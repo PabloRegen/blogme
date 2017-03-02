@@ -1,45 +1,61 @@
 'use strict';
 
+/* require node modules */
 const express = require('express');
 const bodyParser = require('body-parser');
 const rfr = require('rfr');
-const favicon = require('serve-favicon');
 const path = require('path');
+const favicon = require('serve-favicon');
 // const expressSession = require('express-session');
-// const sessionStore = require('connect-session-knex');
+// const KnexSessionStore = require('connect-session-knex')();
 
-const errorHandler = rfr('middleware/error-handler.js');
-const config = rfr('config.json');
+
+/* require blogme modules */
+const errors = rfr('lib/errors');
+const errorHandler = rfr('middleware/error-handler');
+
+let config = rfr('config.json');
+
+let environment;
+
+if (process.env.NODE_ENV != null) {
+	environment = process.env.NODE_ENV;
+} else {
+	environment = config.environment;
+}
+
+/* Database setup */
+// let knex = require('knex')(rfr('knexfile.js'));
 
 let app = express();
 
-// set up
+/* Express configuration */
 app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, '/views'));
-// app.use(express.static(path.join(__dirname, '/public')));
-app.use(favicon(path.join(__dirname, '/public/images/favicon.ico')));
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(favicon(path.join(__dirname, 'public/images/favicon.ico')));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// knex
-// let knex = require('knex')(rfr('knexfile.js'));
+/* Session setup */
 
-// set up session
+/* Fetch current user */
 
-// fetchCurrentUSer
+/* Set user as request-wide locals */
 
-// routes
+/* Route setup */
 app.use('/', rfr('routes/home'));
 app.use('/accounts', rfr('routes/accounts'));
-// app.use('/posts', rfr('routes/posts'));
+app.use('/posts', rfr('routes/posts'));
 
-// 404 error handler
-app.use((req, res, next) => {
-	next(new Error('Page not found'));
+/* Default 404 error handler */
+app.use(function(req, res, next) {
+	next(new errors.NotFoundError('Page not found'));
 });
 
-// error handler
-app.use(errorHandler(config.environment));
+/* error handling */
+app.use(errorHandler(environment));
 
-app.listen(config.port, function() {
-	console.log(`listening on port ${config.port}`);
+app.listen(config.listen.port, function() {
+	console.log(`Server listening on port ${config.listen.port}`);
 });

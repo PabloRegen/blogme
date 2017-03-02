@@ -14,7 +14,7 @@ module.exports = function(environment) {
   		} else {
   			let errorCode;
 
-  			if (err.isBlogmeError) {
+  			if (err.isCustomBlogmeError) {
   				errorCode = err.statusCode;
   			} else {
   				errorCode = 500;
@@ -23,23 +23,18 @@ module.exports = function(environment) {
 	  		res.status(errorCode);
 
 			if (environment === 'development') {
+				// display the error massage along with stack for debugging
 				res.render('error', {title: 'error', errorTitle: err.message, errorStacktrace: err.stack});
 			} else {
 				if (errorCode >= 400 && errorCode < 500) {
+					// client error -> display the error massage
 					res.render('error', {title: 'error', errorTitle: err.message});
 				} else {
+					// non client error -> display short description of a standard HTTP response status code
+					// to prevent exposing internal data
 					res.render('error', {title: 'error', errorTitle: http.STATUS_CODES[errorCode]});
 				}
 			}
-
-			// if ((errorCode >= 400 && errorCode < 500) || environment === 'development') {
-			// 	// it's a client error or environment is 'development' (and needs debugging)
-			// 	res.render('error', {title: 'error', error: err});
-			// } else {
-			// 	// send short description of a standard HTTP response status code
-			// 	// to prevent from leaking internal data
-			// 	res.render('error', {title: 'error', error: http.STATUS_CODES[errorCode]});
-			// }
   		}
 	};
 };
