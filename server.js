@@ -25,7 +25,7 @@ if (process.env.NODE_ENV != null) {
 }
 
 /* Database setup */
-// let knex = require('knex')(rfr('knexfile.js'));
+let knex = require('knex')(rfr('knexfile.js'));
 
 let app = express();
 
