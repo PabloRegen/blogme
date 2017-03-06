@@ -6,9 +6,8 @@ const bodyParser = require('body-parser');
 const rfr = require('rfr');
 const path = require('path');
 const favicon = require('serve-favicon');
-// const expressSession = require('express-session');
-// const KnexSessionStore = require('connect-session-knex')();
-
+const expressSession = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(expressSession);
 
 /* require blogme modules */
 const errors = rfr('lib/errors');
@@ -25,7 +24,7 @@ if (process.env.NODE_ENV != null) {
 }
 
 /* Database setup */
-let knex = require('knex')(rfr('knexfile.js'));
+let knex = require('knex')(rfr('knexfile'));
 
 let app = express();
 
@@ -38,6 +37,14 @@ app.use(favicon(path.join(__dirname, 'public/images/favicon.ico')));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 /* Session setup */
+app.use(expressSession({
+    secret: config.sessions.secret,
+    resave: false,
+    saveUninitialized: false,
+    store: new KnexSessionStore({
+        knex: knex
+    })
+}))
 
 /* Fetch current user */
 

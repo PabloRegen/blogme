@@ -24,6 +24,7 @@
     "pg": "^6.1.2",
     "pug": "^2.0.0-beta11",
     "rfr": "^1.2.3",
+    "scrypt-for-humans": "^2.0.5",
     "serve-favicon": "^2.4.0"
   }
 }
