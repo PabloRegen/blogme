@@ -1,6 +1,5 @@
 'use strict';
 
-/* require node modules */
 const express = require('express');
 const bodyParser = require('body-parser');
 const rfr = require('rfr');
@@ -9,7 +8,6 @@ const favicon = require('serve-favicon');
 const expressSession = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(expressSession);
 
-/* require blogme modules */
 const errors = rfr('lib/errors');
 const errorHandler = rfr('middleware/error-handler');
 
@@ -39,12 +37,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /* Session setup */
 app.use(expressSession({
     secret: config.sessions.secret,
+    // don't save session data unless it was modified to avoid race conditions
     resave: false,
     saveUninitialized: false,
     store: new KnexSessionStore({
+    // the existing Knex instance will be used to interact with the sessions table
         knex: knex
     })
-}))
+}));
 
 /* Fetch current user */
 
@@ -53,7 +53,7 @@ app.use(expressSession({
 /* Route setup */
 app.use('/', rfr('routes/home'));
 app.use('/accounts', rfr('routes/accounts'));
-app.use('/posts', rfr('routes/posts'));
+// app.use('/posts', rfr('routes/posts'));
 
 /* Default 404 error handler */
 app.use(function(req, res, next) {

@@ -4,8 +4,7 @@ const router = require('express-promise-router')();
 
 // home
 router.get('/', (req, res) => {
-  	//res.render('home/home', {title: 'home', message: 'get - home'});
-  	throw new Error("foobar")
+	res.render('home/home', {title: 'home', message: 'get - home'});
 });
 
 // about
