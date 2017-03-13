@@ -1,8 +1,11 @@
-html
-	head
-		title= title
-	body
-		h1= errorTitle
+extends layouts/layout
+
+block title
+	|error
+
+block content
+	h1 error page
+	h2= errorTitle
 		
-		if errorStacktrace != null
-			pre= errorStacktrace
+	if errorStacktrace != null
+		pre= errorStacktrace
