@@ -28,13 +28,13 @@ module.exports = function(environment) {
 	  		res.status(errorCode);
 
 			if (environment === 'development') {
-				res.render('error', {title: 'error', errorTitle: err.message, errorStacktrace: err.stack});
+				res.render('error', {errorTitle: err.message, errorStacktrace: err.stack});
 			} else {
 				if (errorCode >= 400 && errorCode < 500) {
-					res.render('error', {title: 'error', errorTitle: err.message});
+					res.render('error', {errorTitle: err.message});
 				} else {
 					/* send short description of standard HTTP response status code to avoid exposing internal data */
-					res.render('error', {title: 'error', errorTitle: http.STATUS_CODES[errorCode]});
+					res.render('error', {errorTitle: http.STATUS_CODES[errorCode]});
 				}
 			}
   		}
