@@ -15,7 +15,6 @@ const fetchCurrentUser = rfr('middleware/fetch-current-user');
 let config = rfr('config.json');
 
 let environment;
-
 /* allow testing different environments from shell */
 /* ie NODE_ENV=production npm start */
 if (process.env.NODE_ENV != null) {
@@ -24,20 +23,16 @@ if (process.env.NODE_ENV != null) {
 	environment = config.environment;
 }
 
-/* Database setup */
 let knex = require('knex')(rfr('knexfile'));
 
 let app = express();
 
-/* Express configuration */
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public/images/favicon.ico')));
 app.use(bodyParser.urlencoded({ extended: true }));
-
-/* Session setup */
 app.use(expressSession({
     secret: config.sessions.secret,
     resave: false, // don't save session data unless it was modified, to avoid race conditions
@@ -47,20 +42,18 @@ app.use(expressSession({
     })
 }));
 
-/* Fetch current user if logged in so it's available application-wide for every new request */
+/* Make site name available application-wide */
+app.locals.siteName = 'Blogme';
+
+/* Fetch current user if logged in so it's available application-wide */
 app.use(fetchCurrentUser(knex));
 
-/* Set user as request-wide locals */
-/* to make the current user available in every res.render for all requests */
+/* Make current user available in every res.render */
 app.use(function(req,res,next) {
-    if (req.currentUser != null) {
-       res.locals.currentUser = req.currentUser; 
-    } else {
-        next();
-    } 
+    res.locals.currentUser = req.currentUser;
+    next(); 
 });
 
-/* Route setup */
 app.use('/', rfr('routes/home'));
 app.use('/accounts', rfr('routes/accounts'));
 // app.use('/posts', rfr('routes/posts'));
