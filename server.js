@@ -55,7 +55,7 @@ app.use(function(req,res,next) {
 });
 
 app.use('/', rfr('routes/home'));
-app.use('/accounts', rfr('routes/accounts'));
+app.use('/accounts', rfr('routes/accounts')(knex));
 // app.use('/posts', rfr('routes/posts'));
 
 /* 404 Page not found error handler */
