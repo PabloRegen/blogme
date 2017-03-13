@@ -1,0 +1,24 @@
+html
+	head
+		title
+			block title
+			|#{siteName}
+
+		link(href='/css/index.css' type='text/css' rel='stylesheet')
+	body
+		div.header
+			h1= siteName
+
+			if user != null
+				p Hi #{user.username}!
+				p
+					a(href='/accounts/signout') Sign out
+			else
+				p
+					a(href='/accounts/signin') Sign in
+				p
+					a(href='/accounts/signup') Sign up
+
+		div.main
+			block content
+			p This page doesn't have any content yet
