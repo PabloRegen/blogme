@@ -9,7 +9,7 @@ const errors = rfr('lib/errors');
 
 /* signup */
 router.get('/signup', function(req, res) {
-	res.send('get - signup');
+	res.render('accounts/signup');
 });
 
 router.post('/signup', function(req, res) {
@@ -18,7 +18,7 @@ router.post('/signup', function(req, res) {
 
 /* signin */
 router.get('/signin', function(req, res) {
-	res.send('get - signin');
+	res.render('accounts/signin');
 });
 
 router.post('/signin', function(req, res) {
