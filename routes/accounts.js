@@ -1,13 +1,16 @@
 'use strict';
 
 const Promise = require('bluebird');
-const router = require('express-promise-router')();
+const expressPromiseRouter = require('express-promise-router');
 const checkit = require('checkit');
 const scryptForHumans = require('scrypt-for-humans');
 const rfr = require('rfr');
+
 const errors = rfr('lib/errors');
+const requireSignin = rfr('middleware/require-signin');
 
 module.exports = function(knex) {
+	let router = expressPromiseRouter();
 	
 	/* signup */
 	router.get('/signup', function(req, res) {
@@ -53,7 +56,7 @@ module.exports = function(knex) {
 	});
 
 	/* signout */
-	router.get('/signout', function(req, res) {
+	router.get('/signout', requireSignin, function(req, res) {
 		res.send('get - signout');
 	});
 
@@ -62,7 +65,7 @@ module.exports = function(knex) {
 	});
 
 	/* delete */
-	router.get('/delete', function(req, res) {
+	router.get('/delete', requireSignin, function(req, res) {
 		res.send('get - delete');
 	});
 
@@ -71,7 +74,7 @@ module.exports = function(knex) {
 	});
 
 	/* profile */
-	router.get('/profile', function(req, res) {
+	router.get('/profile', requireSignin, function(req, res) {
 		res.send('get - profile');
 	});
 
