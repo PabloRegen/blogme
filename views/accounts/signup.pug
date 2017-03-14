@@ -4,26 +4,18 @@ block title
 	|signup
 
 block content
-	h1 Create your account
-	p
-		a(href='/accounts/signin') I already have an account
-
+	h1 Sign up
 	form(action='/accounts/signup' method='post')
-		p
-			|Choose a username <br/>
+		p Username <br/>
 			input(type='text' name='username')
-		p
-			|Your email <br/>
+		p Email <br/>
 			input(type='text' name='email' placeholder='yourname@example.com')
-		p
-			|Choose a password <br/>
+		p Password <br/>
 			input(type='password' name='password' placeholder='at least 8 characters')
-		p
-			|Confirm password <br/>
+		p Confirm password <br/>
 			input(type='password' name='confirm_password')
 		p
-			|By creating an account you agree to our Terms of Service (add link)
-		p
-			input(type='submit' value='Create my account')
-	p
-		a(href='/') Return to Blog.com
+			input(type='submit' value='Sign up')
+		p By creating an account you agree to our Terms of Service (link)
+		p Have an account? 
+			a(href='/accounts/signin') Sign in »

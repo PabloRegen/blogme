@@ -6,21 +6,15 @@ block title
 block content
 	h1 Sign in
 	form(action='/accounts/signin' method='post')
-		p
-			|Username or Email <br/>
+		p Username or Email <br/>
 			input(type='text' name='usernameOrEmail')
-		p
-			|Password <br/>
+		p Password <br/>
 			input(type='password' name='password')
 		p
 			input(type='checkbox' name='stay_signed' checked)
-			|Stay signed in
+			|Remember me
+			|- Forgot password? (link)
 		p
 			input(type='submit' value='Sign in')
-	p
-		|New to Blog? 
-		a(href='/accounts/signup') Create your Blog account
-	p 
-		|Forgot your password? (add link to page)
-	p
-		a(href='/') Return to Blog.com
+		p Don't have an account? 
+			a(href='/accounts/signup') Sign up »
