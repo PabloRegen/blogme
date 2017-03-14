@@ -45,10 +45,10 @@ app.use(expressSession({
 /* Make site name available application-wide */
 app.locals.siteName = 'Blogme';
 
-/* Fetch current user if logged in so it's available application-wide */
+/* Fetch current user (if logged in) so it's available application-wide */
 app.use(fetchCurrentUser(knex));
 
-/* Make current user available in every res.render */
+/* Set current user as request-wide locals so it's available for every res.render */
 app.use(function(req,res,next) {
     res.locals.currentUser = req.currentUser;
     next(); 
