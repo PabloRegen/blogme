@@ -9,7 +9,7 @@ const rfr = require('rfr');
 const errors = rfr('lib/errors');
 const requireSignin = rfr('middleware/require-signin');
 
-module.exports = function(knex) {
+module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 	
 	/* signup */
@@ -18,7 +18,48 @@ module.exports = function(knex) {
 	});
 
 	router.post('/signup', function(req, res) {
-		res.send('post - signup');
+		if (environment === 'development') {
+			console.log('signup req.body:');
+			console.log(req.body);
+		}
+		
+		return Promise.try(() => {
+			return checkit({
+				username: 'required',
+				email: ['required', 'email'],
+				password: 'required',			// add min length, simbols, etc
+				'confirm_password': ['required', 'matchesField:password']
+			}).run(req.body);
+		}).then(() => {
+			return knex('users').where({username: req.body.username});
+		}).then((users) => {
+			if (users.length > 0) {
+				throw new Error('Username already in use. Choose a different one');
+			}
+		}).then(() => {
+			return knex('users').where({email: req.body.email});
+		}).then((users) => {
+			if (users.length > 0) {
+				throw new Error('Email already in use. Choose a different one');
+			} else {
+				return knex('users').insert({
+					username: req.body.username,
+					email: req.body.email,
+					pwHash: scryptForHumans.hash(req.body.password)
+				});
+			}
+		}).then(() => {
+			res.redirect('accounts/dashboard');
+		}).catch(checkit.Error, (err) => {
+			// FIXME! Need to separate errors depending on the checkit error type: required, email, matches
+			if (err.errors.email.message === 'The email must be a valid email address') {
+				throw new Error(err.errors.email.message);
+			} else if (err.errors.confirm_password.message === 'The confirm_password must exactly match the password'){
+				throw new Error(err.errors.confirm_password.message);
+			} else {
+				throw new errors.ValidationError('Must fill all fields', {errors: err.errors});
+			}
+		});
 	});
 
 	/* signin */
@@ -27,6 +68,11 @@ module.exports = function(knex) {
 	});
 
 	router.post('/signin', function(req, res) {
+		if (environment === 'development') {
+			console.log('signin req.body:');
+			console.log(req.body);
+		}
+
 		return Promise.try(() => {
 			return checkit({
 				usernameOrEmail: 'required',
@@ -43,9 +89,11 @@ module.exports = function(knex) {
 				return Promise.try(() => {
 					return scryptForHumans.verifyHash(req.body.password, user.pwHash);
 				}).then(() => {
-					/* start a session with user id as the session's only data */
+					/* Start a session with user id as the session's only data */
+					/* Or if user is already logged in change the user id in the session */
+					/* with the practical result of logging the user out and logging him back in as another user */
 					req.session.userId = user.id;
-					res.send('post - signin');
+					res.redirect('accounts/dashboard');
 				});
 			}
 		}).catch(checkit.Error, (err) => {
@@ -80,6 +128,11 @@ module.exports = function(knex) {
 
 	router.post('/profile', function(req, res) {
 		res.send('post - profile');
+	});
+
+	/* dashboard */
+	router.get('/dashboard', requireSignin, function(req, res) {
+		res.send('get - dashboard');
 	});
 
 	return router;
