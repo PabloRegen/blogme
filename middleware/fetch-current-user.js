@@ -3,7 +3,7 @@
 const Promise = require('bluebird');
 
 module.exports = function(knex) {
-	return (req, res, next) => {
+	return function (req, res, next) {
 		if (req.session.userId == null) {
 			/* User not logged in */
 			next();

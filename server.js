@@ -49,7 +49,7 @@ app.locals.siteName = 'Blogme';
 app.use(fetchCurrentUser(knex));
 
 /* Set current user as request-wide locals so it's available for every res.render */
-app.use(function(req,res,next) {
+app.use((req,res,next) => {
     res.locals.currentUser = req.currentUser;
     next(); 
 });
@@ -59,12 +59,12 @@ app.use('/accounts', rfr('routes/accounts')(knex, environment));
 // app.use('/posts', rfr('routes/posts'));
 
 /* 404 Page not found error handler */
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
 	next(new errors.NotFoundError('Page not found'));
 });
 
 app.use(errorHandler(environment));
 
-app.listen(config.listen.port, function() {
+app.listen(config.listen.port, () => {
 	console.log(`Server listening on port ${config.listen.port}`);
 });

@@ -13,11 +13,11 @@ module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 	
 	/* signup */
-	router.get('/signup', function(req, res) {
+	router.get('/signup', (req, res) => {
 		res.render('accounts/signup');
 	});
 
-	router.post('/signup', function(req, res) {
+	router.post('/signup', (req, res) => {
 		if (environment === 'development') {
 			console.log('signup req.body:');
 			console.log(req.body);
@@ -76,11 +76,11 @@ module.exports = function(knex, environment) {
 	});
 
 	/* signin */
-	router.get('/signin', function(req, res) {
+	router.get('/signin', (req, res) => {
 		res.render('accounts/signin');
 	});
 
-	router.post('/signin', function(req, res) {
+	router.post('/signin', (req, res) => {
 		if (environment === 'development') {
 			console.log('signin req.body:');
 			console.log(req.body);
@@ -117,31 +117,31 @@ module.exports = function(knex, environment) {
 	});
 
 	/* signout */
-	router.get('/signout', requireSignin, function(req, res) {
+	router.get('/signout', requireSignin, (req, res) => {
 		req.session.destroy();
 		res.redirect('/');
 	});
 
 	/* delete */
-	router.get('/delete', requireSignin, function(req, res) {
+	router.get('/delete', requireSignin, (req, res) => {
 		res.send('get - delete');
 	});
 
-	router.post('/delete', function(req, res) {
+	router.post('/delete', (req, res) => {
 		res.send('post - delete');
 	});
 
 	/* profile */
-	router.get('/profile', requireSignin, function(req, res) {
+	router.get('/profile', requireSignin, (req, res) => {
 		res.send('get - profile');
 	});
 
-	router.post('/profile', function(req, res) {
+	router.post('/profile', (req, res) => {
 		res.send('post - profile');
 	});
 
 	/* dashboard */
-	router.get('/dashboard', requireSignin, function(req, res) {
+	router.get('/dashboard', requireSignin, (req, res) => {
 		res.send('get - dashboard');
 	});
 
