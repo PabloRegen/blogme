@@ -27,35 +27,48 @@ module.exports = function(knex, environment) {
 			return checkit({
 				username: 'required',
 				email: ['required', 'email'],
-				password: 'required',			// add min length, simbols, etc
-				'confirm_password': ['required', 'matchesField:password']
+				password: ['required', 'minLength:8', 'maxLength:1024'],
+				confirm_password: ['required', 'matchesField:password']
 			}).run(req.body);
 		}).then(() => {
 			return knex('users').where({username: req.body.username});
-		}).then((users) => {
+		}).then((users) => { 
 			if (users.length > 0) {
-				throw new Error('Username already in use. Choose a different one');
+				throw new Error('The username is taken. Choose another one');
 			}
-		}).then(() => {
+
 			return knex('users').where({email: req.body.email});
 		}).then((users) => {
 			if (users.length > 0) {
-				throw new Error('Email already in use. Choose a different one');
+				throw new Error('The email address is already in use');
 			} else {
-				return knex('users').insert({
-					username: req.body.username,
-					email: req.body.email,
-					pwHash: scryptForHumans.hash(req.body.password)
-				});
+				return scryptForHumans.hash(req.body.password);
 			}
+		}).then((hash) => {
+			return knex('users').insert({
+				username: req.body.username,
+				email: req.body.email,
+				pwHash: hash
+			});
 		}).then(() => {
+			// FIXME! Need to be updated to send a confirmation email instead
 			res.redirect('accounts/dashboard');
 		}).catch(checkit.Error, (err) => {
+			console.log(err);
+			console.log('---');
 			// FIXME! Need to separate errors depending on the checkit error type: required, email, matches
-			if (err.errors.email.message === 'The email must be a valid email address') {
-				throw new Error(err.errors.email.message);
-			} else if (err.errors.confirm_password.message === 'The confirm_password must exactly match the password'){
-				throw new Error(err.errors.confirm_password.message);
+			if (err.errors.email.message != null && err.errors.email.message === 'The email must be a valid email address') {
+				// if (err.errors.email.message === 'The email must be a valid email address') {
+					throw new Error(err.errors.email.message);
+				// }
+			} else if (err.errors.password.message != null) {
+				if (err.errors.password.message !== 'The password is required') {
+					throw new Error(err.errors.password.message);
+				}
+			} else if (err.errors.confirm_password.message != null) {
+				if (err.errors.confirm_password.message === 'The confirm_password must exactly match the password') {
+					throw new Error('The password and confirm password must exactly match');
+				}
 			} else {
 				throw new errors.ValidationError('Must fill all fields', {errors: err.errors});
 			}
@@ -105,11 +118,8 @@ module.exports = function(knex, environment) {
 
 	/* signout */
 	router.get('/signout', requireSignin, function(req, res) {
-		res.send('get - signout');
-	});
-
-	router.post('/signout', function(req, res) {
-		res.send('post - signout');
+		req.session.destroy();
+		res.redirect('/');
 	});
 
 	/* delete */
