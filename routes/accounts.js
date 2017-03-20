@@ -5,9 +5,22 @@ const expressPromiseRouter = require('express-promise-router');
 const checkit = require('checkit');
 const scryptForHumans = require('scrypt-for-humans');
 const rfr = require('rfr');
+const databaseError = require('database-error');
 
 const errors = rfr('lib/errors');
 const requireSignin = rfr('middleware/require-signin');
+
+let duplicateUsername = {
+	name: 'UniqueConstraintViolationError',
+	table: 'users',
+	column: 'username'
+};
+
+let duplicateEmailAddress = {
+	name: 'UniqueConstraintViolationError',
+	table: 'users',
+	column: 'email'
+};
 
 module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
@@ -31,19 +44,19 @@ module.exports = function(knex, environment) {
 				confirm_password: ['required', 'matchesField:password']
 			}).run(req.body);
 		}).then(() => {
-			return knex('users').where({username: req.body.username});
-		}).then((users) => { 
-			if (users.length > 0) {
-				throw new Error('The username is taken. Choose another one');
-			}
+		// 	return knex('users').where({username: req.body.username});
+		// }).then((users) => { 
+		// 	if (users.length > 0) {
+		// 		throw new Error('That username already exists! Please pick a different one.');
+		// 	}
 
-			return knex('users').where({email: req.body.email});
-		}).then((users) => {
-			if (users.length > 0) {
-				throw new Error('The email address is already in use');
-			} else {
+		// 	return knex('users').where({email: req.body.email});
+		// }).then((users) => {
+		// 	if (users.length > 0) {
+		// 		throw new Error('That e-mail address already exists! Please pick a different one.');
+		// 	} else {
 				return scryptForHumans.hash(req.body.password);
-			}
+		//	}
 		}).then((hash) => {
 			return knex('users').insert({
 				username: req.body.username,
@@ -51,27 +64,47 @@ module.exports = function(knex, environment) {
 				pwHash: hash
 			});
 		}).then(() => {
-			// FIXME! Need to be updated to send a confirmation email instead
-			res.redirect('accounts/dashboard');
-		}).catch(checkit.Error, (err) => {
-			console.log(err);
-			console.log('---');
-			// FIXME! Need to separate errors depending on the checkit error type: required, email, matches
-			if (err.errors.email.message != null && err.errors.email.message === 'The email must be a valid email address') {
-				// if (err.errors.email.message === 'The email must be a valid email address') {
-					throw new Error(err.errors.email.message);
-				// }
-			} else if (err.errors.password.message != null) {
-				if (err.errors.password.message !== 'The password is required') {
-					throw new Error(err.errors.password.message);
-				}
-			} else if (err.errors.confirm_password.message != null) {
-				if (err.errors.confirm_password.message === 'The confirm_password must exactly match the password') {
-					throw new Error('The password and confirm password must exactly match');
-				}
-			} else {
-				throw new errors.ValidationError('Must fill all fields', {errors: err.errors});
+			// FIXME! Send a confirmation email instead
+			res.redirect('/accounts/dashboard');
+		}).catch(databaseError.rethrow).catch(duplicateUsername, (err) => {
+			if (environment === 'development') {
+				console.log('databaseError - duplicateUsername');
+				console.log(err);
 			}
+
+			res.status(422).send('That username already exists! Please pick a different one.');
+
+			// res.render('accounts/signup', {errors: err});
+		}).catch(duplicateEmailAddress, (err) => {
+			if (environment === 'development') {
+				console.log('databaseError - duplicateEmailAddress');
+				console.log(err);
+			}
+			
+			res.status(422).send('That e-mail address already exists! Please pick a different one.');
+
+			// res.render('accounts/signup', {errors: err});
+		}).catch(checkit.Error, (err) => {
+			console.log('checkit.Error: ', err);
+
+			res.render('accounts/signup', {errors: err});
+
+			// // FIXME! Need to separate errors depending on the checkit error type: required, email, matches
+			// if (err.errors.email.message != null && err.errors.email.message === 'The email must be a valid email address') {
+			// 	// if (err.errors.email.message === 'The email must be a valid email address') {
+			// 		throw new Error(err.errors.email.message);
+			// 	// }
+			// } else if (err.errors.password.message != null) {
+			// 	if (err.errors.password.message !== 'The password is required') {
+			// 		throw new Error(err.errors.password.message);
+			// 	}
+			// } else if (err.errors.confirm_password.message != null) {
+			// 	if (err.errors.confirm_password.message === 'The confirm_password must exactly match the password') {
+			// 		throw new Error('The password and confirm password must exactly match');
+			// 	}
+			// } else {
+			// 	throw new errors.ValidationError('Must fill all fields', {errors: err.errors});
+			// }
 		});
 	});
 
@@ -106,7 +139,7 @@ module.exports = function(knex, environment) {
 					/* Or if user is already logged in change the user id in the session */
 					/* with the practical result of logging the user out and logging him back in as another user */
 					req.session.userId = user.id;
-					res.redirect('accounts/dashboard');
+					res.redirect('/accounts/dashboard');
 				});
 			}
 		}).catch(checkit.Error, (err) => {
@@ -123,8 +156,8 @@ module.exports = function(knex, environment) {
 	});
 
 	/* delete */
-	router.get('/delete', requireSignin, (req, res) => {
-		res.send('get - delete');
+	router.post('/delete', requireSignin, (req, res) => {
+		res.send('post - delete');
 	});
 
 	router.post('/delete', (req, res) => {
@@ -142,7 +175,7 @@ module.exports = function(knex, environment) {
 
 	/* dashboard */
 	router.get('/dashboard', requireSignin, (req, res) => {
-		res.send('get - dashboard');
+		res.render('accounts/dashboard');
 	});
 
 	return router;
