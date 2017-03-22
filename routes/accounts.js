@@ -27,7 +27,8 @@ module.exports = function(knex, environment) {
 	
 	/* signup */
 	router.get('/signup', (req, res) => {
-		res.render('accounts/signup');
+		// FIXME! temporary passing errors as an empty object
+		res.render('accounts/signup', {errors: {}});
 	});
 
 	router.post('/signup', (req, res) => {
@@ -60,25 +61,33 @@ module.exports = function(knex, environment) {
 				console.log(err);
 			}
 
-			// res.status(422).send('That username already exists! Please pick a different one.');
-
-			res.render('accounts/signup', {databaseError: 'That username already exists! Please pick a different one.'});
+			let errors = {
+				username: { 
+					message: 'That username already exists! Please pick a different one.' 
+				}
+			};
+			
+			res.render('accounts/signup', {errors: errors});
 		}).catch(duplicateEmailAddress, (err) => {
 			if (environment === 'development') {
 				console.log('databaseError - duplicateEmailAddress');
 				console.log(err);
 			}
 			
-			// res.status(422).send('That e-mail address already exists! Please pick a different one.');
+			let errors = {
+				email: { 
+					message: 'That e-mail address already exists! Please pick a different one.' 
+				}
+			};			
 
-			res.render('accounts/signup', {databaseError: 'That e-mail address already exists! Please pick a different one.'});
+			res.render('accounts/signup', {errors: errors});
 		}).catch(checkit.Error, (err) => {
 			if (environment === 'development') {
 				console.log('checkitError');
 				console.log(err);
 			}
 
-			res.render('accounts/signup', {checkitError: err});
+			res.render('accounts/signup', {errors: err.errors});
 		});
 	});
 
