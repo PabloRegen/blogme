@@ -44,19 +44,7 @@ module.exports = function(knex, environment) {
 				confirm_password: ['required', 'matchesField:password']
 			}).run(req.body);
 		}).then(() => {
-		// 	return knex('users').where({username: req.body.username});
-		// }).then((users) => { 
-		// 	if (users.length > 0) {
-		// 		throw new Error('That username already exists! Please pick a different one.');
-		// 	}
-
-		// 	return knex('users').where({email: req.body.email});
-		// }).then((users) => {
-		// 	if (users.length > 0) {
-		// 		throw new Error('That e-mail address already exists! Please pick a different one.');
-		// 	} else {
 				return scryptForHumans.hash(req.body.password);
-		//	}
 		}).then((hash) => {
 			return knex('users').insert({
 				username: req.body.username,
@@ -72,39 +60,25 @@ module.exports = function(knex, environment) {
 				console.log(err);
 			}
 
-			res.status(422).send('That username already exists! Please pick a different one.');
+			// res.status(422).send('That username already exists! Please pick a different one.');
 
-			// res.render('accounts/signup', {errors: err});
+			res.render('accounts/signup', {databaseError: 'That username already exists! Please pick a different one.'});
 		}).catch(duplicateEmailAddress, (err) => {
 			if (environment === 'development') {
 				console.log('databaseError - duplicateEmailAddress');
 				console.log(err);
 			}
 			
-			res.status(422).send('That e-mail address already exists! Please pick a different one.');
+			// res.status(422).send('That e-mail address already exists! Please pick a different one.');
 
-			// res.render('accounts/signup', {errors: err});
+			res.render('accounts/signup', {databaseError: 'That e-mail address already exists! Please pick a different one.'});
 		}).catch(checkit.Error, (err) => {
-			console.log('checkit.Error: ', err);
+			if (environment === 'development') {
+				console.log('checkitError');
+				console.log(err);
+			}
 
-			res.render('accounts/signup', {errors: err});
-
-			// // FIXME! Need to separate errors depending on the checkit error type: required, email, matches
-			// if (err.errors.email.message != null && err.errors.email.message === 'The email must be a valid email address') {
-			// 	// if (err.errors.email.message === 'The email must be a valid email address') {
-			// 		throw new Error(err.errors.email.message);
-			// 	// }
-			// } else if (err.errors.password.message != null) {
-			// 	if (err.errors.password.message !== 'The password is required') {
-			// 		throw new Error(err.errors.password.message);
-			// 	}
-			// } else if (err.errors.confirm_password.message != null) {
-			// 	if (err.errors.confirm_password.message === 'The confirm_password must exactly match the password') {
-			// 		throw new Error('The password and confirm password must exactly match');
-			// 	}
-			// } else {
-			// 	throw new errors.ValidationError('Must fill all fields', {errors: err.errors});
-			// }
+			res.render('accounts/signup', {checkitError: err});
 		});
 	});
 
