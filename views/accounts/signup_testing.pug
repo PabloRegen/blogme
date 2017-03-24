@@ -32,20 +32,19 @@ block content
 
 
 block content
-	mixin field(classic, title, type, name, errorKey)
-		p(class=classic) #{title} <br/>
-			input(type=type, name=name)
-			if errorKey != null
-				| <br/> #{errorKey.message}
-
+	mixin field(classes, title, type)
+		p(class=classes) #{title} <br/>
+			input(type=type, name=Object.keys(errors)[0])
+			if Object.keys(errors)[0] != null
+				| <br/> #{Object.keys(errors)[0].message}
 
 	h1 Sign up
 	form(action='/accounts/signup' method='post')
 
-		+field({invalid: errors.username != null}, 'Username', 'text', 'username', errors.username)
-		+field({invalid: errors.email != null}, 'Email', 'text', 'email', errors.email)
-		+field({invalid: errors.password != null}, 'Password', 'password', 'password', errors.password)
-		+field({invalid: errors.confirm_password != null}, 'Confirm password', 'password', 'confirm_password', errors.confirm_password) (errorMessage= 'The confirmation must exactly match the password')
+		+field({invalid: errors.username != null}, 'Username', 'text')
+		+field({invalid: errors.email != null}, 'Email', 'text')
+		+field({invalid: errors.password != null}, 'Password', 'password')
+		+field({invalid: errors.confirm_password != null}, 'Confirm password', 'password') (errorMessage= 'The confirmation must exactly match the password')
 
 		p
 			input(type='submit' value='Sign up')

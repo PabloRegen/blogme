@@ -21,36 +21,17 @@ block content
 		p(class={invalid: errors.confirm_password != null}) Confirm password <br/>
 			input(type='password' name='confirm_password')
 			if errors.confirm_password != null
-				| </br> The confirmation must exactly match the password
+				| </br> The confirmation must exactly match the password					
 		p
 			input(type='submit' value='Sign up')
 		p By creating an account you agree to our Terms of Service (link)
-		p Have an account?
-			|
-			|
+		p Have an account? 
 			a(href='/accounts/signin') Sign in »
 
+		mixin paragraph(type, placeholder, field, message)
+		p(class={invalid: errors[field] != null}) #{errors[field]} <br/>
+			input(type=type, name=field)
+			if field != null
+				| </br> #{field.message}
 
-block content
-	mixin field(classic, title, type, name, errorKey)
-		p(class=classic) #{title} <br/>
-			input(type=type, name=name)
-			if errorKey != null
-				| <br/> #{errorKey.message}
-
-
-	h1 Sign up
-	form(action='/accounts/signup' method='post')
-
-		+field({invalid: errors.username != null}, 'Username', 'text', 'username', errors.username)
-		+field({invalid: errors.email != null}, 'Email', 'text', 'email', errors.email)
-		+field({invalid: errors.password != null}, 'Password', 'password', 'password', errors.password)
-		+field({invalid: errors.confirm_password != null}, 'Confirm password', 'password', 'confirm_password', errors.confirm_password) (errorMessage= 'The confirmation must exactly match the password')
-
-		p
-			input(type='submit' value='Sign up')
-		p By creating an account you agree to our Terms of Service (link)
-		p Have an account?
-			|
-			|
-			a(href='/accounts/signin') Sign in »
+		paragraph(username, message)
