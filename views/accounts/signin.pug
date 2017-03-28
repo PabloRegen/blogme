@@ -4,16 +4,18 @@ block title
 	|signin
 
 block content
+	mixin field(title)
+		p(class={invalid: errors[attributes.name] != null}) #{title} <br/>
+			input&attributes(attributes)
+			if errors[attributes.name] != null
+				| <br/> #{errors[attributes.name].message}
+
 	h1 Sign in
 	form(action='/accounts/signin' method='post')
-		p(class={invalid: errors.usernameOrEmail != null}) Username or Email <br/>
-			input(type='text' name='usernameOrEmail')
-			if errors.usernameOrEmail != null
-				| <br/> #{errors.usernameOrEmail.message}
-		p(class={invalid: errors.password != null}) Password <br/>
-			input(type='password' name='password')
-			if errors.password != null
-				| <br/> #{errors.password.message}
+
+		+field('Username or Email')(type='text' name='usernameOrEmail')
+		+field('Password')(type='text' name='password')
+
 		p
 			input(type='checkbox' name='stay_signed' checked)
 			|Remember me
