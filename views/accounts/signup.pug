@@ -8,7 +8,13 @@ block content
 		p(class={invalid: errors[attributes.name] != null}) #{title} <br/>
 			input&attributes(attributes)
 			if errors[attributes.name] != null
-				| <br/> #{errors[attributes.name].message}
+				if errors[attributes.name] === 'confirm_password'
+					if errors[attributes.name].message === 'The confirm_password is required'
+						| <br/> 'The confirmation is required'
+					else
+						| <br/> 'The confirmation must exactly match the password'
+				else
+					| <br/> #{errors[attributes.name].message}
 
 	h1 Sign up
 	form(action='/accounts/signup' method='post')
