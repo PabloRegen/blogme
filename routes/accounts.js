@@ -22,6 +22,21 @@ let duplicateEmailAddress = {
 	column: 'email'
 };
 
+let logReqBody = function(environment, reqBody, whichReqBody) {
+	if (environment === 'development') {
+		console.log(whichReqBody);
+		console.log(reqBody);
+	}
+};
+
+let logError = function(environment, err, errorType) {
+	if (environment === 'development') {
+		console.log('error type is: ', errorType);
+		console.log('error is:');
+		console.log(err);
+	}
+};
+
 module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 	
@@ -32,10 +47,7 @@ module.exports = function(knex, environment) {
 	});
 
 	router.post('/signup', (req, res) => {
-		if (environment === 'development') {
-			console.log('signup req.body:');
-			console.log(req.body);
-		}
+		logReqBody(environment, req.body, 'signup req.body:')
 		
 		return Promise.try(() => {
 			return checkit({
@@ -56,10 +68,7 @@ module.exports = function(knex, environment) {
 			// FIXME! Send a confirmation email instead
 			res.redirect('/accounts/dashboard');
 		}).catch(databaseError.rethrow).catch(duplicateUsername, (err) => {
-			if (environment === 'development') {
-				console.log('databaseError - duplicateUsername');
-				console.log(err);
-			}
+			logError(environment, err, 'databaseError - duplicateUsername');
 
 			let errors = {
 				username: { 
@@ -69,10 +78,7 @@ module.exports = function(knex, environment) {
 			
 			res.render('accounts/signup', {errors: errors});
 		}).catch(duplicateEmailAddress, (err) => {
-			if (environment === 'development') {
-				console.log('databaseError - duplicateEmailAddress');
-				console.log(err);
-			}
+			logError(environment, err, 'databaseError - duplicateEmailAddress');
 			
 			let errors = {
 				email: { 
@@ -82,10 +88,7 @@ module.exports = function(knex, environment) {
 
 			res.render('accounts/signup', {errors: errors});
 		}).catch(checkit.Error, (err) => {
-			if (environment === 'development') {
-				console.log('checkitError');
-				console.log(err);
-			}
+			logError(environment, err, 'checkitError');
 
 			res.render('accounts/signup', {errors: err.errors});
 		});
@@ -93,14 +96,12 @@ module.exports = function(knex, environment) {
 
 	/* signin */
 	router.get('/signin', (req, res) => {
-		res.render('accounts/signin');
+		// FIXME! temporary passing errors as an empty object
+		res.render('accounts/signin', {errors: {}});
 	});
 
 	router.post('/signin', (req, res) => {
-		if (environment === 'development') {
-			console.log('signin req.body:');
-			console.log(req.body);
-		}
+		logReqBody(environment, req.body, 'signin req.body:')
 
 		return Promise.try(() => {
 			return checkit({
@@ -111,7 +112,16 @@ module.exports = function(knex, environment) {
 			return knex('users').where({username: req.body.usernameOrEmail}).orWhere({email: req.body.usernameOrEmail});
 		}).then((users) => {
 			if (users.length === 0) {
-				throw new errors.UnauthorizedError('Invalid username or email');
+				logError(environment, 'Invalid username or email', 'User Error');
+
+				let errors = {
+					usernameOrEmail: {
+						message: 'Invalid username or email'
+					}
+				};
+
+				res.render('accounts/signin', {errors: errors});
+				// throw new errors.UnauthorizedError('Invalid username or email');
 			} else {
 				let user = users[0];
 
@@ -126,9 +136,21 @@ module.exports = function(knex, environment) {
 				});
 			}
 		}).catch(checkit.Error, (err) => {
-			throw new errors.ValidationError('Must enter both fields', {errors: err.errors});
+			logError(environment, err, 'checkitError');
+
+			res.render('accounts/signin', {errors: err.errors});
+			// throw new errors.ValidationError('Must enter both fields', {errors: err.errors});
 		}).catch(scryptForHumans.PasswordError, (err) => {
-			throw new errors.UnauthorizedError('Invalid password');
+			logError(environment, err, 'scryptForHumans error');
+
+			let errors = {
+				password: {
+					message: 'Invalid password'
+				}
+			};
+
+			res.render('accounts/signin', {errors: errors});
+			// throw new errors.UnauthorizedError('Invalid password');
 		});
 	});
 
