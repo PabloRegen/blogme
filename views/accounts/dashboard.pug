@@ -8,10 +8,10 @@ block content
 	p Hi #{currentUser.username}
 	p
 		a(href='/posts/create') Create a new post
-	p Your latest posts
+	p Your latest posts:
 		ul
-			each post in posts
-				li= post.title
+			each post in latestPosts
+				li: a(href=`/posts/read/${post.id}`)= post.title
 			else
 				li You have no posts yet
 	
