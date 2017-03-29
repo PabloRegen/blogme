@@ -165,17 +165,24 @@ module.exports = function(knex, environment) {
 		res.send('post - delete');
 	});
 
-	router.post('/delete', (req, res) => {
+	router.post('/delete', requireSignin, (req, res) => {
 		res.send('post - delete');
 	});
 
 	/* profile */
 	router.get('/profile', requireSignin, (req, res) => {
-		res.send('get - profile');
+		res.render('accounts/profile');
 	});
 
-	router.post('/profile', (req, res) => {
-		res.send('post - profile');
+	router.post('/profile', requireSignin, (req, res) => {
+		return Promise.try(() => {
+			return knex('users').where({id: req.currentUser.id}).insert({
+				name: req.body.name,
+				bio: req.body.bio
+			});
+		}).then(() => {
+			res.render('accounts/dashboard');
+		});
 	});
 
 	/* dashboard */

@@ -1,0 +1,20 @@
+extends ../layouts/layout
+
+block title
+	|profile
+
+block content
+	h1 Create your profile
+	form(action='/accounts/profile' method='post')
+		p Name <br/>
+			input(type='text' name='name')
+		p Bio <br/>
+			textarea(name='bio' placeholder='Enter short bio')
+		p Picture <br/>
+			input(type='file' name='userPic')
+		p
+			input(type='button' value='Save temp profile')
+		p
+			input(type='submit' value='Create profile')
+	p
+		a(href='/accounts/signout') Sign out
