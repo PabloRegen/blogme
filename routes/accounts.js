@@ -187,7 +187,11 @@ module.exports = function(knex, environment) {
 
 	/* dashboard */
 	router.get('/dashboard', requireSignin, (req, res) => {
-		res.render('accounts/dashboard');
+		return Promise.try(() => {
+			return knex('posts').where({userId: req.currentUser.id}).limit(3).orderBy('id', 'asc');
+		}).then((posts) => {
+			res.render('accounts/dashboard', {posts: posts});
+		});
 	});
 
 	return router;

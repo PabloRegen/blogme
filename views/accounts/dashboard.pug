@@ -2,3 +2,26 @@ extends ../layouts/layout
 
 block title
 	|dashboard
+
+block content
+	h1 Dashboard
+	p Hi #{currentUser.username}
+	p
+		a(href='/posts/create') Create a new post
+	p Your latest posts
+		ul
+			each post in posts
+				li= post.title
+			else
+				li You have no posts yet
+	
+	<br/> <br/>
+
+	p Your messages
+	p Your visitors
+	p Your most common referrers
+	p People following you
+	p People you are following
+
+	p
+		a(href='/accounts/signout') Sign out
