@@ -3,7 +3,6 @@ html
 	head
 		title #{siteName} - 
 			block title
-
 		link(href='/css/index.css' type='text/css' rel='stylesheet')
 	body
 		div.header
@@ -11,8 +10,8 @@ html
 				a(href='/'): img(src='/images/blogme.jpg' alt='blogme image')
 			h1= siteName
 
-			if user != null
-				p Hi #{user.username}!
+			if currentUser != null
+				p Hi #{currentUser.username}!
 				p
 					a(href='/accounts/signout') Sign out
 			else

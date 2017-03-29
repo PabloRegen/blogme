@@ -1,0 +1,24 @@
+extends ../layouts/layout
+
+block title
+	|edit post
+
+block content
+	h1 Edit your post
+	form(action=`/posts/edit/${id}` method='post')
+
+		p Title <br/>
+			input(type='text' name='title' required value= title)
+		p Subtitle <br/>
+			textarea(name='subtitle')= subtitle
+		p Body <br/>
+			textarea(name='body' required)= body
+		p Picture <br/>
+			input(type='file' name='postPic')
+		p
+			input(type='button' value='Save temp post')
+		p
+			input(type='submit' value='Edit post')
+	p <br/> Search for articles (link)
+	p
+		a(href='/accounts/signout') Sign out
