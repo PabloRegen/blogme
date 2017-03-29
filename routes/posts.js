@@ -80,7 +80,8 @@ module.exports = function(knex, environment) {
 			return knex('posts').where({id: req.params.id}).update({
 				title: req.body.title,
 				subtitle: req.body.subtitle,
-				body: req.body.body
+				body: req.body.body,
+				updatedAt: knex.fn.now()
 			});
 		}).then(() => {
 			res.redirect(`/posts/read/${req.params.id}`);
