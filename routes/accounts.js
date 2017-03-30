@@ -162,11 +162,14 @@ module.exports = function(knex, environment) {
 
 	/* delete */
 	router.post('/delete', requireSignin, (req, res) => {
-		res.send('post - delete');
-	});
-
-	router.post('/delete', requireSignin, (req, res) => {
-		res.send('post - delete');
+		return Promise.try(() => {
+			return knex('users').where({id: req.currentUser.id}).update({
+				deletedAt: knex.fn.now()
+			});
+		}).then(() => {
+			req.session.destroy();
+			res.redirect('/');
+		});
 	});
 
 	/* profile */
