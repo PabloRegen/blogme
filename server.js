@@ -11,6 +11,7 @@ const KnexSessionStore = require('connect-session-knex')(expressSession);
 const errors = rfr('lib/errors');
 const errorHandler = rfr('middleware/error-handler');
 const fetchCurrentUser = rfr('middleware/fetch-current-user');
+const sessionsPromises = rfr('middleware/sessions-promises');
 
 let config = rfr('config.json');
 
@@ -42,16 +43,19 @@ app.use(expressSession({
     })
 }));
 
+app.use(sessionsPromises);
+
 /* Make site name available application-wide */
 app.locals.siteName = 'Blogme';
 
 /* Fetch current user (if logged in) so it's available application-wide */
-app.use(fetchCurrentUser(knex));
+app.use(fetchCurrentUser(knex, environment));
 
-/* Set current user as request-wide locals so it's available for every res.render */
 app.use((req,res,next) => {
+    /* Set current user as request-wide locals so it's available for every res.render */
     res.locals.currentUser = req.currentUser;
-    next(); 
+    res.locals.errors = {};
+    next();
 });
 
 app.use('/', rfr('routes/home'));
