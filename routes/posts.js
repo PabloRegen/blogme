@@ -28,63 +28,57 @@ module.exports = function(knex, environment) {
 				body: req.body.body
 			}).returning('id');
 		}).then((postId) => {
-			res.redirect(`/posts/read/${postId}`);
+			res.redirect(`/posts/${postId}`);
 		});
 	});
 
 	/* read */
-	router.get('/read/:id', (req, res) => {
+	router.get('/:id', (req, res) => {
 		return Promise.try(() => {
 			return knex('posts').where({id: req.params.id});
 		}).then((posts) => {
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {
-				let post = posts[0];
-
 				res.render('posts/read', {
-					title: post.title,
-					subtitle: post.subtitle,
-					body: post.body
+					post: posts[0]
 				});
 			}
 		});
 	});
 
 	/* edit */
-	router.get('/edit/:id', requireSignin, (req, res) => {
+	router.get('/:id/edit', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			return knex('posts').where({id: req.params.id});
 		}).then((posts) => {
-			if (posts.length == 0) {
+			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
-			} else {
-				let post = posts[0];
-				
+			} else {	
 				res.render('posts/edit', {
-					id: post.id,
-					title: post.title,
-					subtitle: post.subtitle,
-					body: post.body
+					post: posts[0]
 				});
 			}
 		});
 	});
 
-	router.post('/edit/:id', requireSignin, (req, res) => {
+	router.post('/:id/edit', requireSignin, (req, res) => {
 		if (environment === 'development') {
 			console.log(req.body)
 		}
 
 		return Promise.try(() => {
-			return knex('posts').where({id: req.params.id}).update({
-				title: req.body.title,
-				subtitle: req.body.subtitle,
-				body: req.body.body,
-				updatedAt: knex.fn.now()
-			});
+			return knex('posts')
+				.where({id: req.params.id})
+				.update({
+					title: req.body.title,
+					subtitle: req.body.subtitle,
+					body: req.body.body,
+					updatedAt: knex.fn.now()
+				})
+			;
 		}).then(() => {
-			res.redirect(`/posts/read/${req.params.id}`);
+			res.redirect(`/posts/${req.params.id}`);
 		});
 	});
 

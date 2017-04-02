@@ -5,14 +5,14 @@ block title
 
 block content
 	h1 Edit your post
-	form(action=`/posts/edit/${id}` method='post')
+	form(action=`/posts/${post.id}/edit` method='post')
 
 		p Title <br/>
-			input(type='text' name='title' required value= title)
+			input(type='text' name='title' required value= post.title)
 		p Subtitle <br/>
-			textarea(name='subtitle')= subtitle
+			textarea(name='subtitle')= post.subtitle
 		p Body <br/>
-			textarea(name='body' required)= body
+			textarea(name='body' required)= post.body
 		p Picture <br/>
 			input(type='file' name='postPic')
 		p

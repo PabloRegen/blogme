@@ -199,7 +199,7 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, req.body, 'profile post! req.body:');
 
 		return Promise.try(() => {
-			return knex('users').where({id: req.currentUser.id}).insert({
+			return knex('users').where({id: req.currentUser.id}).update({
 				name: req.body.name,
 				bio: req.body.bio
 			});
