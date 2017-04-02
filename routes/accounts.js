@@ -204,7 +204,7 @@ module.exports = function(knex, environment) {
 				bio: req.body.bio
 			});
 		}).then(() => {
-			res.render('accounts/dashboard');
+			res.redirect('/accounts/dashboard');
 		});
 	});
 

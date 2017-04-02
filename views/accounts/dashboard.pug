@@ -6,12 +6,18 @@ block title
 block content
 	h1 Dashboard
 	p Hi #{currentUser.username}
+		if currentUser.name != null
+			|
+			|AKA #{currentUser.name}
+		else
+			|
+			|AKA mistery person
 	p
 		a(href='/posts/create') Create a new post
 	p Your latest posts:
 		ul
 			each post in latestPosts
-				li: a(href=`/posts/read/${post.id}`)= post.title
+				li: a(href=`/posts/${post.id}`)= post.title
 			else
 				li You have no posts yet
 	
