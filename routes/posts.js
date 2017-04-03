@@ -81,7 +81,9 @@ module.exports = function(knex, environment) {
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {	
-				res.render('posts/edit', {post: posts[0]});
+				res.render('posts/edit', {
+					postId: req.params.id,
+					post: posts[0]});
 			}
 		});
 	});
@@ -109,7 +111,10 @@ module.exports = function(knex, environment) {
 		}).catch(checkit.Error, (err) => {
 			logError(environment, err, 'checkitError');
 
-			res.render('posts/edit', {errors: err.errors});
+			res.render('posts/edit', {
+				postId: req.params.id,
+				errors: err.errors
+			});
 		});
 	});
 
