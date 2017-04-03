@@ -6,13 +6,16 @@ block title
 block content
 	h1 Edit your post
 	form(action=`/posts/${post.id}/edit` method='post')
-
-		p Title <br/>
-			input(type='text' name='title' required value= post.title)
+		p(class={invalid: errors.title != null}) Title <br/>
+			input(type='text' name='title' value= post.title)
+			if errors.title != null
+				|<br/> #{errors.title.message}
 		p Subtitle <br/>
 			textarea(name='subtitle')= post.subtitle
-		p Body <br/>
-			textarea(name='body' required)= post.body
+		p(class={invalid: errors.body != null}) Body <br/>
+			textarea(name='body' placeholder='Your article goes here...')= post.body
+			if errors.body != null
+				|<br/> #{errors.body.message}
 		p Picture <br/>
 			input(type='file' name='postPic')
 		p

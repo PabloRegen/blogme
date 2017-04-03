@@ -6,13 +6,16 @@ block title
 block content
 	h1 Create your post
 	form(action='/posts/create' method='post')
-
-		p Title <br/>
-			input(type='text' name='title' required)
+		p(class={invalid: errors.title != null}) Title <br/>
+			input(type='text' name='title' value=body.title)
+			if errors.title != null
+				|<br/> #{errors.title.message}
 		p Subtitle <br/>
-			textarea(name='subtitle')
-		p Body <br/>
-			textarea(name='body' placeholder='Your article goes here...' required)
+			textarea(name='subtitle')= body.subtitle
+		p(class={invalid: errors.body != null}) Body <br/>
+			textarea(name='body' placeholder='Your article goes here...')= body.body
+			if errors.body != null
+				|<br/> #{errors.body.message}
 		p Picture <br/>
 			input(type='file' name='postPic')
 		p
