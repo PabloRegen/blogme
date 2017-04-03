@@ -13,10 +13,10 @@ block content
 	h1 Sign up
 	form(action='/accounts/signup' method='post')
 
-		+field('Username')(type='text', name='username')
-		+field('Email')(type='text', name='email')
-		+field('Password')(type='password', name='password')
-		+field('Confirm password')(type='password', name='confirm_password')
+		+field('Username')(type='text', name='username' value=body.username)
+		+field('Email')(type='text', name='email' value=body.email)
+		+field('Password')(type='password', name='password' value=body.password)
+		+field('Confirm password')(type='password', name='confirm_password' value=body.confirm_password)
 
 		p
 			input(type='submit' value='Sign up')

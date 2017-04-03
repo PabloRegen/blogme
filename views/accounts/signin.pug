@@ -13,8 +13,8 @@ block content
 	h1 Sign in
 	form(action='/accounts/signin' method='post')
 
-		+field('Username or Email')(type='text' name='usernameOrEmail')
-		+field('Password')(type='password' name='password')
+		+field('Username or Email')(type='text' name='usernameOrEmail' value=body.usernameOrEmail)
+		+field('Password')(type='password' name='password' value=body.password)
 
 		p
 			input(type='checkbox' name='stay_signed' checked)

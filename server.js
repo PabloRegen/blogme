@@ -51,9 +51,14 @@ app.locals.siteName = 'Blogme';
 /* Fetch current user (if logged in) so it's available application-wide */
 app.use(fetchCurrentUser(knex, environment));
 
+ /* Set values as request-wide template locals variables so they are available for every res.render */
 app.use((req,res,next) => {
-    /* Set current user as request-wide locals so it's available for every res.render */
     res.locals.currentUser = req.currentUser;
+
+    /* Allow forms to display previously specified values when input validation fails, and forms are re-rendered with error messages */
+    res.locals.body = req.body;
+
+    /* Default value for the 'errors' local, so that the templates don't throw an error when displaying a form without errors */
     res.locals.errors = {};
     next();
 });
@@ -70,5 +75,5 @@ app.use((req, res, next) => {
 app.use(errorHandler(environment));
 
 app.listen(config.listen.port, () => {
-	console.log(`Server listening on port ${config.listen.port}`);
+	console.log(`Server listening on port ${config.listen.port}...`);
 });
