@@ -83,7 +83,8 @@ module.exports = function(knex, environment) {
 			} else {	
 				res.render('posts/edit', {
 					postId: req.params.id,
-					post: posts[0]});
+					post: posts[0]
+				});
 			}
 		});
 	});
