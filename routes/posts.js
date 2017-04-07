@@ -4,6 +4,8 @@ const Promise = require('bluebird');
 const expressPromiseRouter = require('express-promise-router');
 const checkit = require('checkit');
 const multer = require('multer');
+const uuidV4 = require('uuid/v4');
+const path = require('path');
 const rfr = require('rfr');
 
 const requireSignin = rfr('middleware/require-signin');
@@ -25,18 +27,18 @@ let logError = function(environment, err, errorType) {
 
 module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
-	// let upload = multer({dest: 'uploads/'});
 
 	let storage = multer.diskStorage({
-		destination: function (req, file, cb) {
-			cb(null, '/tmp/my-uploads')
-		},
-		filename: function (req, file, cb) {
-			cb(null, file.fieldname + '-' + Date.now())
+		destination: path.join(__dirname, '../uploads'),
+		filename: (req, file, cb) => {
+			// cb(null, `${uuidV4()}-${file.originalname}`);
+			// cb(null, `${file.originalname}`);
+			cb(null, file.fieldname);
 		}
 	});
 
 	let upload = multer({storage: storage});
+	// let upload = multer({dest: path.join(__dirname, '../uploads')});
 
 	/* create */
 	router.get('/create', requireSignin, (req, res) => {

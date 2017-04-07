@@ -32,6 +32,7 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(favicon(path.join(__dirname, 'public/images/favicon.ico')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSession({
@@ -57,8 +58,6 @@ app.use((req,res,next) => {
 
     /* Allow forms to display previously specified values when input validation fails, and forms are re-rendered with error messages */
     res.locals.body = req.body;
-
-    res.locals.file = req.file;
 
     /* Default value for the 'errors' local, so that the templates don't throw an error when displaying a form without errors */
     res.locals.errors = {};
