@@ -32,7 +32,7 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(favicon(path.join(__dirname, 'public/images/favicon.ico')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSession({

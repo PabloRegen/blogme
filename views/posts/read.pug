@@ -7,7 +7,5 @@ block content
 	h2 #{post.title}
 	h3 #{post.subtitle}
 	p #{post.body}
-	p file != null: #{file != null}
-
 	figure
-		img(src=file, alt='Alt post pic', title='Title Post Pic')
+		img(src=`/uploads/${post.pic}`, alt='Alt post pic', title='Title Post Pic')

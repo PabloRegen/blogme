@@ -17,6 +17,13 @@ let logReqBody = function(environment, reqBody, whichReqBody) {
 	}
 };
 
+let logReqFile = function(environment, reqFile, whichReqFile) {
+	if (environment === 'development') {
+		console.log(whichReqFile);
+		console.log(reqFile);
+	}
+};
+
 let logError = function(environment, err, errorType) {
 	if (environment === 'development') {
 		console.log('error type is: ', errorType);
@@ -31,14 +38,11 @@ module.exports = function(knex, environment) {
 	let storage = multer.diskStorage({
 		destination: path.join(__dirname, '../uploads'),
 		filename: (req, file, cb) => {
-			// cb(null, `${uuidV4()}-${file.originalname}`);
-			// cb(null, `${file.originalname}`);
-			cb(null, file.fieldname);
+			cb(null, `${uuidV4()}-${file.originalname}`);
 		}
 	});
 
-	let upload = multer({storage: storage});
-	// let upload = multer({dest: path.join(__dirname, '../uploads')});
+	let storeUpload = Promise.promisify(multer({storage: storage}).single('postPic'));
 
 	/* create */
 	router.get('/create', requireSignin, (req, res) => {
@@ -47,11 +51,14 @@ module.exports = function(knex, environment) {
 		res.render('posts/create');
 	});
 
-	router.post('/create', requireSignin, upload.single('postPic'), (req, res) => {
-		logReqBody(environment, req.body, 'create post! req.body:');
-		console.log('req.file is: ', req.file);
+	router.post('/create', requireSignin, (req, res) => {
 
 		return Promise.try(() => {
+			return storeUpload(req, res);
+		}).then(() => {
+			logReqBody(environment, req.body, 'create post! req.body:');
+			logReqFile(environment, req.file, 'create post! req.file:');
+
 			return checkit({
 				title: 'required',
 				body: 'required'
@@ -61,7 +68,8 @@ module.exports = function(knex, environment) {
 				userId: req.currentUser.id,
 				title: req.body.title,
 				subtitle: req.body.subtitle,
-				body: req.body.body
+				body: req.body.body,
+				pic: req.file.filename
 			}).returning('id');
 		}).then((postId) => {
 			res.redirect(`/posts/${postId}`);
