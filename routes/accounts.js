@@ -195,8 +195,11 @@ module.exports = function(knex, environment) {
 	router.get('/signout', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'signout get! req.body:');
 
-		req.session.destroy();
-		res.redirect('/');
+		return Promise.try(() => {
+			return req.destroySession();
+		}).then(() => {
+			res.redirect('/');
+		});
 	});
 
 	/* delete */
@@ -208,7 +211,8 @@ module.exports = function(knex, environment) {
 				deletedAt: knex.fn.now()
 			});
 		}).then(() => {
-			req.session.destroy();
+			return req.destroySession();
+		}).then(() => {
 			res.redirect('/');
 		});
 	});
