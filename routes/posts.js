@@ -60,7 +60,8 @@ module.exports = function(knex, environment) {
 			logReqFile(environment, req.file, 'create post! req.file:');
 
 			return checkit({
-				title: 'required',
+				title: ['required', 'maxLength:200'],
+				subtitle: 'maxLength:300',
 				body: 'required'
 			}).run(req.body);
 		}).then(() => {
@@ -118,7 +119,8 @@ module.exports = function(knex, environment) {
 
 		return Promise.try(() => {
 			return checkit({
-				title: 'required',
+				title: ['required', 'maxLength:200'],
+				subtitle: 'maxLength:300',
 				body: 'required'
 			}).run(req.body);
 		}).then(() => {

@@ -46,6 +46,12 @@ app.use(expressSession({
 
 app.use(sessionsPromises);
 
+/* Default req.file value to avoid an error when creating a post without a picture in it */
+app.use((req, res, next) => {
+    req.file = {};
+    next();
+});
+
 /* Make site name available application-wide */
 app.locals.siteName = 'Blogme';
 
@@ -59,7 +65,7 @@ app.use((req,res,next) => {
     /* Allow forms to display previously specified values when input validation fails, and forms are re-rendered with error messages */
     res.locals.body = req.body;
 
-    /* Default value for the 'errors' local, so that the templates don't throw an error when displaying a form without errors */
+    /* Default value for the 'errors' locals, so that the templates don't throw an error when displaying a form without errors */
     res.locals.errors = {};
     next();
 });
