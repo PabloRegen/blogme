@@ -45,13 +45,13 @@ module.exports = function(knex, environment) {
 	let storeUpload = Promise.promisify(multer({storage: storage}).single('postPic'));
 
 	/* create */
-	router.get('/create', requireSignin, (req, res) => {
+	router.get('/create', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'create get! req.body:');
 
 		res.render('posts/create');
 	});
 
-	router.post('/create', requireSignin, (req, res) => {
+	router.post('/create', requireSignin(environment), (req, res) => {
 
 		return Promise.try(() => {
 			return storeUpload(req, res);
@@ -96,7 +96,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* edit */
-	router.get('/:id/edit', requireSignin, (req, res) => {
+	router.get('/:id/edit', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'edit get! req.body:');
 
 		return Promise.try(() => {
@@ -113,7 +113,7 @@ module.exports = function(knex, environment) {
 		});
 	});
 
-	router.post('/:id/edit', requireSignin, (req, res) => {
+	router.post('/:id/edit', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'edit post! req.body:');
 
 		return Promise.try(() => {

@@ -192,7 +192,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* signout */
-	router.get('/signout', requireSignin, (req, res) => {
+	router.get('/signout', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'signout get! req.body:');
 
 		req.session.destroy();
@@ -200,7 +200,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* delete */
-	router.post('/delete', requireSignin, (req, res) => {
+	router.post('/delete', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'delete post! req.body:');
 
 		return Promise.try(() => {
@@ -214,13 +214,13 @@ module.exports = function(knex, environment) {
 	});
 
 	/* profile */
-	router.get('/profile', requireSignin, (req, res) => {
+	router.get('/profile', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'profile get! req.body:');
 
 		res.render('accounts/profile');
 	});
 
-	router.post('/profile', requireSignin, (req, res) => {
+	router.post('/profile', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'profile post! req.body:');
 
 		return Promise.try(() => {
@@ -234,7 +234,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* dashboard */
-	router.get('/dashboard', requireSignin, (req, res) => {
+	router.get('/dashboard', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'dashboard! req.body:');
 
 		return Promise.try(() => {

@@ -1,13 +1,20 @@
 'use strict';
 
-module.exports = function(req, res, next) {
-	console.log('require-signin middleware!');
-	console.log('-----');
+module.exports = function(environment) {
+	return function(req, res, next) {
+		if (environment === 'development') {
+			console.log('require-signin middleware!');
+			console.log('-----');
+		}
 
-	if (req.currentUser == null) {
-		console.log('currentUser == null so redirect to signin route!')
-		res.redirect('/accounts/signin');
-	} else {
-		next();
-	}
+		if (req.currentUser == null) {
+			if (environment === 'development') {
+				console.log('currentUser == null so redirect to signin!')
+			}
+
+			res.redirect('/accounts/signin');
+		} else {
+			next();
+		}
+	};
 };
