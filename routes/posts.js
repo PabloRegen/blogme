@@ -65,13 +65,24 @@ module.exports = function(knex, environment) {
 				body: 'required'
 			}).run(req.body);
 		}).then(() => {
-			return knex('posts').insert({
-				userId: req.currentUser.id,
-				title: req.body.title,
-				subtitle: req.body.subtitle,
-				body: req.body.body,
-				pic: req.file.filename
-			}).returning('id');
+			if (req.body.publish != null) {
+				return knex('posts').insert({
+					userId: req.currentUser.id,
+					title: req.body.title,
+					subtitle: req.body.subtitle,
+					body: req.body.body,
+					pic: req.file.filename
+				}).returning('id');
+			} else {
+				return knex('posts').insert({
+					userId: req.currentUser.id,
+					title: req.body.title,
+					subtitle: req.body.subtitle,
+					body: req.body.body,
+					pic: req.file.filename,
+					isDraft: true
+				}).returning('id');				
+			}	
 		}).then((postId) => {
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
@@ -124,15 +135,29 @@ module.exports = function(knex, environment) {
 				body: 'required'
 			}).run(req.body);
 		}).then(() => {
-			return knex('posts')
-				.where({id: req.params.id})
-				.update({
-					title: req.body.title,
-					subtitle: req.body.subtitle,
-					body: req.body.body,
-					updatedAt: knex.fn.now()
-				})
-			;
+			if (req.body.publish != null) {
+				return knex('posts')
+					.where({id: req.params.id})
+					.update({
+						title: req.body.title,
+						subtitle: req.body.subtitle,
+						body: req.body.body,
+						updatedAt: knex.fn.now(),
+						isDraft: false
+					})
+				;
+			} else {
+				return knex('posts')
+					.where({id: req.params.id})
+					.update({
+						title: req.body.title,
+						subtitle: req.body.subtitle,
+						body: req.body.body,
+						updatedAt: knex.fn.now(),
+						isDraft: true
+					})
+				;
+			}
 		}).then(() => {
 			res.redirect(`/posts/${req.params.id}`);
 		}).catch(checkit.Error, (err) => {
