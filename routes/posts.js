@@ -60,29 +60,18 @@ module.exports = function(knex, environment) {
 			logReqFile(environment, req.file, 'create post! req.file:');
 
 			return checkit({
-				title: ['required', 'maxLength:200'],
-				subtitle: 'maxLength:300',
+				title: 'required',
 				body: 'required'
 			}).run(req.body);
 		}).then(() => {
-			if (req.body.publish != null) {
-				return knex('posts').insert({
-					userId: req.currentUser.id,
-					title: req.body.title,
-					subtitle: req.body.subtitle,
-					body: req.body.body,
-					pic: req.file.filename
-				}).returning('id');
-			} else {
-				return knex('posts').insert({
-					userId: req.currentUser.id,
-					title: req.body.title,
-					subtitle: req.body.subtitle,
-					body: req.body.body,
-					pic: req.file.filename,
-					isDraft: true
-				}).returning('id');				
-			}	
+			return knex('posts').insert({
+				userId: req.currentUser.id,
+				title: req.body.title,
+				subtitle: req.body.subtitle,
+				body: req.body.body,
+				pic: (req.file != null ? req.file.filename : undefined),
+				isDraft: (req.body.publish == null)
+			}).returning('id');
 		}).then((postId) => {
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
@@ -130,34 +119,19 @@ module.exports = function(knex, environment) {
 
 		return Promise.try(() => {
 			return checkit({
-				title: ['required', 'maxLength:200'],
-				subtitle: 'maxLength:300',
+				title: 'required',
 				body: 'required'
 			}).run(req.body);
 		}).then(() => {
-			if (req.body.publish != null) {
-				return knex('posts')
-					.where({id: req.params.id})
-					.update({
-						title: req.body.title,
-						subtitle: req.body.subtitle,
-						body: req.body.body,
-						updatedAt: knex.fn.now(),
-						isDraft: false
-					})
-				;
-			} else {
-				return knex('posts')
-					.where({id: req.params.id})
-					.update({
-						title: req.body.title,
-						subtitle: req.body.subtitle,
-						body: req.body.body,
-						updatedAt: knex.fn.now(),
-						isDraft: true
-					})
-				;
-			}
+			return knex('posts')
+				.where({id: req.params.id})
+				.update({
+					title: req.body.title,
+					subtitle: req.body.subtitle,
+					body: req.body.body,
+					updatedAt: knex.fn.now(),
+					isDraft: (req.body.publish == null)
+				});
 		}).then(() => {
 			res.redirect(`/posts/${req.params.id}`);
 		}).catch(checkit.Error, (err) => {

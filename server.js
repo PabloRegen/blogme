@@ -46,12 +46,6 @@ app.use(expressSession({
 
 app.use(sessionsPromises);
 
-/* Default req.file value to avoid an error when creating a post without a picture in it */
-app.use((req, res, next) => {
-    req.file = {};
-    next();
-});
-
 /* Make site name available application-wide */
 app.locals.siteName = 'Blogme';
 
