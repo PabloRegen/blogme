@@ -34,12 +34,12 @@ module.exports = function(knex, environment) {
 					}
 
 					/* User still logged in but no longer exists in the db or was soft deleted, so log user out */
-					req.session.destroy();
+					return req.destroySession();
 				} else {
 					/* make current user available application-wide */
 					req.currentUser = user;
 				}
-
+			}).then(() => {
 				next();
 			});
 		}
