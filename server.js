@@ -12,6 +12,7 @@ const errors = rfr('lib/errors');
 const errorHandler = rfr('middleware/error-handler');
 const fetchCurrentUser = rfr('middleware/fetch-current-user');
 const sessionsPromises = rfr('middleware/sessions-promises');
+const loginUser = rfr('middleware/login-user');
 
 let config = rfr('config.json');
 
@@ -45,6 +46,7 @@ app.use(expressSession({
 }));
 
 app.use(sessionsPromises);
+app.use(loginUser);
 
 /* Make site name available application-wide */
 app.locals.siteName = 'Blogme';
