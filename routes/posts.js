@@ -5,8 +5,12 @@ const expressPromiseRouter = require('express-promise-router');
 const checkit = require('checkit');
 const multer = require('multer');
 const uuidV4 = require('uuid/v4');
+const marked = require('marked');
+const marked1 = require('jstransformer')(require('jstransformer-marked'));
 const path = require('path');
 const rfr = require('rfr');
+
+const pug = require('pug');
 
 const requireSignin = rfr('middleware/require-signin');
 
@@ -46,7 +50,7 @@ module.exports = function(knex, environment) {
 
 	/* create */
 	router.get('/create', requireSignin(environment), (req, res) => {
-		logReqBody(environment, req.body, 'create get! req.body:');
+		logReqBody(environment, req.body, 'create GET! req.body:');
 
 		res.render('posts/create');
 	});
@@ -56,8 +60,8 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {
-			logReqBody(environment, req.body, 'create post! req.body:');
-			logReqFile(environment, req.file, 'create post! req.file:');
+			logReqBody(environment, req.body, 'create POST! req.body:');
+			logReqFile(environment, req.file, 'create POST! req.file:');
 
 			return checkit({
 				title: 'required',
@@ -83,7 +87,7 @@ module.exports = function(knex, environment) {
 
 	/* read */
 	router.get('/:id', (req, res) => {
-		logReqBody(environment, req.body, 'read get! req.body:');
+		logReqBody(environment, req.body, 'read GET! req.body:');
 
 		return Promise.try(() => {
 			return knex('posts').where({id: req.params.id});
@@ -91,14 +95,66 @@ module.exports = function(knex, environment) {
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {
-				res.render('posts/read', {post: posts[0]});
+				console.log('posts[0]: ', typeof(posts[0]), posts[0]);
+				console.log('------');
+				console.log(marked('# Heading 1'));
+				console.log(marked('Hello1 **Hello2** Hello3'));
+				console.log(marked('> Hello1 *Hello2* Hello3'));
+				console.log('------');
+				console.log(marked1.render('# Heading 1').body);
+				console.log(marked1.render('Hello1 **Hello2** Hello3').body);
+				console.log(marked1.render('> Hello1 *Hello2* Hello3').body);
+				console.log('------');
+				console.log('<h1 id="heading-1">Heading 1</h1>');
+				console.log('<p>Hello1 <strong>Hello2</strong> Hello3</p>');
+				console.log('<blockquote><p>Hello1 <em>Hello2</em> Hello3</p></blockquote>');
+				console.log('------');
+
+				console.log(pug.renderFile('views/posts/read.pug', {
+  					post: posts[0],
+					postBody: marked(posts[0].body),
+
+					test1: marked('# Heading 1'),
+					test2: marked('Hello1 **Hello2** Hello3'),
+					test3: marked('> Hello1 *Hello2* Hello3'),
+
+					test11: marked1.render('# Heading 1').body,
+					test12: marked1.render('Hello1 **Hello2** Hello3').body,
+					test13: marked1.render('> Hello1 *Hello2* Hello3').body,
+
+					test21: `<h1 id="heading-1">Heading 1</h1>`,
+					test22: `<p>Hello1 <strong>Hello2</strong> Hello3</p>`,
+					test23: `<blockquote><p>Hello1 <em>Hello2</em> Hello3</p></blockquote>`,
+
+					shit: marked('What the **fuck**!')
+				}));
+
+				res.render('posts/read.pug', {
+					post: posts[0],
+					postBody: marked(posts[0].body),
+
+					test1: marked('# Heading 1'),
+					test2: marked('Hello1 **Hello2** Hello3'),
+					test3: marked('> Hello1 *Hello2* Hello3'),
+
+					test11: marked1.render('# Heading 1').body,
+					test12: marked1.render('Hello1 **Hello2** Hello3').body,
+					test13: marked1.render('> Hello1 *Hello2* Hello3').body,
+
+					test21: `<h1 id="heading-1">Heading 1</h1>`,
+					test22: `<p>Hello1 <strong>Hello2</strong> Hello3</p>`,
+					test23: `<blockquote><p>Hello1 <em>Hello2</em> Hello3</p></blockquote>`,
+
+					shit: marked('What the **fuck**!')
+					//shit: :marked1('What the **fuck**!') // trying to use filters
+				});
 			}
 		});
 	});
 
 	/* edit */
 	router.get('/:id/edit', requireSignin(environment), (req, res) => {
-		logReqBody(environment, req.body, 'edit get! req.body:');
+		logReqBody(environment, req.body, 'edit GET! req.body:');
 
 		return Promise.try(() => {
 			return knex('posts').where({id: req.params.id});
@@ -115,7 +171,7 @@ module.exports = function(knex, environment) {
 	});
 
 	router.post('/:id/edit', requireSignin(environment), (req, res) => {
-		logReqBody(environment, req.body, 'edit post! req.body:');
+		logReqBody(environment, req.body, 'edit POST! req.body:');
 
 		return Promise.try(() => {
 			return checkit({
