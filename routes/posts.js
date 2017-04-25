@@ -6,7 +6,6 @@ const checkit = require('checkit');
 const multer = require('multer');
 const uuidV4 = require('uuid/v4');
 const marked = require('marked');
-const marked1 = require('jstransformer')(require('jstransformer-marked'));
 const path = require('path');
 const rfr = require('rfr');
 

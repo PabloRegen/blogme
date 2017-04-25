@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const rfr = require('rfr');
 const path = require('path');
 const favicon = require('serve-favicon');
+const sanitizer = require('sanitizer');
 const expressSession = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(expressSession);
 
@@ -48,8 +49,9 @@ app.use(expressSession({
 app.use(sessionsPromises);
 app.use(loginUser);
 
-/* Make site name available application-wide */
+/* Make values available application-wide */
 app.locals.siteName = 'Blogme';
+app.locals.sanitizer = sanitizer;
 
 /* Fetch current user (if logged in) so it's available application-wide */
 app.use(fetchCurrentUser(knex, environment));
@@ -63,6 +65,7 @@ app.use((req,res,next) => {
 
     /* Default value for the 'errors' locals, so that the templates don't throw an error when displaying a form without errors */
     res.locals.errors = {};
+
     next();
 });
 

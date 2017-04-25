@@ -4,11 +4,11 @@ block title
 	|read post
 
 block content
-	h2!= post.title
-	h3!= post.subtitle
+	h2!= sanitizer.sanitize(post.title)
+	h3!= sanitizer.sanitize(post.subtitle)
 
 	if post.pic != null
 		figure
 			img(src=`/uploads/${post.pic}`, alt='Alt post pic', title='Title Post Pic')
 
-	!= postBody
+	!= sanitizer.sanitize(postBody)
