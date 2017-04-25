@@ -10,8 +10,6 @@ const marked1 = require('jstransformer')(require('jstransformer-marked'));
 const path = require('path');
 const rfr = require('rfr');
 
-const pug = require('pug');
-
 const requireSignin = rfr('middleware/require-signin');
 
 let logReqBody = function(environment, reqBody, whichReqBody) {
@@ -95,58 +93,13 @@ module.exports = function(knex, environment) {
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {
-				console.log('posts[0]: ', typeof(posts[0]), posts[0]);
-				console.log('------');
-				console.log(marked('# Heading 1'));
-				console.log(marked('Hello1 **Hello2** Hello3'));
-				console.log(marked('> Hello1 *Hello2* Hello3'));
-				console.log('------');
-				console.log(marked1.render('# Heading 1').body);
-				console.log(marked1.render('Hello1 **Hello2** Hello3').body);
-				console.log(marked1.render('> Hello1 *Hello2* Hello3').body);
-				console.log('------');
-				console.log('<h1 id="heading-1">Heading 1</h1>');
-				console.log('<p>Hello1 <strong>Hello2</strong> Hello3</p>');
-				console.log('<blockquote><p>Hello1 <em>Hello2</em> Hello3</p></blockquote>');
-				console.log('------');
+				if (environment = 'development') {
+					console.log('posts[0]: ', typeof(posts[0]), posts[0]);
+				}
 
-				console.log(pug.renderFile('views/posts/read.pug', {
-  					post: posts[0],
-					postBody: marked(posts[0].body),
-
-					test1: marked('# Heading 1'),
-					test2: marked('Hello1 **Hello2** Hello3'),
-					test3: marked('> Hello1 *Hello2* Hello3'),
-
-					test11: marked1.render('# Heading 1').body,
-					test12: marked1.render('Hello1 **Hello2** Hello3').body,
-					test13: marked1.render('> Hello1 *Hello2* Hello3').body,
-
-					test21: `<h1 id="heading-1">Heading 1</h1>`,
-					test22: `<p>Hello1 <strong>Hello2</strong> Hello3</p>`,
-					test23: `<blockquote><p>Hello1 <em>Hello2</em> Hello3</p></blockquote>`,
-
-					shit: marked('What the **fuck**!')
-				}));
-
-				res.render('posts/read.pug', {
+				res.render('posts/read.pug', { 
 					post: posts[0],
 					postBody: marked(posts[0].body),
-
-					test1: marked('# Heading 1'),
-					test2: marked('Hello1 **Hello2** Hello3'),
-					test3: marked('> Hello1 *Hello2* Hello3'),
-
-					test11: marked1.render('# Heading 1').body,
-					test12: marked1.render('Hello1 **Hello2** Hello3').body,
-					test13: marked1.render('> Hello1 *Hello2* Hello3').body,
-
-					test21: `<h1 id="heading-1">Heading 1</h1>`,
-					test22: `<p>Hello1 <strong>Hello2</strong> Hello3</p>`,
-					test23: `<blockquote><p>Hello1 <em>Hello2</em> Hello3</p></blockquote>`,
-
-					shit: marked('What the **fuck**!')
-					//shit: :marked1('What the **fuck**!') // trying to use filters
 				});
 			}
 		});
