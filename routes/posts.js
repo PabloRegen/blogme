@@ -5,9 +5,9 @@ const expressPromiseRouter = require('express-promise-router');
 const checkit = require('checkit');
 const multer = require('multer');
 const uuidV4 = require('uuid/v4');
-const marked = require('marked');
 const path = require('path');
 const rfr = require('rfr');
+const marked = require('marked');
 
 const requireSignin = rfr('middleware/require-signin');
 
@@ -37,7 +37,7 @@ module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 
 	let storage = multer.diskStorage({
-		destination: path.join(__dirname, '../uploads'),
+		destination: path.join(__dirname, '../uploads/postsPics'),
 		filename: (req, file, cb) => {
 			cb(null, `${uuidV4()}-${file.originalname}`);
 		}
@@ -53,7 +53,6 @@ module.exports = function(knex, environment) {
 	});
 
 	router.post('/create', requireSignin(environment), (req, res) => {
-
 		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {

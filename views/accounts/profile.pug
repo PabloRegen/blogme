@@ -5,16 +5,14 @@ block title
 
 block content
 	h1 Create your profile
-	form(action='/accounts/profile' method='post')
+	form(action='/accounts/profile' method='post' enctype='multipart/form-data')
 		p Name <br/>
-			input(type='text' name='name')
+			input(type='text' name='name' value=body.name)
 		p Bio <br/>
-			textarea(name='bio' placeholder='Enter short bio')
+			textarea(name='bio' placeholder='Enter short bio')= body.bio
 		p Picture <br/>
 			input(type='file' name='userPic')
 		p
-			input(type='button' value='Save temp profile')
+			input(type='submit' name='save' value='Save draft')
 		p
-			input(type='submit' value='Create profile')
-	p
-		a(href='/accounts/signout') Sign out
+			input(type='submit' name='publish' value='Publish profile')

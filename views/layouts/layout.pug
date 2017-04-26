@@ -13,6 +13,10 @@ html
 			if currentUser != null
 				p Hi #{currentUser.username}!
 				p
+					a(href='/accounts/dashboard') Dashboard
+				p
+					a(href='/accounts/profile') Profile
+				p
 					a(href='/accounts/signout') Sign out
 			else
 				p

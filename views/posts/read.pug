@@ -9,6 +9,6 @@ block content
 
 	if post.pic != null
 		figure
-			img(src=`/uploads/${post.pic}`, alt='Alt post pic', title='Title Post Pic')
+			img(src=`/uploads/postsPics/${post.pic}`, alt='Alt post pic', title='Title Post Pic')
 
 	!= sanitizer.sanitize(postBody)

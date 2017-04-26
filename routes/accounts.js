@@ -3,12 +3,15 @@
 const Promise = require('bluebird');
 const expressPromiseRouter = require('express-promise-router');
 const checkit = require('checkit');
-const scryptForHumans = require('scrypt-for-humans');
+const multer = require('multer');
+const uuidV4 = require('uuid/v4');
+const path = require('path');
 const rfr = require('rfr');
+const scryptForHumans = require('scrypt-for-humans');
 const databaseError = require('database-error');
 
-const errors = rfr('lib/errors');
 const requireSignin = rfr('middleware/require-signin');
+const errors = rfr('lib/errors');
 
 let duplicateUsername = {
 	name: 'UniqueConstraintViolationError',
@@ -29,6 +32,13 @@ let logReqBody = function(environment, reqBody, whichReqBody) {
 	}
 };
 
+let logReqFile = function(environment, reqFile, whichReqFile) {
+	if (environment === 'development') {
+		console.log(whichReqFile);
+		console.log(reqFile);
+	}
+};
+
 let logError = function(environment, err, errorType) {
 	if (environment === 'development') {
 		console.log('error type is: ', errorType);
@@ -39,6 +49,15 @@ let logError = function(environment, err, errorType) {
 
 module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
+
+	let storage = multer.diskStorage({
+		destination: path.join(__dirname, '../uploads/usersPics'),
+		filename: (req, file, cb) => {
+			cb(null, `${uuidV4()}-${file.originalname}`);
+		}
+	});
+
+	let storeUpload = Promise.promisify(multer({storage: storage}).single('userPic'));
 	
 	/* signup */
 	router.get('/signup', (req, res) => {
@@ -200,12 +219,16 @@ module.exports = function(knex, environment) {
 	});
 
 	router.post('/profile', requireSignin(environment), (req, res) => {
-		logReqBody(environment, req.body, 'profile POST! req.body:');
-
 		return Promise.try(() => {
+			return storeUpload(req, res);
+		}).then(() => {	
+			logReqBody(environment, req.body, 'profile POST! req.body:');
+			logReqFile(environment, req.file, 'profile POST! req.file:');
+
 			return knex('users').where({id: req.currentUser.id}).update({
 				name: req.body.name,
-				bio: req.body.bio
+				bio: req.body.bio,
+				pic: (req.file != null ? req.file.filename : undefined)
 			});
 		}).then(() => {
 			res.redirect('/accounts/dashboard');
