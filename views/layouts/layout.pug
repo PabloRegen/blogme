@@ -6,23 +6,19 @@ html
 		link(href='/css/index.css' type='text/css' rel='stylesheet')
 	body
 		div.header
-			figure
-				a(href='/'): img(src='/images/blogme.jpg' alt='blogme image')
-			h1= siteName
+			
+			h1.siteName: a(href='/')= siteName
 
 			if currentUser != null
-				p Hi #{currentUser.username}!
-				p
-					a(href='/accounts/dashboard') Dashboard
-				p
-					a(href='/accounts/profile') Profile
-				p
-					a(href='/accounts/signout') Sign out
+				a.menuItem(href='/accounts/signout') Sign out
+				a.menuItem(href='/accounts/profile') Profile
+				a.menuItem(href='/accounts/dashboard') Dashboard
+				div.menuItem Hi #{currentUser.username}!
 			else
-				p
-					a(href='/accounts/signin') Sign in
-				p
-					a(href='/accounts/signup') Sign up
+				a.menuItem(href='/accounts/signup') Sign up
+				a.menuItem(href='/accounts/signin') Sign in
+
+			div.clear
 
 		div.main
 			block content

@@ -1,20 +1,45 @@
 body {
-   background-color: #aa9;
-   font-family: Arial, sans-serif;
-   text-align: center;
+    color: #323232;
+    background-color: rgb(255, 255, 255);
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
 }
 
 .header {
-    width: 85%;
-    margin: 40px auto;
+    margin: 0px;
+    padding: 10px;
     box-shadow: 0px 1px 1px 0px #000;
 }
 
+.header a {
+	text-decoration: none;
+  color: rgb(66, 171, 158);
+}
+
 .main {
-    width: 85%;
-    margin: 40px auto;
+    width: 75%;
+    margin: 30px auto;
 }
 
 .invalid {
     background-color: rgb(254, 206, 206);
+}
+
+.siteName {
+	float: left;
+	margin: 0px;
+}
+
+.menuItem {
+	float: right;
+	/* background-color: grey; */
+	padding: 5px;
+	margin-top: 5px;
+	margin-left: 5px;
+}
+
+.clear {
+	clear: both;
 }
