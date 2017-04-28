@@ -50,7 +50,7 @@ app.use(sessionsPromises);
 app.use(loginUser);
 
 /* Make values available application-wide */
-app.locals.siteName = 'BLOGme';
+app.locals.siteName = 'BLOGME';
 app.locals.sanitizer = sanitizer;
 
 /* Fetch current user (if logged in) so it's available application-wide */

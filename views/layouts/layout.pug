@@ -7,15 +7,15 @@ html
 	body
 		div.header
 			
-			h1.siteName: a(href='/')= siteName
+			div.siteName: a(href='/')= siteName
 
 			if currentUser != null
-				a.menuItem(href='/accounts/signout') Sign out
+				a.menuItem(class='margin_r' href='/accounts/signout') Sign out
 				a.menuItem(href='/accounts/profile') Profile
 				a.menuItem(href='/accounts/dashboard') Dashboard
 				div.menuItem Hi #{currentUser.username}!
 			else
-				a.menuItem(href='/accounts/signup') Sign up
+				a.menuItem(class='margin_r' href='/accounts/signup') Sign up
 				a.menuItem(href='/accounts/signin') Sign in
 
 			div.clear
