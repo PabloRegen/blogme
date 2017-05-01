@@ -5,21 +5,29 @@ html
 			block title
 		link(href='/css/index.css' type='text/css' rel='stylesheet')
 	body
-		div.header
-			
-			div.siteName: a(href='/')= siteName
+		div#page
+			header.layout-header
+				div.siteName: a(href='/')= siteName
 
-			if currentUser != null
-				a.menuItem(class='margin_r' href='/accounts/signout') Sign out
-				a.menuItem(href='/accounts/profile') Profile
-				a.menuItem(href='/accounts/dashboard') Dashboard
-				div.menuItem Hi #{currentUser.username}!
-			else
-				a.menuItem(class='margin_r' href='/accounts/signup') Sign up
-				a.menuItem(href='/accounts/signin') Sign in
+				if currentUser != null
+					nav
+						ul
+							li Hi #{currentUser.username}!
+							li: a(href='/accounts/dashboard') Dashboard
+							li: a(href='/accounts/profile') Profile
+							li: a(href='/accounts/signout') Sign out
+				else
+					nav
+						ul
+							li: a(href='/accounts/signup') Sign up
+							li: a(href='/accounts/signin') Sign in
 
-			div.clear
+				div.clear
 
-		div.main
-			block content
-				p This page doesn't have any content yet
+			div#content
+				block content
+					p #[strong Note:] This page doesn't have any content yet
+
+			footer
+				block footer
+					p #[strong Note:] This page doesn't have a footer yet

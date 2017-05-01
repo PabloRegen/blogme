@@ -7,42 +7,87 @@ body {
     padding: 0px;
 }
 
-.header {
+#page {}
+
+header.layout-header {
     margin: 0px;
-    padding: 20px 0px;
+    padding: 15px 150px;
     border-bottom: 1px solid #e6eaea;
+    /* position: fixed; */
 }
 
-.header a {
-    text-decoration: none;
-    color: rgb(66, 171, 158);
-}
-
-.main {
-    width: 60%;
-    margin: 30px auto;
-}
-
-.siteName {
+header.layout-header .siteName {
     float: left;
-    margin: 0px 0px 0px 150px;
     font-size: 1.375rem;
     letter-spacing: 3px;
+}
+
+header.layout-header nav {
+	float: right;
+	letter-spacing: 1px;
+	font-size: 0.85rem;
+	/* box-sizing: border-box; */
+}
+
+header.layout-header ul {
+    margin: 0px;
+    padding: 0px;
+}
+
+header.layout-header li {
+	display: inline-block;
+	margin-left: 25px;
+	padding-top: 5px;
+	/* list-style: none; */
+}
+
+header.layout-header a {
+    text-decoration: none;
+    color: rgb(0, 150, 136);
+    padding: 10px;
+}
+
+header.layout-header li a:hover {
+	background-color: grey;
+	color: white;
+}
+
+.clear {clear: both;}
+
+#content {
+    max-width: 750px;
+    margin: 30px auto;
+    text-align: left;
+    /* box-sizing: border-box; */
+}
+
+#content article .postTitle {
+ 	font-size: 36px;
+ 	letter-spacing: -0.5px;
+ 	line-height: 1.15;
+}
+#content article .postSubtitle {
+	color: grey;
+	font-size: 21px;
+	font-style: italic;
+	font-weight: 400;
+	line-height: 1.58;
+}
+#content article .postCoverImage {
+	display: block;
+	margin-left: -345px ;
+}
+#content article .postBody {
+	line-height: 36px;
+	font-size: 17px;
+	color: rgb(117, 123, 133);
+}
+
+footer p{
+    max-width: 750px;
+    margin: 30px auto;
+    text-align: left;
     box-sizing: border-box;
-}
-
-.menuItem {
-    float: right;
-    padding: 0px 15px;
-    font-size: 0.85rem;
-}
-
-.margin_r {
-    margin-right: 150px;
-}
-
-.clear {
-    clear: both;
 }
 
 .homeTitle {
@@ -51,14 +96,4 @@ body {
     letter-spacing: 1px;
 }
 
-.postTitle {
-
-}
-
-.postSubtitle {
-    color: grey;
-}
-
-.invalid {
-    background-color: rgb(254, 206, 206);
-}
+.invalid {background-color: rgb(254, 206, 206);}

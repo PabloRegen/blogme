@@ -136,8 +136,9 @@ module.exports = function(knex, environment) {
 					title: req.body.title,
 					subtitle: req.body.subtitle,
 					body: req.body.body,
-					updatedAt: knex.fn.now(),
-					isDraft: (req.body.publish == null)
+					pic: (req.file != null ? req.file.filename : undefined),
+					isDraft: (req.body.publish == null),
+					updatedAt: knex.fn.now()
 				});
 		}).then(() => {
 			res.redirect(`/posts/${req.params.id}`);
