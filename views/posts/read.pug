@@ -5,6 +5,11 @@ block title
 
 block content
 	article
+		if user != null
+			img.userPic(src=`/uploads/usersPics/${user.pic}`)
+			div.userName #{user.name}
+			div.userBio #{user.bio}
+
 		h1.postTitle!= sanitizer.sanitize(post.title)
 		h2.postSubtitle!= sanitizer.sanitize(post.subtitle)
 
