@@ -88,18 +88,23 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('posts').where({id: req.params.id});
 		}).then((posts) => {
-			if (posts.length === 0) {
-				throw new Error('The selected post does not exist');
-			} else {
-				if (environment = 'development') {
-					console.log('posts[0]: ', typeof(posts[0]), posts[0]);
-				}
+			// return Promise.try(() => {
+			// 	return knex('users').where({id: posts.userId});
+			// }).then((users) => {
+				if (posts.length === 0) {
+					throw new Error('The selected post does not exist');
+				} else {
+					if (environment = 'development') {
+						console.log('posts[0]: ', typeof(posts[0]), posts[0]);
+					}
 
-				res.render('posts/read.pug', { 
-					post: posts[0],
-					postBody: marked(posts[0].body),
-				});
-			}
+					res.render('posts/read.pug', {
+						// users: users[0],
+						post: posts[0],
+						postBody: marked(posts[0].body),
+					});
+				}
+			// });
 		});
 	});
 
@@ -125,6 +130,8 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, req.body, 'edit POST! req.body:');
 
 		return Promise.try(() => {
+			return storeUpload(req, res);
+		}).then(() => {
 			return checkit({
 				title: 'required',
 				body: 'required'
