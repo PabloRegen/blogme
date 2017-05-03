@@ -8,6 +8,7 @@ const uuidV4 = require('uuid/v4');
 const path = require('path');
 const rfr = require('rfr');
 const marked = require('marked');
+const slug = require('slug');
 
 const requireSignin = rfr('middleware/require-signin');
 
@@ -73,38 +74,20 @@ module.exports = function(knex, environment) {
 				isDraft: (req.body.publish == null)
 			}).returning('id');
 		}).then((postId) => {
+			// console.log('post_id: ', post_id, typeof(post_id));
+			// console.log('post_id[0]: ', post_id[0], typeof(post_id[0]));
+			return knex('slugs').insert({
+				postId: postId[0],
+				name: slug(req.body.title),
+				isCurrent: true
+			}).returning('postId');
+		}).then((postId) => {
+			// console.log('postId: ', postId, typeof(postId));
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, err, 'checkitError');
 
 			res.render('posts/create', {errors: err.errors});
-		});
-	});
-
-	/* read */
-	router.get('/:id', (req, res) => {
-		logReqBody(environment, req.body, 'read GET! req.body:');
-
-		return Promise.try(() => {
-			return knex('posts').where({id: req.params.id});
-		}).then((posts) => {
-			if (posts.length === 0) {
-				throw new Error('The selected post does not exist');
-			} else {
-				if (environment = 'development') {
-					console.log('posts[0]: ', typeof(posts[0]), posts[0]);
-				}
-
-				return Promise.try(() => {
-					return knex('users').where({id: posts[0].userId});
-				}).then((users) => {
-					res.render('posts/read.pug', {
-						user: users[0],
-						post: posts[0],
-						postBody: marked(posts[0].body)
-					});
-				});
-			}
 		});
 	});
 
@@ -147,6 +130,8 @@ module.exports = function(knex, environment) {
 					isDraft: (req.body.publish == null),
 					updatedAt: knex.fn.now()
 				});
+		// }).then(() => {
+		// 	return knex('slugs').
 		}).then(() => {
 			res.redirect(`/posts/${req.params.id}`);
 		}).catch(checkit.Error, (err) => {
@@ -156,6 +141,33 @@ module.exports = function(knex, environment) {
 				postId: req.params.id,
 				errors: err.errors
 			});
+		});
+	});
+
+	/* read */
+	router.get('/:id', (req, res) => {
+		logReqBody(environment, req.body, 'read GET! req.body:');
+
+		return Promise.try(() => {
+			return knex('posts').where({id: req.params.id});
+		}).then((posts) => {
+			if (posts.length === 0) {
+				throw new Error('The selected post does not exist');
+			} else {
+				if (environment = 'development') {
+					console.log('posts[0]: ', typeof(posts[0]), posts[0]);
+				}
+
+				return Promise.try(() => {
+					return knex('users').where({id: posts[0].userId});
+				}).then((users) => {
+					res.render('posts/read.pug', {
+						user: users[0],
+						post: posts[0],
+						postBody: marked(posts[0].body)
+					});
+				});
+			}
 		});
 	});
 
