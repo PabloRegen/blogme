@@ -138,18 +138,23 @@ module.exports = function(knex, environment) {
 					updatedAt: knex.fn.now()
 				});
 		}).then(() => {
-			return knex('slugs')
-				.where({postId: req.params.id})
-				.orderBy('id', 'desc')
-				.limit(1)
-				.update({isCurrent: false});
-		}).then(() => {
-			return knex('slugs')
-				.insert({
-					postId: req.params.id,
-					name: slug(req.body.title),
-					isCurrent: true
+			if (req.body.title !== req.body.previousTitle) {
+				return Promise.try(() => {
+					return knex('slugs')
+						.where({postId: req.params.id})
+						.orderBy('id', 'desc')
+						.limit(1)
+						.update({isCurrent: false});
+				}).then(() => {
+					return knex('slugs')
+						.insert({
+							postId: req.params.id,
+							name: slug(req.body.title),
+							isCurrent: true
+						});
 				});
+			}
+
 		}).then(() => {
 			res.redirect(`/posts/${req.params.id}`);
 		}).catch(checkit.Error, (err) => {
