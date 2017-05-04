@@ -50,7 +50,7 @@ module.exports = function(knex, environment) {
 	router.get('/create', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'create GET! req.body:');
 
-		res.render('posts/create');
+		res.render('posts/create', {body: req.body});
 	});
 
 	router.post('/create', requireSignin(environment), (req, res) => {
@@ -86,8 +86,12 @@ module.exports = function(knex, environment) {
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, err, 'checkitError');
+			logReqBody(environment, req.body, 'create POST-Checkit Error! req.body:');
 
-			res.render('posts/create', {errors: err.errors});
+			res.render('posts/create', {
+				errors: err.errors,
+				body: req.body
+			});
 		});
 	});
 
@@ -139,7 +143,8 @@ module.exports = function(knex, environment) {
 
 			res.render('posts/edit', {
 				postId: req.params.id,
-				errors: err.errors
+				errors: err.errors,
+				body: req.body
 			});
 		});
 	});
@@ -154,14 +159,14 @@ module.exports = function(knex, environment) {
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {
-				if (environment = 'development') {
+				if (environment === 'development') {
 					console.log('posts[0]: ', typeof(posts[0]), posts[0]);
 				}
 
 				return Promise.try(() => {
 					return knex('users').where({id: posts[0].userId});
 				}).then((users) => {
-					res.render('posts/read.pug', {
+					res.render('posts/read', {
 						user: users[0],
 						post: posts[0],
 						postBody: marked(posts[0].body)
