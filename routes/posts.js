@@ -76,11 +76,13 @@ module.exports = function(knex, environment) {
 		}).then((postId) => {
 			// console.log('post_id: ', post_id, typeof(post_id));
 			// console.log('post_id[0]: ', post_id[0], typeof(post_id[0]));
-			return knex('slugs').insert({
-				postId: postId[0],
-				name: slug(req.body.title),
-				isCurrent: true
-			}).returning('postId');
+			return knex('slugs')
+				.insert({
+					postId: postId[0],
+					name: slug(req.body.title),
+					isCurrent: true
+				})
+				.returning('postId');
 		}).then((postId) => {
 			// console.log('postId: ', postId, typeof(postId));
 			res.redirect(`/posts/${postId}`);
@@ -114,11 +116,12 @@ module.exports = function(knex, environment) {
 	});
 
 	router.post('/:id/edit', requireSignin(environment), (req, res) => {
-		logReqBody(environment, req.body, 'edit POST! req.body:');
-
 		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {
+			logReqBody(environment, req.body, 'edit POST! req.body:');
+			logReqFile(environment, req.file, 'edit POST! req.file:');
+
 			return checkit({
 				title: 'required',
 				body: 'required'
@@ -134,8 +137,19 @@ module.exports = function(knex, environment) {
 					isDraft: (req.body.publish == null),
 					updatedAt: knex.fn.now()
 				});
-		// }).then(() => {
-		// 	return knex('slugs').
+		}).then(() => {
+			return knex('slugs')
+				.where({postId: req.params.id})
+				.orderBy('id', 'desc')
+				.limit(1)
+				.update({isCurrent: false});
+		}).then(() => {
+			return knex('slugs')
+				.insert({
+					postId: req.params.id,
+					name: slug(req.body.title),
+					isCurrent: true
+				});
 		}).then(() => {
 			res.redirect(`/posts/${req.params.id}`);
 		}).catch(checkit.Error, (err) => {
