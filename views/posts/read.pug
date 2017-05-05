@@ -17,3 +17,6 @@ block content
 			img.postCoverImage(src=`/uploads/postsPics/${post.pic}`, alt='Alt post pic', title='Title Post Pic')
 
 		div.postBody!= sanitizer.sanitize(postBody)
+
+		if tag != null
+			p= tag

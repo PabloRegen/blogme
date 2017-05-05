@@ -16,6 +16,8 @@ block content
 			textarea(name='body' placeholder='Your article goes here...')= body.body
 			if errors.body != null
 				|<br/> #{errors.body.message}
+		p Tags <br/>
+			input(type='text' name='tags' value=body.tags)
 		p Picture <br/>
 			input(type='file' name='postPic')
 		p

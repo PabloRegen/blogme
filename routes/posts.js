@@ -84,7 +84,29 @@ module.exports = function(knex, environment) {
 				})
 				.returning('postId');
 		}).then((postId) => {
-			// console.log('postId: ', postId, typeof(postId));
+			// FIXME!!! Need to solve 2 cases: 
+			// 1. more than one tag entered at once
+			// 2. tags containing more than 1 word
+
+			let tags = req.body.tags;
+
+			if (tags != null && tags.trim() !== '') {
+				return Promise.try(() => {
+					return knex('tags')
+						.insert({
+							name: tags,
+						}).returning('id');
+				}).then((tagId) => {
+					return knex('tags_posts')
+						.insert({
+							tagId: tagId[0],
+							postId: postId[0]
+						}).returning('postId');
+				});
+			} else {
+				return postId;
+			}
+		}).then((postId) => {	
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, err, 'checkitError');
@@ -178,17 +200,28 @@ module.exports = function(knex, environment) {
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {
-				if (environment === 'development') {
-					console.log('posts[0]: ', typeof(posts[0]), posts[0]);
-				}
+				// if (environment === 'development') {
+				// 	console.log('posts[0]: ', typeof(posts[0]), posts[0]);
+				// }
 
 				return Promise.try(() => {
 					return knex('users').where({id: posts[0].userId});
 				}).then((users) => {
-					res.render('posts/read', {
-						user: users[0],
-						post: posts[0],
-						postBody: marked(posts[0].body)
+					return Promise.try(() => {
+						return knex('tags_posts')
+							.where({postId: req.params.id})
+							.returning('tagId')
+					}).then((tagId) => {
+						return knex('tags')
+							.where({id: tagId[0].id})
+							.returning('name')
+					}).then((tagName) => {
+						res.render('posts/read', {
+							tag: tagName[0].name,
+							user: users[0],
+							post: posts[0],
+							postBody: marked(posts[0].body)
+						});
 					});
 				});
 			}
