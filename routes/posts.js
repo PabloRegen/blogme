@@ -106,7 +106,7 @@ module.exports = function(knex, environment) {
 			} else {
 				return postId;
 			}
-		}).then((postId) => {	
+		}).then((postId) => {
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, err, 'checkitError');
@@ -160,12 +160,10 @@ module.exports = function(knex, environment) {
 					updatedAt: knex.fn.now()
 				});
 		}).then(() => {
-			if (req.body.title !== req.body.previousTitle) {
+			// FIXME! only update old slug status & create new slug if req.body.title !== old title on db
 				return Promise.try(() => {
 					return knex('slugs')
-						.where({postId: req.params.id})
-						.orderBy('id', 'desc')
-						.limit(1)
+						.where({postId: req.params.id, isCurrent: true})
 						.update({isCurrent: false});
 				}).then(() => {
 					return knex('slugs')
@@ -175,8 +173,6 @@ module.exports = function(knex, environment) {
 							isCurrent: true
 						});
 				});
-			}
-
 		}).then(() => {
 			res.redirect(`/posts/${req.params.id}`);
 		}).catch(checkit.Error, (err) => {

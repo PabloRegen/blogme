@@ -6,8 +6,6 @@ block title
 block content
 	h1 Edit your post
 	form(action=`/posts/${postId}/edit` method='post' enctype='multipart/form-data')
-		input(type='hidden' name='previousTitle' value=post != null ? post.title : undefined)
-
 		p(class={invalid: errors.title != null}) Title <br/>
 			input(type='text' name='title' value=post != null ? post.title : body.title)
 			if errors.title != null
