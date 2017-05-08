@@ -65,14 +65,16 @@ module.exports = function(knex, environment) {
 				body: 'required'
 			}).run(req.body);
 		}).then(() => {
-			return knex('posts').insert({
-				userId: req.currentUser.id,
-				title: req.body.title,
-				subtitle: req.body.subtitle,
-				body: req.body.body,
-				pic: (req.file != null ? req.file.filename : undefined),
-				isDraft: (req.body.publish == null)
-			}).returning('id');
+			return knex('posts')
+				.insert({
+					userId: req.currentUser.id,
+					title: req.body.title,
+					subtitle: req.body.subtitle,
+					body: req.body.body,
+					pic: (req.file != null ? req.file.filename : undefined),
+					isDraft: (req.body.publish == null)
+				})
+				.returning('id');
 		}).then((postId) => {
 			// console.log('post_id: ', post_id, typeof(post_id));
 			// console.log('post_id[0]: ', post_id[0], typeof(post_id[0]));
@@ -107,7 +109,7 @@ module.exports = function(knex, environment) {
 				return postId;
 			}
 		}).then((postId) => {
-			res.redirect(`/posts/${postId}`);
+			res.redirect(`/posts/${postId[0]}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, err, 'checkitError');
 			logReqBody(environment, req.body, 'create POST-Checkit Error! req.body:');
@@ -155,7 +157,10 @@ module.exports = function(knex, environment) {
 			if (req.body.title !== post[0].title) {
 				return Promise.try(() => {
 					return knex('slugs')
-						.where({postId: req.params.id, isCurrent: true})
+						.where({
+							postId: req.params.id, 
+							isCurrent: true
+						})
 						.update({isCurrent: false});
 				}).then(() => {
 					return knex('slugs')
@@ -210,7 +215,7 @@ module.exports = function(knex, environment) {
 					return Promise.try(() => {
 						return knex('tags_posts')
 							.where({postId: req.params.id})
-							.returning('tagId')
+							.returning('tagId');
 					}).then((tagId) => {
 						return knex('tags')
 							.where({id: tagId[0].id})

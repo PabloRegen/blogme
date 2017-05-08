@@ -81,13 +81,15 @@ module.exports = function(knex, environment) {
 					}]
 			}).run(req.body);
 		}).then(() => {
-				return scryptForHumans.hash(req.body.password);
+			return scryptForHumans.hash(req.body.password);
 		}).then((hash) => {
-			return knex('users').insert({
-				username: req.body.username,
-				email: req.body.email,
-				pwHash: hash
-			}).returning('id');
+			return knex('users')
+				.insert({
+					username: req.body.username,
+					email: req.body.email,
+					pwHash: hash
+				})
+				.returning('id');
 		}).then((userID) => {
 			// FIXME! Send a confirmation email instead?
 			return req.loginUser(userID[0]);
@@ -141,9 +143,12 @@ module.exports = function(knex, environment) {
 				password: 'required'
 			}).run(req.body);
 		}).then(() => {
-			return knex('users').where(function() {
-				this.where({username: req.body.usernameOrEmail}).orWhere({email: req.body.usernameOrEmail})
-			}).andWhere({deletedAt: null});
+			return knex('users')
+				.where(function() {
+					this.where({username: req.body.usernameOrEmail})
+					.orWhere({email: req.body.usernameOrEmail})
+				})
+				.andWhere({deletedAt: null});
 		}).then((users) => {
 			if (users.length === 0) {
 				logError(environment, 'Invalid username or email', 'User Error');
@@ -209,9 +214,9 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, req.body, 'delete POST! req.body:');
 
 		return Promise.try(() => {
-			return knex('users').where({id: req.currentUser.id}).update({
-				deletedAt: knex.fn.now()
-			});
+			return knex('users')
+				.where({id: req.currentUser.id})
+				.update({deletedAt: knex.fn.now()});
 		}).then(() => {
 			return req.destroySession();
 		}).then(() => {
@@ -233,11 +238,13 @@ module.exports = function(knex, environment) {
 			logReqBody(environment, req.body, 'profile POST! req.body:');
 			logReqFile(environment, req.file, 'profile POST! req.file:');
 
-			return knex('users').where({id: req.currentUser.id}).update({
-				name: req.body.name,
-				bio: req.body.bio,
-				pic: (req.file != null ? req.file.filename : undefined)
-			});
+			return knex('users')
+				.where({id: req.currentUser.id})
+				.update({
+					name: req.body.name,
+					bio: req.body.bio,
+					pic: (req.file != null ? req.file.filename : undefined)
+				});
 		}).then(() => {
 			res.redirect('/accounts/dashboard');
 		});
@@ -248,7 +255,10 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, req.body, 'dashboard GET! req.body:');
 
 		return Promise.try(() => {
-			return knex('posts').where({userId: req.currentUser.id}).limit(3).orderBy('id', 'desc');
+			return knex('posts')
+				.where({userId: req.currentUser.id})
+				.limit(3)
+				.orderBy('id', 'desc');
 		}).then((posts) => {
 			res.render('accounts/dashboard', {latestPosts: posts});
 		});
