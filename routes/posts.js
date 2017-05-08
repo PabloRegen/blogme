@@ -149,18 +149,10 @@ module.exports = function(knex, environment) {
 				body: 'required'
 			}).run(req.body);
 		}).then(() => {
-			return knex('posts')
-				.where({id: req.params.id})
-				.update({
-					title: req.body.title,
-					subtitle: req.body.subtitle,
-					body: req.body.body,
-					pic: (req.file != null ? req.file.filename : undefined),
-					isDraft: (req.body.publish == null),
-					updatedAt: knex.fn.now()
-				});
-		}).then(() => {
-			// FIXME! only update old slug status & create new slug if req.body.title !== old title on db
+			return knex('posts').where({id: req.params.id});
+		}).then((post) => {
+			/* only update slug if updated title !== title on db */
+			if (req.body.title !== post[0].title) {
 				return Promise.try(() => {
 					return knex('slugs')
 						.where({postId: req.params.id, isCurrent: true})
@@ -172,6 +164,18 @@ module.exports = function(knex, environment) {
 							name: slug(req.body.title),
 							isCurrent: true
 						});
+				});
+			}
+		}).then(() => {
+			return knex('posts')
+				.where({id: req.params.id})
+				.update({
+					title: req.body.title,
+					subtitle: req.body.subtitle,
+					body: req.body.body,
+					pic: (req.file != null ? req.file.filename : undefined),
+					isDraft: (req.body.publish == null),
+					updatedAt: knex.fn.now()
 				});
 		}).then(() => {
 			res.redirect(`/posts/${req.params.id}`);
