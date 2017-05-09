@@ -18,5 +18,8 @@ block content
 
 		div.postBody!= sanitizer.sanitize(postBody)
 
-		if tag != null
-			p= tag
+		if tags != null
+			| tags
+			ul
+				each tag in tags
+					li= tag
