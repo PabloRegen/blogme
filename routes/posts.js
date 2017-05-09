@@ -11,6 +11,8 @@ const marked = require('marked');
 const slug = require('slug');
 
 const requireSignin = rfr('middleware/require-signin');
+const splitTags = rfr('lib/split-tags');
+const storeTags = rfr('lib/store-tags');
 
 let logReqBody = function(environment, reqBody, whichReqBody) {
 	if (environment === 'development') {
@@ -76,6 +78,7 @@ module.exports = function(knex, environment) {
 				})
 				.returning('id');
 		}).then((postId) => {
+
 			return knex('slugs')
 				.insert({
 					postId: postId[0],
@@ -84,51 +87,8 @@ module.exports = function(knex, environment) {
 				})
 				.returning('postId');
 		}).then((postId) => {
-			// FIXME! Need to solve 2 cases: 
-			// 1. more than one tag entered at once
-			// 2. tags containing more than 1 word
-
-			// FIXME! need to discard only spaces tags
-
-			let tagsInput = req.body.tags;
-
-			if (tagsInput != null) {
-				// let tagsInputArray = tagsInput.split(',');
-				// let tagsArray = [];
-
-				// for(let i = 0; i < tagsInputArray.length; i++) {
-				// 	if (tagsInputArray[i].trim() !== '') {
-				// 		tagsArray.push(tagsInputArray[i]);
-				// 	}
-				// }
-
-				// let tagsArray = tagsInput.split(',').map((tag) => {
-				// 	return tag.trim();
-				// });
-
-				return Promise.try(() => {
-					return tagsInput.split(',').map((tag) => {
-						return tag.trim();
-					});
-				}).map((tag) => {
-					console.log('tag: ', tag);
-
-					return knex('tags')
-						.insert({name: tag})
-						.returning('id');
-				}).map((tagId) => {
-					console.log('tagId: ', tagId);
-					console.log('postId: ', postId);
-
-					return knex('tags_posts')
-						.insert({
-							tagId: tagId[0],
-							postId: postId[0]
-						})
-						.returning('postId');
-				});
-			} else {
-				return postId;
+			if (req.body.tags != null) {
+				return storeTags(postId[0], splitTags(req.body.tags));
 			}
 		}).then((postId) => {
 			console.log('postId: ', postId);
