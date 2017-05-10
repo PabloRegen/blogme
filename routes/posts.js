@@ -11,8 +11,10 @@ const marked = require('marked');
 const slug = require('slug');
 
 const requireSignin = rfr('middleware/require-signin');
-const splitTags = rfr('lib/split-tags');
-const storeTags = rfr('lib/store-tags');
+const splitFilterTags = rfr('lib/split-filter-tags');
+// const storeTags = rfr('lib/store-tags')(knex);
+// const storeSlugs = rfr('lib/store-slugs')(knex);
+
 
 let logReqBody = function(environment, reqBody, whichReqBody) {
 	if (environment === 'development') {
@@ -37,6 +39,9 @@ let logError = function(environment, err, errorType) {
 };
 
 module.exports = function(knex, environment) {
+	const storeTags = rfr('lib/store-tags')(knex);
+	const storeSlugs = rfr('lib/store-slugs')(knex);
+
 	let router = expressPromiseRouter();
 
 	let storage = multer.diskStorage({
@@ -78,22 +83,18 @@ module.exports = function(knex, environment) {
 				})
 				.returning('id');
 		}).then((postId) => {
+			console.log('postId returned when inserting new post on db: ', postId);
 
-			return knex('slugs')
-				.insert({
-					postId: postId[0],
-					name: slug(req.body.title),
-					isCurrent: true
-				})
-				.returning('postId');
-		}).then((postId) => {
-			if (req.body.tags != null) {
-				return storeTags(postId[0], splitTags(req.body.tags));
-			}
-		}).then((postId) => {
-			console.log('postId: ', postId);
+			return Promise.try(() => {
+				Promise.all([
+					storeSlugs(postId[0], slug(req.body.title)),
+					(req.body.tags != null) ? storeTags(postId[0], splitFilterTags(req.body.tags)) : undefined
+				])
+			}).then(() => {
+				console.log('postId just before redirecting to /posts/${postId[0]}: ', postId);
 
-			res.redirect(`/posts/${postId[0][0]}`);
+				res.redirect(`/posts/${postId[0]}`);
+			});
 		}).catch(checkit.Error, (err) => {
 			logError(environment, err, 'checkitError');
 			logReqBody(environment, req.body, 'create POST-Checkit Error! req.body:');
@@ -202,6 +203,7 @@ module.exports = function(knex, environment) {
 						return knex('tags_posts')
 							.where({postId: req.params.id})
 							.select('tagId')
+							.orderBy('tagId', 'asc')  
 							.returning('tagId');
 					}).map((tagId) => {
 						console.log('tagId: ', tagId);
