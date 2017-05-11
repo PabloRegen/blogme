@@ -13,7 +13,7 @@ const slug = require('slug');
 const requireSignin = rfr('middleware/require-signin');
 const splitFilterTags = rfr('lib/split-filter-tags');
 // const storeTags = rfr('lib/store-tags')(knex);
-// const storeSlugs = rfr('lib/store-slugs')(knex);
+// const storeSlug = rfr('lib/store-slug')(knex);
 
 
 let logReqBody = function(environment, reqBody, whichReqBody) {
@@ -40,7 +40,8 @@ let logError = function(environment, err, errorType) {
 
 module.exports = function(knex, environment) {
 	const storeTags = rfr('lib/store-tags')(knex);
-	const storeSlugs = rfr('lib/store-slugs')(knex);
+	const storeSlug = rfr('lib/store-slug')(knex);
+	const storePost = rfr('lib/store-post')(knex);
 
 	let router = expressPromiseRouter();
 
@@ -72,22 +73,13 @@ module.exports = function(knex, environment) {
 				body: 'required'
 			}).run(req.body);
 		}).then(() => {
-			return knex('posts')
-				.insert({
-					userId: req.currentUser.id,
-					title: req.body.title,
-					subtitle: req.body.subtitle,
-					body: req.body.body,
-					pic: (req.file != null ? req.file.filename : undefined),
-					isDraft: (req.body.publish == null)
-				})
-				.returning('id');
+			return storePost(req);
 		}).then((postId) => {
 			console.log('postId returned when inserting new post on db: ', postId);
 
 			return Promise.try(() => {
-				Promise.all([
-					storeSlugs(postId[0], slug(req.body.title)),
+				return Promise.all([
+					storeSlug(postId[0], slug(req.body.title)),
 					(req.body.tags != null) ? storeTags(postId[0], splitFilterTags(req.body.tags)) : undefined
 				])
 			}).then(() => {
