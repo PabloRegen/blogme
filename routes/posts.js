@@ -41,6 +41,7 @@ module.exports = function(knex, environment) {
 	const storeTags = rfr('lib/store-tags')(knex);
 	const storeSlug = rfr('lib/store-slug')(knex);
 	const storePost = rfr('lib/store-post')(knex);
+	const updatePost = rfr('lib/update-post')(knex);
 	const updateSlugsStatusFalse = rfr('lib/update-slugs-status-false')(knex);
 
 	let router = expressPromiseRouter();
@@ -69,11 +70,6 @@ module.exports = function(knex, environment) {
 			logReqFile(environment, req.file, 'create POST! req.file:');
 
 			return checkitPost(req);
-
-			// return checkit({
-			// 	title: 'required',
-			// 	body: 'required'
-			// }).run(req.body);
 		}).then(() => {
 			return storePost(req);
 		}).then((postId) => {
@@ -104,14 +100,16 @@ module.exports = function(knex, environment) {
 	router.get('/:id/edit', requireSignin(environment), (req, res) => {
 		logReqBody(environment, req.body, 'edit GET! req.body:');
 
+		let postId = req.params.id;
+
 		return Promise.try(() => {
-			return knex('posts').where({id: req.params.id});
+			return knex('posts').where({id: postId});
 		}).then((posts) => {
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {	
 				res.render('posts/edit', {
-					postId: req.params.id,
+					postId: postId,
 					post: posts[0]
 				});
 			}
@@ -128,11 +126,6 @@ module.exports = function(knex, environment) {
 			logReqFile(environment, req.file, 'edit POST! req.file:');
 
 			return checkitPost(req);
-
-			// return checkit({
-			// 	title: 'required',
-			// 	body: 'required'
-			// }).run(req.body);
 		}).then(() => {
 			return knex('posts').where({id: postId});
 		}).then((post) => {
@@ -145,16 +138,7 @@ module.exports = function(knex, environment) {
 				});
 			}
 		}).then(() => {
-			return knex('posts')
-				.where({id: postId})
-				.update({
-					title: req.body.title,
-					subtitle: req.body.subtitle,
-					body: req.body.body,
-					pic: (req.file != null ? req.file.filename : undefined),
-					isDraft: (req.body.publish == null),
-					updatedAt: knex.fn.now()
-				});
+			return updatePost(req, postId);
 		}).then(() => {
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
