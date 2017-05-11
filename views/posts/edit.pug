@@ -16,12 +16,12 @@ block content
 			textarea(name='body' placeholder='Your article goes here...')= post != null ? post.body : body.body
 			if errors.body != null
 				|<br/> #{errors.body.message}
+		p Tags <br/>
+			input(type='text' name='tags' value=tags)
 		p Picture <br/>
 			input(type='file' name='postPic')
 		p
 			input(type='submit' name='save' value='Save draft')
 		p
 			input(type='submit' name='publish' value='Publish post')
-	p <br/> Search for articles (link)
-	p
-		a(href='/accounts/signout') Sign out
+	p <br/> Search for articles (FIXME! missing link)

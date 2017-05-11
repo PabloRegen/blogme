@@ -43,6 +43,7 @@ module.exports = function(knex, environment) {
 	const storePost = rfr('lib/store-post')(knex);
 	const updatePost = rfr('lib/update-post')(knex);
 	const updateSlugsStatusFalse = rfr('lib/update-slugs-status-false')(knex);
+	const getTags = rfr('lib/get-tags')(knex);
 
 	let router = expressPromiseRouter();
 
@@ -105,12 +106,22 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
+			console.log('posts: ', posts);
+
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
-			} else {	
-				res.render('posts/edit', {
-					postId: postId,
-					post: posts[0]
+			} else {
+				return Promise.try(() => {
+					return getTags(postId);
+				}).then((existingTags) => {
+					console.log('existingTags: ', existingTags);
+					console.log('existingTags.toString(): ', existingTags.toString());
+
+					res.render('posts/edit', {
+						postId: postId,
+						post: posts[0],
+						tags: existingTags.toString()
+					});
 				});
 			}
 		});
