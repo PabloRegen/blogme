@@ -12,8 +12,7 @@ const slug = require('slug');
 
 const requireSignin = rfr('middleware/require-signin');
 const splitFilterTags = rfr('lib/split-filter-tags');
-// const storeTags = rfr('lib/store-tags')(knex);
-// const storeSlug = rfr('lib/store-slug')(knex);
+const checkitPost = rfr('lib/checkit-post');
 
 
 let logReqBody = function(environment, reqBody, whichReqBody) {
@@ -42,6 +41,7 @@ module.exports = function(knex, environment) {
 	const storeTags = rfr('lib/store-tags')(knex);
 	const storeSlug = rfr('lib/store-slug')(knex);
 	const storePost = rfr('lib/store-post')(knex);
+	const updateSlugsStatusFalse = rfr('lib/update-slugs-status-false')(knex);
 
 	let router = expressPromiseRouter();
 
@@ -68,10 +68,12 @@ module.exports = function(knex, environment) {
 			logReqBody(environment, req.body, 'create POST! req.body:');
 			logReqFile(environment, req.file, 'create POST! req.file:');
 
-			return checkit({
-				title: 'required',
-				body: 'required'
-			}).run(req.body);
+			return checkitPost(req);
+
+			// return checkit({
+			// 	title: 'required',
+			// 	body: 'required'
+			// }).run(req.body);
 		}).then(() => {
 			return storePost(req);
 		}).then((postId) => {
@@ -117,40 +119,34 @@ module.exports = function(knex, environment) {
 	});
 
 	router.post('/:id/edit', requireSignin(environment), (req, res) => {
+		let postId = req.params.id;
+
 		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {
 			logReqBody(environment, req.body, 'edit POST! req.body:');
 			logReqFile(environment, req.file, 'edit POST! req.file:');
 
-			return checkit({
-				title: 'required',
-				body: 'required'
-			}).run(req.body);
+			return checkitPost(req);
+
+			// return checkit({
+			// 	title: 'required',
+			// 	body: 'required'
+			// }).run(req.body);
 		}).then(() => {
-			return knex('posts').where({id: req.params.id});
+			return knex('posts').where({id: postId});
 		}).then((post) => {
 			/* only update slug if updated title !== title on db */
 			if (req.body.title !== post[0].title) {
 				return Promise.try(() => {
-					return knex('slugs')
-						.where({
-							postId: req.params.id, 
-							isCurrent: true
-						})
-						.update({isCurrent: false});
+					return updateSlugsStatusFalse(postId);
 				}).then(() => {
-					return knex('slugs')
-						.insert({
-							postId: req.params.id,
-							name: slug(req.body.title),
-							isCurrent: true
-						});
+					return storeSlug(postId, slug(req.body.title));
 				});
 			}
 		}).then(() => {
 			return knex('posts')
-				.where({id: req.params.id})
+				.where({id: postId})
 				.update({
 					title: req.body.title,
 					subtitle: req.body.subtitle,
@@ -160,12 +156,12 @@ module.exports = function(knex, environment) {
 					updatedAt: knex.fn.now()
 				});
 		}).then(() => {
-			res.redirect(`/posts/${req.params.id}`);
+			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, err, 'checkitError');
 
 			res.render('posts/edit', {
-				postId: req.params.id,
+				postId: postId,
 				errors: err.errors,
 				body: req.body
 			});
