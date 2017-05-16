@@ -73,18 +73,20 @@ module.exports = function(knex, environment) {
 			return checkitPost(req);
 		}).then(() => {
 			return storePost(req);
-		}).then((postId) => {
-			console.log('postId returned when inserting new post on db: ', postId);
+		}).then((postIds) => {
+			console.log('postIds returned when inserting new post on db: ', postIds);
+
+			let postId = postIds[0];
+			let tags = req.body.tags;
+			let title = req.body.title;
 
 			return Promise.try(() => {
 				return Promise.all([
-					storeSlug(postId[0], slug(req.body.title)),
-					(req.body.tags != null) ? storeTags(postId[0], splitFilterTags(req.body.tags)) : undefined
+					storeSlug(postId, slug(title)),
+					((tags != null) ? storeTags(postId, splitFilterTags(tags)) : undefined)
 				])
 			}).then(() => {
-				console.log('postId just before redirecting to /posts/${postId[0]}: ', postId);
-
-				res.redirect(`/posts/${postId[0]}`);
+				res.redirect(`/posts/${postId}`);
 			});
 		}).catch(checkit.Error, (err) => {
 			logError(environment, err, 'checkitError');
@@ -139,13 +141,15 @@ module.exports = function(knex, environment) {
 			return checkitPost(req);
 		}).then(() => {
 			return knex('posts').where({id: postId});
-		}).then((post) => {
+		}).then((posts) => {
+			let title = req.body.title; 
+
 			/* only update slug if updated title !== title on db */
-			if (req.body.title !== post[0].title) {
+			if (title !== posts[0].title) {
 				return Promise.try(() => {
 					return updateSlugsStatusFalse(postId);
 				}).then(() => {
-					return storeSlug(postId, slug(req.body.title));
+					return storeSlug(postId, slug(title));
 				});
 			}
 		}).then(() => {
@@ -186,15 +190,15 @@ module.exports = function(knex, environment) {
 						return knex('tags_posts')
 							.where({postId: req.params.id})
 							.select('tagId')
-							.orderBy('tagId', 'asc')  
-							.returning('tagId');
+							.orderBy('tagId', 'asc'); 
+							// .returning('tagId');
 					}).map((tagId) => {
 						console.log('tagId: ', tagId);
 
 						return knex('tags')
 							.where({id: tagId.tagId})
-							.select('name')
-							.returning('name')
+							.select('name'); 
+							// .returning('name')
 					}).then((tagName) => {
 						console.log('tagName: ', tagName);
 
