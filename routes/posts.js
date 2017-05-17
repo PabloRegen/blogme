@@ -78,11 +78,10 @@ module.exports = function(knex, environment) {
 
 			let postId = postIds[0];
 			let tags = req.body.tags;
-			let title = req.body.title;
 
 			return Promise.try(() => {
 				return Promise.all([
-					storeSlug(postId, slug(title)),
+					storeSlug(postId, slug(req.body.title)),
 					((tags != null) ? storeTags(postId, splitFilterTags(tags)) : undefined)
 				])
 			}).then(() => {
@@ -142,15 +141,9 @@ module.exports = function(knex, environment) {
 		}).then(() => {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
-			let title = req.body.title; 
-
 			/* only update slug if updated title !== title on db */
-			if (title !== posts[0].title) {
-				return Promise.try(() => {
-					return updateSlugsStatusFalse(postId);
-				}).then(() => {
-					return storeSlug(postId, slug(title));
-				});
+			if (req.body.title !== posts[0].title) {
+				return storeSlug(postId, slug(req.body.title));
 			}
 		}).then(() => {
 			return updatePost(req, postId);
