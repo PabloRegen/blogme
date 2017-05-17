@@ -70,7 +70,7 @@ module.exports = function(knex, environment) {
 			logReqBody(environment, req.body, 'create POST! req.body:');
 			logReqFile(environment, req.file, 'create POST! req.file:');
 
-			return checkitPost(req);
+			return checkitPost(req.body);
 		}).then(() => {
 			return storePost(req);
 		}).then((postIds) => {
