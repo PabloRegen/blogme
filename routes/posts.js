@@ -42,7 +42,6 @@ module.exports = function(knex, environment) {
 	const storeSlug = rfr('lib/store-slug')(knex);
 	const storePost = rfr('lib/store-post')(knex);
 	const updatePost = rfr('lib/update-post')(knex);
-	const updateSlugsStatusFalse = rfr('lib/update-slugs-status-false')(knex);
 	const getTags = rfr('lib/get-tags')(knex);
 
 	let router = expressPromiseRouter();
@@ -79,6 +78,7 @@ module.exports = function(knex, environment) {
 			let postId = postIds[0];
 			let tags = req.body.tags;
 
+			/* nest Promise.all & res.redirect so both have access to postId */
 			return Promise.try(() => {
 				return Promise.all([
 					storeSlug(postId, slug(req.body.title)),
@@ -107,21 +107,16 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
-			console.log('posts: ', posts);
-
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {
 				return Promise.try(() => {
 					return getTags(postId);
-				}).then((existingTags) => {
-					console.log('existingTags: ', existingTags);
-					console.log('existingTags.toString(): ', existingTags.toString());
-
+				}).then((postTags) => {
 					res.render('posts/edit', {
 						postId: postId,
 						post: posts[0],
-						tags: existingTags.toString()
+						tags: postTags.toString()
 					});
 				});
 			}
@@ -137,7 +132,7 @@ module.exports = function(knex, environment) {
 			logReqBody(environment, req.body, 'edit POST! req.body:');
 			logReqFile(environment, req.file, 'edit POST! req.file:');
 
-			return checkitPost(req);
+			return checkitPost(req.body);
 		}).then(() => {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
@@ -164,50 +159,27 @@ module.exports = function(knex, environment) {
 	router.get('/:id', (req, res) => {
 		logReqBody(environment, req.body, 'read GET! req.body:');
 
+		let postId = req.params.id;
+
 		return Promise.try(() => {
-			return knex('posts').where({id: req.params.id});
+			return knex('posts').where({id: postId});
 		}).then((posts) => {
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {
-				// if (environment === 'development') {
-				// 	console.log('posts[0]: ', typeof(posts[0]), posts[0]);
-				// }
+				let post = posts[0];
 
 				return Promise.try(() => {
-					return knex('users').where({id: posts[0].userId});
+					return knex('users').where({id: post.userId});
 				}).then((users) => {
-					console.log('users: ', users);
-
 					return Promise.try(() => {
-						return knex('tags_posts')
-							.where({postId: req.params.id})
-							.select('tagId')
-							.orderBy('tagId', 'asc'); 
-							// .returning('tagId');
-					}).map((tagId) => {
-						console.log('tagId: ', tagId);
-
-						return knex('tags')
-							.where({id: tagId.tagId})
-							.select('name'); 
-							// .returning('name')
-					}).then((tagName) => {
-						console.log('tagName: ', tagName);
-
-						let tagsRender = [];
-
-						for(let i = 0; i < tagName.length; i++) {
-							tagsRender.push(tagName[i][0].name)
-						}
-
-						console.log('tagsRender: ', tagsRender);
-
+						return getTags(postId);
+					}).then((postTags) => {
 						res.render('posts/read', {
-							tags: tagsRender,
+							tags: postTags,
 							user: users[0],
-							post: posts[0],
-							postBody: marked(posts[0].body)
+							post: post,
+							postBody: marked(post.body)
 						});
 					});
 				});
