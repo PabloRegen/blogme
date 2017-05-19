@@ -83,7 +83,7 @@ module.exports = function(knex, environment) {
 				return Promise.all([
 					storeSlug(postId, slug(req.body.title)),
 					((tags != null) ? storeTags(postId, splitFilterTags(tags)) : undefined)
-				])
+				]);
 			}).then(() => {
 				res.redirect(`/posts/${postId}`);
 			});
@@ -125,6 +125,7 @@ module.exports = function(knex, environment) {
 
 	router.post('/:id/edit', requireSignin(environment), (req, res) => {
 		let postId = req.params.id;
+		// let tags = req.body.tags;
 
 		return Promise.try(() => {
 			return storeUpload(req, res);
@@ -141,7 +142,10 @@ module.exports = function(knex, environment) {
 				return storeSlug(postId, slug(req.body.title));
 			}
 		}).then(() => {
-			return updatePost(req, postId);
+			return Promise.all([
+				updatePost(req, postId),
+				// ((tags != null) ? storeTags(postId, splitFilterTags(tags)) : undefined)
+			]);
 		}).then(() => {
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
