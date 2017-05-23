@@ -39,6 +39,7 @@ let logError = function(environment, err, errorType) {
 
 module.exports = function(knex, environment) {
 	const storeTags = rfr('lib/store-tags')(knex);
+	const removeTags = rfr('lib/remove-tags')(knex);
 	const storeSlug = rfr('lib/store-slug')(knex);
 	const storePost = rfr('lib/store-post')(knex);
 	const updatePost = rfr('lib/update-post')(knex);
@@ -71,14 +72,21 @@ module.exports = function(knex, environment) {
 
 			return checkitPost(req.body);
 		}).then(() => {
-			return storePost(req);
+			return storePost({
+				userId: req.currentUser.id,
+				title: req.body.title,
+				subtitle: req.body.subtitle,
+				body: req.body.body,
+				pic: (req.file != null ? req.file.filename : undefined),
+				isDraft: (req.body.publish == null)
+			});
 		}).then((postIds) => {
 			console.log('postIds returned when inserting new post on db: ', postIds);
 
 			let postId = postIds[0];
 			let tags = req.body.tags;
-
 			/* nest Promise.all & res.redirect so both have access to postId */
+
 			return Promise.try(() => {
 				return Promise.all([
 					storeSlug(postId, slug(req.body.title)),
@@ -116,7 +124,7 @@ module.exports = function(knex, environment) {
 					res.render('posts/edit', {
 						postId: postId,
 						post: posts[0],
-						tags: postTags.toString()
+						tags: postTags.join(", ")
 					});
 				});
 			}
@@ -125,7 +133,6 @@ module.exports = function(knex, environment) {
 
 	router.post('/:id/edit', requireSignin(environment), (req, res) => {
 		let postId = req.params.id;
-		// let tags = req.body.tags;
 
 		return Promise.try(() => {
 			return storeUpload(req, res);
@@ -142,10 +149,26 @@ module.exports = function(knex, environment) {
 				return storeSlug(postId, slug(req.body.title));
 			}
 		}).then(() => {
-			return Promise.all([
-				updatePost(req, postId),
-				// ((tags != null) ? storeTags(postId, splitFilterTags(tags)) : undefined)
-			]);
+			return updatePost(postId, {
+				title: req.body.title,
+				subtitle: req.body.subtitle,
+				body: req.body.body,
+				pic: (req.file != null ? req.file.filename : undefined),
+				isDraft: (req.body.publish == null),
+				updatedAt: knex.fn.now()
+			});
+		}).then(() => {
+			let tags = req.body.tags;
+
+			console.log('about to storeTags - tags to keep: ', tags);
+
+			return (tags != null) ? storeTags(postId, splitFilterTags(tags)) : undefined;
+		}).then(() => {
+			let tagsKeep = req.body.tags;
+
+			console.log('about to removeTags - tags to keep: ', tagsKeep);
+
+			return (tagsKeep != null) ? removeTags(postId, splitFilterTags(tagsKeep)) : removeTags(postId, []);
 		}).then(() => {
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
