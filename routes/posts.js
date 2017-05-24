@@ -158,17 +158,9 @@ module.exports = function(knex, environment) {
 				updatedAt: knex.fn.now()
 			});
 		}).then(() => {
-			let tags = req.body.tags;
-
-			console.log('about to storeTags - tags to keep: ', tags);
-
-			return (tags != null) ? storeTags(postId, splitFilterTags(tags)) : undefined;
+			return (req.body.tags != null) ? storeTags(postId, splitFilterTags(req.body.tags)) : undefined;
 		}).then(() => {
-			let tagsKeep = req.body.tags;
-
-			console.log('about to removeTags - tags to keep: ', tagsKeep);
-
-			return (tagsKeep != null) ? removeTags(postId, splitFilterTags(tagsKeep)) : removeTags(postId, []);
+			return (req.body.tags != null) ? removeTags(postId, splitFilterTags(req.body.tags)) : removeTags(postId, []);
 		}).then(() => {
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
