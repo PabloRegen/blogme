@@ -83,13 +83,11 @@ module.exports = function(knex, environment) {
 		}).then(() => {
 			return scryptForHumans.hash(req.body.password);
 		}).then((hash) => {
-			return knex('users')
-				.insert({
-					username: req.body.username,
-					email: req.body.email,
-					pwHash: hash
-				})
-				.returning('id');
+			return knex('users').insert({
+				username: req.body.username,
+				email: req.body.email,
+				pwHash: hash
+			}).returning('id');
 		}).then((userID) => {
 			// FIXME! Send a confirmation email instead?
 			return req.loginUser(userID[0]);
@@ -143,12 +141,10 @@ module.exports = function(knex, environment) {
 				password: 'required'
 			}).run(req.body);
 		}).then(() => {
-			return knex('users')
-				.where(function() {
-					this.where({username: req.body.usernameOrEmail})
-					.orWhere({email: req.body.usernameOrEmail})
-				})
-				.andWhere({deletedAt: null});
+			return knex('users').where(function() {
+				this.where({username: req.body.usernameOrEmail})
+				.orWhere({email: req.body.usernameOrEmail})
+			}).andWhere({deletedAt: null});
 		}).then((users) => {
 			if (users.length === 0) {
 				logError(environment, 'Invalid username or email', 'User Error');
