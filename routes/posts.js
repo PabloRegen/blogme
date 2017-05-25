@@ -85,7 +85,6 @@ module.exports = function(knex, environment) {
 
 			let postId = postIds[0];
 			let tags = req.body.tags;
-			/* nest Promise.all & res.redirect so both have access to postId */
 
 			return Promise.try(() => {
 				return Promise.all([
