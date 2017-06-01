@@ -38,10 +38,10 @@ let logError = function(environment, err, errorType) {
 };
 
 module.exports = function(knex, environment) {
-	const storeTags = rfr('lib/store-tags')(knex);
+	const storeTags = rfr('lib/store-tags');
 	const removeTags = rfr('lib/remove-tags')(knex);
-	const storeSlug = rfr('lib/store-slug')(knex);
-	const storePost = rfr('lib/store-post')(knex);
+	const storeSlug = rfr('lib/store-slug');
+	const storePost = rfr('lib/store-post');
 	const updatePost = rfr('lib/update-post')(knex);
 	const getTags = rfr('lib/get-tags')(knex);
 
@@ -64,35 +64,37 @@ module.exports = function(knex, environment) {
 	});
 
 	router.post('/create', requireSignin(environment), (req, res) => {
-		return Promise.try(() => {
-			return storeUpload(req, res);
-		}).then(() => {
-			logReqBody(environment, req.body, 'create POST! req.body:');
-			logReqFile(environment, req.file, 'create POST! req.file:');
-
-			return checkitPost(req.body);
-		}).then(() => {
-			return storePost({
-				userId: req.currentUser.id,
-				title: req.body.title,
-				subtitle: req.body.subtitle,
-				body: req.body.body,
-				pic: (req.file != null ? req.file.filename : undefined),
-				isDraft: (req.body.publish == null)
-			});
-		}).then((postIds) => {
-			console.log('postIds returned when inserting new post on db: ', postIds);
-
-			let postId = postIds[0];
-			let tags = req.body.tags;
-
+		return knex.transaction(function(trx) {
 			return Promise.try(() => {
-				return Promise.all([
-					storeSlug(postId, slug(req.body.title)),
-					((tags != null) ? storeTags(postId, splitFilterTags(tags)) : undefined)
-				]);
+				return storeUpload(req, res);
 			}).then(() => {
-				res.redirect(`/posts/${postId}`);
+				logReqBody(environment, req.body, 'create POST! req.body:');
+				logReqFile(environment, req.file, 'create POST! req.file:');
+
+				return checkitPost(req.body);
+			}).then(() => {
+				return storePost(trx)({
+					userId: req.currentUser.id,
+					title: req.body.title,
+					subtitle: req.body.subtitle,
+					body: req.body.body,
+					pic: (req.file != null ? req.file.filename : undefined),
+					isDraft: (req.body.publish == null)
+				});
+			}).then((postIds) => {
+				console.log('postIds returned when inserting new post on db: ', postIds);
+
+				let postId = postIds[0];
+				let tags = req.body.tags;
+
+				return Promise.try(() => {
+					return Promise.all([
+						storeSlug(trx)(postId, slug(req.body.title)),
+						((tags != null) ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
+					]);
+				}).then(() => {
+					res.redirect(`/posts/${postId}`);
+				});
 			});
 		}).catch(checkit.Error, (err) => {
 			logError(environment, err, 'checkitError');
