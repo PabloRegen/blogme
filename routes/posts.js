@@ -14,6 +14,12 @@ const requireSignin = rfr('middleware/require-signin');
 const checkitPost = rfr('lib/checkit-post');
 const splitFilterTags = rfr('lib/split-filter-tags');
 
+const storeTags = rfr('lib/store-tags');
+const storeSlug = rfr('lib/store-slug');
+const storePost = rfr('lib/store-post');
+const removeTags = rfr('lib/remove-tags');
+const updatePost = rfr('lib/update-post');
+
 let logReqBody = function(environment, reqBody, whichReqBody) {
 	if (environment === 'development') {
 		console.log(whichReqBody);
@@ -37,11 +43,6 @@ let logError = function(environment, err, errorType) {
 };
 
 module.exports = function(knex, environment) {
-	const storeTags = rfr('lib/store-tags');
-	const storeSlug = rfr('lib/store-slug');
-	const storePost = rfr('lib/store-post');
-	const removeTags = rfr('lib/remove-tags');
-	const updatePost = rfr('lib/update-post');
 	const getTags = rfr('lib/get-tags')(knex);
 
 	let router = expressPromiseRouter();
@@ -80,18 +81,18 @@ module.exports = function(knex, environment) {
 						body: req.body.body,
 						pic: (req.file != null ? req.file.filename : undefined),
 						isDraft: (req.body.publish == null)
-					}).then((postIds) => {
-						console.log('POST/create postIds: ', postIds);
+					});
+				}).then((postIds) => {
+					console.log('POST/create postIds: ', postIds);
 
-						let postId = postIds[0];
-						let tags = req.body.tags;
+					let postId = postIds[0];
+					let tags = req.body.tags;
 
-						return Promise.all([
-							storeSlug(trx)(postId, slug(req.body.title)),
-							((tags != null) ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
-						]).then(() => {
-							res.redirect(`/posts/${postId}`);
-						});
+					return Promise.all([
+						storeSlug(trx)(postId, slug(req.body.title)),
+						((tags != null) ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
+					]).then(() => {
+						res.redirect(`/posts/${postId}`);
 					});
 				});
 			});
