@@ -19,10 +19,10 @@ module.exports = function(knex, environment) {
 			return Promise.try(() => {
 				return knex('users').where({id: req.session.userId});
 			}).then((users) => {
-				if (environment === 'development') {
-					console.log('fetchCurrentUser! users is:');
-					console.log(users);
-				}
+				// if (environment === 'development') {
+				// 	console.log('fetchCurrentUser! users is:');
+				// 	console.log(users);
+				// }
 
 				let user = users[0];
 
