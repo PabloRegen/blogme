@@ -72,10 +72,6 @@ module.exports = function(knex, environment) {
 		}).then((userIDs) => {
 			// FIXME! Send a confirmation email instead?
 			return req.loginUser(userIDs[0]);
-
-			// req.session.userId = userIDs[0];
-			// return req.saveSession();
-
 		}).then(() => {
 			res.redirect('/accounts/dashboard');
 		}).catch(databaseError.rethrow).catch(duplicateUsername, (err) => {
@@ -146,10 +142,6 @@ module.exports = function(knex, environment) {
 					/* Or if user is already logged in change the user id in the session */
 					/* with the practical result of logging the user out and logging him back in as another user */
 					return req.loginUser(user.id);
-
-					// req.session.userId = user.id;
-					// return req.saveSession();
-
 				}).then(() => {
 					res.redirect('/accounts/dashboard');
 				});
