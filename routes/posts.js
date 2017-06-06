@@ -13,34 +13,15 @@ const slug = require('slug');
 const requireSignin = rfr('middleware/require-signin');
 const checkitPost = rfr('lib/checkit-post');
 const splitFilterTags = rfr('lib/split-filter-tags');
+const logReqBody = rfr('lib/log-req-body');
+const logReqFile = rfr('lib/log-req-file');
+const logError = rfr('lib/log-error');
 
 const storeTags = rfr('lib/store-tags');
 const storeSlug = rfr('lib/store-slug');
 const storePost = rfr('lib/store-post');
 const removeTags = rfr('lib/remove-tags');
 const updatePost = rfr('lib/update-post');
-
-let logReqBody = function(environment, reqBody, whichReqBody) {
-	if (environment === 'development') {
-		console.log(whichReqBody);
-		console.log(reqBody);
-	}
-};
-
-let logReqFile = function(environment, reqFile, whichReqFile) {
-	if (environment === 'development') {
-		console.log(whichReqFile);
-		console.log(reqFile);
-	}
-};
-
-let logError = function(environment, err, errorType) {
-	if (environment === 'development') {
-		console.log('error type is: ', errorType);
-		console.log('error is:');
-		console.log(err);
-	}
-};
 
 module.exports = function(knex, environment) {
 	const getTags = rfr('lib/get-tags')(knex);
@@ -58,7 +39,7 @@ module.exports = function(knex, environment) {
 
 	/* create */
 	router.get('/create', requireSignin(environment), (req, res) => {
-		console.log('GET/create');
+		logReqBody(environment, 'GET/create req.body:', req.body);
 
 		res.render('posts/create', {body: req.body});
 	});
@@ -67,8 +48,8 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {
-			logReqBody(environment, req.body, 'POST/create req.body: ');
-			logReqFile(environment, req.file, 'POST/create req.file: ');
+			logReqBody(environment, 'POST/create req.body: ', req.body);
+			logReqFile(environment, 'POST/create req.file: ', req.file);
 
 			return checkitPost(req.body);
 		}).then(() => {
@@ -83,8 +64,10 @@ module.exports = function(knex, environment) {
 						isDraft: (req.body.publish == null)
 					});
 				}).then((postIds) => {
-					console.log('POST/create postIds: ', postIds);
-
+					if (environment === 'development') {
+						console.log('POST/create postIds: ', postIds);
+					}
+					
 					let postId = postIds[0];
 					let tags = req.body.tags;
 
@@ -97,8 +80,7 @@ module.exports = function(knex, environment) {
 				});
 			});
 		}).catch(checkit.Error, (err) => {
-			logError(environment, err, 'checkitError');
-			logReqBody(environment, req.body, 'POST/create - Checkit Error! req.body:');
+			logError(environment, 'checkitError', err);
 
 			res.render('posts/create', {
 				errors: err.errors,
@@ -109,7 +91,7 @@ module.exports = function(knex, environment) {
 
 	/* edit */
 	router.get('/:id/edit', requireSignin(environment), (req, res) => {
-		console.log('GET/:id/edit');
+		logReqBody(environment, 'GET/:id/edit req.body:', req.body);
 
 		let postId = req.params.id;
 
@@ -138,23 +120,23 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {
-			logReqBody(environment, req.body, 'POST/:id/edit req.body: ');
-			logReqFile(environment, req.file, 'POST/:id/edit req.file: ');
+			logReqBody(environment, 'POST/:id/edit req.body: ', req.body);
+			logReqFile(environment, 'POST/:id/edit req.file: ', req.file);
 
 			return checkitPost(req.body);
 		}).then(() => {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
-			return knex.transaction(function(trx) {
+			// return knex.transaction(function(trx) {
 				return Promise.try(() => {
 					/* only update slug if updated title !== title on db */
 					if (req.body.title !== posts[0].title) {
-						return storeSlug(trx)(postId, slug(req.body.title));
+						return storeSlug(knex)(postId, slug(req.body.title));
 					}
 				}).then(() => {
-					console.log('POST/:id/edit updatePost(trx)(postId, {...})');
+					console.log('POST/:id/edit updatePost(knex)(postId, {...})');
 
-					return updatePost(trx)(postId, {
+					return updatePost(knex)(postId, {
 						title: req.body.title,
 						subtitle: req.body.subtitle,
 						body: req.body.body,
@@ -164,25 +146,25 @@ module.exports = function(knex, environment) {
 					});
 				}).then(() => {
 					if (req.body.tags != null) {
-						console.log('POST/:id/edit storeTags(trx)(postId, splitFilterTags(req.body.tags))');
+						console.log('POST/:id/edit storeTags(knex)(postId, splitFilterTags(req.body.tags))');
 
-						return storeTags(trx)(postId, splitFilterTags(req.body.tags));
+						return storeTags(knex)(postId, splitFilterTags(req.body.tags));
 					}
 				}).then(() => {
 					if (req.body.tags != null) {
-						console.log('POST/:id/edit removeTags(trx)(postId, splitFilterTags(req.body.tags))');
+						console.log('POST/:id/edit removeTags(knex)(postId, splitFilterTags(req.body.tags))');
 
-						return removeTags(trx)(postId, splitFilterTags(req.body.tags));
+						return removeTags(knex)(postId, splitFilterTags(req.body.tags));
 					} else {
-						console.log('POST/:id/edit removeTags(trx)(postId, [])');
-						return removeTags(trx)(postId, []);
+						console.log('POST/:id/edit removeTags(knex)(postId, [])');
+						return removeTags(knex)(postId, []);
 					}
 				}).then(() => {
 					res.redirect(`/posts/${postId}`);
 				});
-			});
+			// });
 		}).catch(checkit.Error, (err) => {
-			logError(environment, err, 'checkitError');
+			logError(environment, 'checkitError', err);
 
 			res.render('posts/edit', {
 				postId: postId,
@@ -194,7 +176,7 @@ module.exports = function(knex, environment) {
 
 	/* read */
 	router.get('/:id', (req, res) => {
-		console.log('GET/:id');
+		logReqBody(environment, 'GET/:id req.body:', req.body);
 
 		let postId = req.params.id;
 

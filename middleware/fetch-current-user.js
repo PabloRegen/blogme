@@ -2,15 +2,29 @@
 
 const Promise = require('bluebird');
 
+let logBodyAndUserId = function(environment, req) {
+	if (environment === 'development') {
+		console.log('fetch-current-user.js -> req.body is: ', req.body);
+		console.log('fetch-current-user.js -> req.session.userId is: ', req.session.userId);
+	}
+};
+
+let logUsers = function(environment, users) {
+	if (environment === 'development') {
+		console.log('fetch-current-user.js -> users is:');
+		console.log(users);
+	}
+};
+
+let logDestroySession = function(environment) {
+	if (environment === 'development') {
+		console.log('fetch-current-user.js -> user still logged in but no longer exists in the db or was soft deleted, so log user out');
+	}
+};
+
 module.exports = function(knex, environment) {
 	return function(req, res, next) {
-		if (environment === 'development') {
-			console.log('fetchCurrentUser! req.body is:');
-			console.log(req.body);
-			console.log('fetchCurrentUser! req.session.userId is:');
-			console.log(req.session.userId);
-			console.log('-----');
-		}
+		logBodyAndUserId(environment, req);
 		
 		if (req.session.userId == null) {
 			/* User not logged in */
@@ -19,24 +33,17 @@ module.exports = function(knex, environment) {
 			return Promise.try(() => {
 				return knex('users').where({id: req.session.userId});
 			}).then((users) => {
-				// if (environment === 'development') {
-				// 	console.log('fetchCurrentUser! users is:');
-				// 	console.log(users);
-				// }
+				logUsers(environment, users);
 
 				let user = users[0];
 
 				if (users.length === 0 || user.deletedAt != null) {
-					if (environment === 'development') {
-						console.log('fetchCurrentUser! User still logged in but no longer exists in the db or was soft deleted');
-						console.log('therefore log user out by destroying the session');
-						console.log('-----');
-					}
+					logDestroySession(environment);
 
 					/* User still logged in but no longer exists in the db or was soft deleted, so log user out */
 					return req.destroySession();
 				} else {
-					/* make current user available application-wide */
+					/* make current user available application-wide by adding it as a property to the req object */
 					req.currentUser = user;
 				}
 			}).then(() => {

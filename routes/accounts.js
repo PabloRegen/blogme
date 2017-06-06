@@ -12,6 +12,9 @@ const databaseError = require('database-error');
 
 const requireSignin = rfr('middleware/require-signin');
 const errors = rfr('lib/errors');
+const logReqBody = rfr('lib/log-req-body');
+const logReqFile = rfr('lib/log-req-file');
+const logError = rfr('lib/log-error');
 
 let duplicateUsername = {
 	name: 'UniqueConstraintViolationError',
@@ -23,28 +26,6 @@ let duplicateEmailAddress = {
 	name: 'UniqueConstraintViolationError',
 	table: 'users',
 	column: 'email'
-};
-
-let logReqBody = function(environment, reqBody, whichReqBody) {
-	if (environment === 'development') {
-		console.log(whichReqBody);
-		console.log(reqBody);
-	}
-};
-
-let logReqFile = function(environment, reqFile, whichReqFile) {
-	if (environment === 'development') {
-		console.log(whichReqFile);
-		console.log(reqFile);
-	}
-};
-
-let logError = function(environment, err, errorType) {
-	if (environment === 'development') {
-		console.log('error type is: ', errorType);
-		console.log('error is:');
-		console.log(err);
-	}
 };
 
 module.exports = function(knex, environment) {
@@ -65,7 +46,7 @@ module.exports = function(knex, environment) {
 	});
 
 	router.post('/signup', (req, res) => {
-		logReqBody(environment, req.body, 'signup POST! req.body:')
+		logReqBody(environment, 'POST/signup req.body:', req.body)
 		
 		return Promise.try(() => {
 			return checkit({
@@ -88,17 +69,17 @@ module.exports = function(knex, environment) {
 				email: req.body.email,
 				pwHash: hash
 			}).returning('id');
-		}).then((userID) => {
+		}).then((userIDs) => {
 			// FIXME! Send a confirmation email instead?
-			return req.loginUser(userID[0]);
+			return req.loginUser(userIDs[0]);
 
-			// req.session.userId = userID[0];
+			// req.session.userId = userIDs[0];
 			// return req.saveSession();
 
 		}).then(() => {
 			res.redirect('/accounts/dashboard');
 		}).catch(databaseError.rethrow).catch(duplicateUsername, (err) => {
-			logError(environment, err, 'databaseError - duplicateUsername');
+			logError(environment, 'databaseError - duplicateUsername', err);
 
 			let errors = {
 				username: { 
@@ -108,7 +89,7 @@ module.exports = function(knex, environment) {
 			
 			res.render('accounts/signup', {errors: errors});
 		}).catch(duplicateEmailAddress, (err) => {
-			logError(environment, err, 'databaseError - duplicateEmailAddress');
+			logError(environment, 'databaseError - duplicateEmailAddress', err);
 			
 			let errors = {
 				email: { 
@@ -118,7 +99,7 @@ module.exports = function(knex, environment) {
 
 			res.render('accounts/signup', {errors: errors});
 		}).catch(checkit.Error, (err) => {
-			logError(environment, err, 'checkitError');
+			logError(environment, 'checkitError', err);
 
 			res.render('accounts/signup', {errors: err.errors});
 		});
@@ -126,14 +107,13 @@ module.exports = function(knex, environment) {
 
 	/* signin */
 	router.get('/signin', (req, res) => {
-		console.log('signin GET route');
-		console.log('-----');
+		console.log('GET/signin');
 
 		res.render('accounts/signin');
 	});
 
 	router.post('/signin', (req, res) => {
-		logReqBody(environment, req.body, 'signin POST! req.body:')
+		logReqBody(environment, 'POST/signin req.body:', req.body);
 
 		return Promise.try(() => {
 			return checkit({
@@ -142,12 +122,11 @@ module.exports = function(knex, environment) {
 			}).run(req.body);
 		}).then(() => {
 			return knex('users').where(function() {
-				this.where({username: req.body.usernameOrEmail})
-				.orWhere({email: req.body.usernameOrEmail})
+				this.where({username: req.body.usernameOrEmail}).orWhere({email: req.body.usernameOrEmail})
 			}).andWhere({deletedAt: null});
 		}).then((users) => {
 			if (users.length === 0) {
-				logError(environment, 'Invalid username or email', 'User Error');
+				logError(environment, 'User Error', 'Invalid username or email');
 
 				let errors = {
 					usernameOrEmail: {
@@ -176,12 +155,12 @@ module.exports = function(knex, environment) {
 				});
 			}
 		}).catch(checkit.Error, (err) => {
-			logError(environment, err, 'checkitError');
+			logError(environment, 'checkitError', err);
 
 			res.render('accounts/signin', {errors: err.errors});
 			// throw new errors.ValidationError('Must enter both fields', {errors: err.errors});
 		}).catch(scryptForHumans.PasswordError, (err) => {
-			logError(environment, err, 'scryptForHumans error');
+			logError(environment, 'scryptForHumans error', err);
 
 			let errors = {
 				password: {
@@ -196,7 +175,7 @@ module.exports = function(knex, environment) {
 
 	/* signout */
 	router.get('/signout', requireSignin(environment), (req, res) => {
-		logReqBody(environment, req.body, 'signout GET! req.body:');
+		logReqBody(environment, 'GET/signout req.body:', req.body);
 
 		return Promise.try(() => {
 			return req.destroySession();
@@ -207,12 +186,10 @@ module.exports = function(knex, environment) {
 
 	/* delete */
 	router.post('/delete', requireSignin(environment), (req, res) => {
-		logReqBody(environment, req.body, 'delete POST! req.body:');
+		logReqBody(environment, 'POST/delete req.body:', req.body);
 
 		return Promise.try(() => {
-			return knex('users')
-				.where({id: req.currentUser.id})
-				.update({deletedAt: knex.fn.now()});
+			return knex('users').where({id: req.currentUser.id}).update({deletedAt: knex.fn.now()});
 		}).then(() => {
 			return req.destroySession();
 		}).then(() => {
@@ -222,7 +199,7 @@ module.exports = function(knex, environment) {
 
 	/* profile */
 	router.get('/profile', requireSignin(environment), (req, res) => {
-		logReqBody(environment, req.body, 'profile GET! req.body:');
+		logReqBody(environment, 'GET/profile req.body:', req.body);
 
 		res.render('accounts/profile');
 	});
@@ -231,16 +208,14 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {	
-			logReqBody(environment, req.body, 'profile POST! req.body:');
-			logReqFile(environment, req.file, 'profile POST! req.file:');
+			logReqBody(environment, 'POST/profile req.body:', req.body);
+			logReqFile(environment, 'POST/profile req.file:', req.file);
 
-			return knex('users')
-				.where({id: req.currentUser.id})
-				.update({
-					name: req.body.name,
-					bio: req.body.bio,
-					pic: (req.file != null ? req.file.filename : undefined)
-				});
+			return knex('users').where({id: req.currentUser.id}).update({
+				name: req.body.name,
+				bio: req.body.bio,
+				pic: (req.file != null ? req.file.filename : undefined)
+			});
 		}).then(() => {
 			res.redirect('/accounts/dashboard');
 		});
@@ -248,13 +223,10 @@ module.exports = function(knex, environment) {
 
 	/* dashboard */
 	router.get('/dashboard', requireSignin(environment), (req, res) => {
-		logReqBody(environment, req.body, 'dashboard GET! req.body:');
+		logReqBody(environment, 'GET/dashboard req.body:', req.body);
 
 		return Promise.try(() => {
-			return knex('posts')
-				.where({userId: req.currentUser.id})
-				.limit(3)
-				.orderBy('id', 'desc');
+			return knex('posts').where({userId: req.currentUser.id}).limit(3).orderBy('id', 'desc');
 		}).then((posts) => {
 			res.render('accounts/dashboard', {latestPosts: posts});
 		});
