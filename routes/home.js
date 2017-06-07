@@ -3,8 +3,6 @@
 const router = require('express-promise-router')();
 
 router.get('/', (req, res) => {
-	console.log('home');
-	
 	res.render('home/home', {title: 'home'});
 });
 

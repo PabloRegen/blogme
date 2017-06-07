@@ -17,7 +17,7 @@ block content
 			if errors.body != null
 				|<br/> #{errors.body.message}
 		p Tags <br/>
-			input(type='text' name='tags' value=tags)
+			input(type='text' name='tags' value=tags != null ? tags : body.tags)
 		p Picture <br/>
 			input(type='file' name='postPic')
 		p

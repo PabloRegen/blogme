@@ -64,10 +64,6 @@ module.exports = function(knex, environment) {
 						isDraft: (req.body.publish == null)
 					});
 				}).then((postIds) => {
-					if (environment === 'development') {
-						console.log('POST/create postIds: ', postIds);
-					}
-					
 					let postId = postIds[0];
 					let tags = req.body.tags;
 
@@ -134,8 +130,6 @@ module.exports = function(knex, environment) {
 						return storeSlug(knex)(postId, slug(req.body.title));
 					}
 				}).then(() => {
-					console.log('POST/:id/edit updatePost(knex)(postId, {...})');
-
 					return updatePost(knex)(postId, {
 						title: req.body.title,
 						subtitle: req.body.subtitle,
@@ -146,19 +140,10 @@ module.exports = function(knex, environment) {
 					});
 				}).then(() => {
 					if (req.body.tags != null) {
-						console.log('POST/:id/edit storeTags(knex)(postId, splitFilterTags(req.body.tags))');
-
 						return storeTags(knex)(postId, splitFilterTags(req.body.tags));
 					}
 				}).then(() => {
-					if (req.body.tags != null) {
-						console.log('POST/:id/edit removeTags(knex)(postId, splitFilterTags(req.body.tags))');
-
-						return removeTags(knex)(postId, splitFilterTags(req.body.tags));
-					} else {
-						console.log('POST/:id/edit removeTags(knex)(postId, [])');
-						return removeTags(knex)(postId, []);
-					}
+					return removeTags(knex)(postId, splitFilterTags(req.body.tags));
 				}).then(() => {
 					res.redirect(`/posts/${postId}`);
 				});
@@ -179,10 +164,12 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, 'GET/:id req.body:', req.body);
 
 		let postId = req.params.id;
+		console.log('postId: ', postId);
 
 		return Promise.try(() => {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
+			console.log('posts: ', posts);
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {
