@@ -19,7 +19,11 @@ block content
 		p Tags <br/>
 			input(type='text' name='tags' value=body.tags)
 		p Picture <br/>
-			input(type='file' name='postPic')
+			input(type='file' name='postPic' value=file.filename)
+
+		p= `file.filename is ${file.filename}`
+		p file.filename is #{file.filename}
+		
 		p
 			input(type='submit' name='save' value='Save draft')
 		p

@@ -8,7 +8,7 @@ block content
 		p(class={invalid: errors[attributes.name] != null}) #{title} <br/>
 			input&attributes(attributes)
 			if errors[attributes.name] != null
-				| <br/> #{errors[attributes.name].message}
+				|<br/> #{errors[attributes.name].message}
 
 	h1 Sign in
 	form(action='/accounts/signin' method='post')

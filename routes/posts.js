@@ -41,6 +41,7 @@ module.exports = function(knex, environment) {
 	router.get('/create', requireSignin(environment), (req, res) => {
 		logReqBody(environment, 'GET/create req.body:', req.body);
 
+		// res.render('posts/create');
 		res.render('posts/create', {body: req.body});
 	});
 
@@ -80,7 +81,8 @@ module.exports = function(knex, environment) {
 
 			res.render('posts/create', {
 				errors: err.errors,
-				body: req.body
+				body: req.body,
+				file: req.file
 			});
 		});
 	});
@@ -170,6 +172,7 @@ module.exports = function(knex, environment) {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
 			console.log('posts: ', posts);
+
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {

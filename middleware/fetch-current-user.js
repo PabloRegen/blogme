@@ -33,7 +33,7 @@ module.exports = function(knex, environment) {
 			return Promise.try(() => {
 				return knex('users').where({id: req.session.userId});
 			}).then((users) => {
-				logUsers(environment, users);
+				// logUsers(environment, users);
 
 				let user = users[0];
 
