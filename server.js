@@ -66,8 +66,6 @@ app.use((req,res,next) => {
     /* Default value for the 'errors' locals, so that the templates don't throw an error when displaying a form without errors */
     res.locals.errors = {};
 
-    res.locals.file = {}; // TEMP!!!
-
     next();
 });
 

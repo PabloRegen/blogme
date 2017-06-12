@@ -41,8 +41,7 @@ module.exports = function(knex, environment) {
 	router.get('/create', requireSignin(environment), (req, res) => {
 		logReqBody(environment, 'GET/create req.body:', req.body);
 
-		// res.render('posts/create');
-		res.render('posts/create', {body: req.body});
+		res.render('posts/create');
 	});
 
 	router.post('/create', requireSignin(environment), (req, res) => {
@@ -72,13 +71,20 @@ module.exports = function(knex, environment) {
 						storeSlug(trx)(postId, slug(req.body.title)),
 						((tags != null) ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
 					]).then(() => {
-						res.redirect(`/posts/${postId}`);
+						return postId;
 					});
 				});
 			});
+		}).then((postId) => {				
+			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
+			/* The data that forms the body of the request is multipart encoded to allow for file uploads
+			therefore the usual order: bodyparser, setting res.locals, route with route middleware does not work here
+			because bodyparser, which only parses urlencoded data, gets skipped 
+			& res.locals.body gets set before the request data gets handled
+			so body needs to be set within the route after multer runs and req.body is populated */
 			res.render('posts/create', {
 				errors: err.errors,
 				body: req.body,
@@ -146,13 +152,15 @@ module.exports = function(knex, environment) {
 					}
 				}).then(() => {
 					return removeTags(knex)(postId, splitFilterTags(req.body.tags));
-				}).then(() => {
-					res.redirect(`/posts/${postId}`);
 				});
 			// });
+		}).then(() => {
+			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
+			/* body needs to get passed within the render call because the form is multipart enctype 
+			See additional explanation at POST/create route */
 			res.render('posts/edit', {
 				postId: postId,
 				errors: err.errors,
@@ -166,13 +174,10 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, 'GET/:id req.body:', req.body);
 
 		let postId = req.params.id;
-		console.log('postId: ', postId);
 
 		return Promise.try(() => {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
-			console.log('posts: ', posts);
-
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {
