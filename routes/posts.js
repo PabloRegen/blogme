@@ -20,7 +20,6 @@ const logError = rfr('lib/log-error');
 const storeTags = rfr('lib/store-tags');
 const storeSlug = rfr('lib/store-slug');
 const storePost = rfr('lib/store-post');
-const storeImages = rfr('lib/store-images');
 const removeTags = rfr('lib/remove-tags');
 const updatePost = rfr('lib/update-post');
 
@@ -36,11 +35,7 @@ module.exports = function(knex, environment) {
 		}
 	});
 
-	// let storeUpload = Promise.promisify(multer({storage: storage}).single('postPic'));
-	let storeUpload = Promise.promisify(multer({storage: storage}).fields([
-		{name: 'postPic', maxCount: 1}, 
-		{name: 'postImages', maxCount: 20}
-	]);
+	let storeUpload = Promise.promisify(multer({storage: storage}).single('postPic'));
 
 	/* create */
 	router.get('/create', requireSignin(environment), (req, res) => {
@@ -54,7 +49,7 @@ module.exports = function(knex, environment) {
 			return storeUpload(req, res);
 		}).then(() => {
 			logReqBody(environment, 'POST/create req.body: ', req.body);
-			logReqFile(environment, 'POST/create req.file: ', req.files);
+			logReqFile(environment, 'POST/create req.file: ', req.file);
 
 			return checkitPost(req.body);
 		}).then(() => {
@@ -65,23 +60,16 @@ module.exports = function(knex, environment) {
 						title: req.body.title,
 						subtitle: req.body.subtitle,
 						body: req.body.body,
-						// pic: (req.file != null ? req.file.filename : undefined),
-						pic: req.files['postPic'] != null ? req.file.['postPic'][0] : undefined,
+						pic: (req.file != null ? req.file.filename : undefined),
 						isDraft: (req.body.publish == null)
 					});
 				}).then((postIds) => {
 					let postId = postIds[0];
 					let tags = req.body.tags;
-					let postImages = req.files['postImages'];
 
 					return Promise.all([
 						storeSlug(trx)(postId, slug(req.body.title)),
-						(tags != null) ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined,
-						(postImages != null) ? storeImages(trx)({
-							userId: req.currentUser.id,
-							postId: postId,
-							name: postImages
-						}) : undefined
+						(tags != null) ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined
 					]).then(() => {
 						return postId;
 					});

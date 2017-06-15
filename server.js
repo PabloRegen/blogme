@@ -72,6 +72,7 @@ app.use((req,res,next) => {
 app.use('/', rfr('routes/home'));
 app.use('/accounts', rfr('routes/accounts')(knex, environment));
 app.use('/posts', rfr('routes/posts')(knex, environment));
+app.use('/uploads', rfr('routes/uploads')(knex, environment));
 
 /* 404 Page not found error handler */
 app.use((req, res, next) => {
