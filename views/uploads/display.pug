@@ -1,0 +1,32 @@
+extends ../layouts/layout
+
+block title
+	|image manager display
+
+block content
+	h1 Image manager display
+
+	img(src=`/uploads/postsImages/${image.currentName}`)
+	div URL: /uploads/postsImages/#{image.currentName}
+	div URL: #{image.path}
+	<br/>
+	div name: #{image.originalName}
+	div caption: #{image.caption}
+	div size: #{image.size} kb
+	div width: #{image.width} px
+	div height: #{image.height} px
+	div dated: #{image.dated}
+	div owner: #{image.ownerName}
+	div license: #{image.licenseType}
+	div original URL: #{image.originalURL}
+	div uploaded: #{image.uploadedAt}
+	div modified: #{image.modifiedAt}
+	div deleted: #{image.deletedAt}
+
+	form(action=`/uploads/${image.id}/edit` method='get')
+		p
+			input(type='submit' value='Edit image data')
+
+	form(action=`/uploads/${image.id}/delete` method='post')
+		p
+			input(type='submit' value='Delete image')
