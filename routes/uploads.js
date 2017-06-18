@@ -19,7 +19,7 @@ module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 
 	let storage = multer.diskStorage({
-		destination: path.join(__dirname, '../uploads/postsImages'),
+		destination: path.join(__dirname, '../uploads'),
 		filename: (req, file, cb) => {
 			cb(null, `${uuidV4()}-${file.originalname}`);
 		}
@@ -27,7 +27,7 @@ module.exports = function(knex, environment) {
 
 	let storeUpload = Promise.promisify(multer({storage: storage}).single('image'));
 	// let storeUpload = Promise.promisify(multer({storage: storage}).array('images'));
-	// req.files is array of `postimages` files
+	// req.files is array of `images` files
 
 	/* upload */
 	router.get('/upload', requireSignin(environment), (req, res) => {
@@ -50,12 +50,11 @@ module.exports = function(knex, environment) {
 				});
 			} else {
 				return Promise.try(() => {
-					return knex('postimages').insert({
+					return knex('images').insert({
 						userId: req.currentUser.id,
-						path: req.file.path,
-						currentName: req.file.filename,
+						path: req.file.filename,
 						originalName: req.file.originalname,
-						size: Math.round(req.file.size / 1000),
+						size: req.file.size,
 						caption: req.body.caption,
 						ownerName: req.body.owner,
 						licenseType: req.body.license,
@@ -75,7 +74,7 @@ module.exports = function(knex, environment) {
 	/* edit */
 	router.get('/:id/edit', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
-			return knex('postimages').where({id: req.params.id});
+			return knex('images').where({id: req.params.id});
 		}).then((images) => {
 			if (images.length === 0) {
 				throw new Error('The selected image does not exist');
@@ -94,7 +93,7 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, 'POST/:id/delete req.body:', req.body);
 
 		return Promise.try(() => {
-			return knex('postimages').where({id: req.params.id}).update({deletedAt: knex.fn.now()});
+			return knex('images').where({id: req.params.id}).update({deletedAt: knex.fn.now()});
 		}).then(() => {
 			res.redirect('/uploads/upload');
 		});
@@ -105,14 +104,17 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, 'GET/:id req.body: ', req.body);
 
 		return Promise.try(() => {
-			return knex('postimages').where({id: req.params.id});
+			return knex('images').where({id: req.params.id});
 		}).then((images) => {
 			console.log(images);
 
 			if (images.length === 0) {
 				throw new Error('The selected image does not exist');
 			} else {
-				res.render('uploads/display', {image: images[0]});
+				res.render('uploads/display', {
+					image: images[0],
+					size: Math.round(images[0].size/1000)
+				});
 			}
 		});
 	});

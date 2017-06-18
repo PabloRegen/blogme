@@ -6,18 +6,32 @@ block title
 block content
 	h1 Image manager display
 
-	img(src=`/uploads/postsImages/${image.currentName}`)
-	div URL: /uploads/postsImages/#{image.currentName}
-	div URL: #{image.path}
+	img(src=`/uploads/${image.path}`)
 	<br/>
+	<br/>
+	div To use this image copy and paste within your post:
+		<br/>
+		|/uploads/#{image.path}
+
+	<br/>
+
 	div name: #{image.originalName}
 	div caption: #{image.caption}
-	div size: #{image.size} kb
-	div width: #{image.width} px
-	div height: #{image.height} px
+	div size: #{size} KB
+
+	if image.width != null
+		div width: #{image.width} px
+	else
+		div width:
+
+	if image.height != null
+		div height: #{image.height} px
+	else
+		div height:
+
 	div dated: #{image.dated}
-	div owner: #{image.ownerName}
-	div license: #{image.licenseType}
+	div owner: #{image.owner}
+	div license: #{image.license}
 	div original URL: #{image.originalURL}
 	div uploaded: #{image.uploadedAt}
 	div modified: #{image.modifiedAt}

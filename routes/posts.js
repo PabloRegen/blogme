@@ -29,7 +29,7 @@ module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 
 	let storage = multer.diskStorage({
-		destination: path.join(__dirname, '../uploads/postsPics'),
+		destination: path.join(__dirname, '../uploads'),
 		filename: (req, file, cb) => {
 			cb(null, `${uuidV4()}-${file.originalname}`);
 		}
