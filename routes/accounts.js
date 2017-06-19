@@ -190,7 +190,8 @@ module.exports = function(knex, environment) {
 		}).then((users) => {
 			res.render('accounts/profile', {
 				name: users[0].name,
-				bio: users[0].bio
+				bio: users[0].bio,
+				pic: users[0].pic
 			});
 		});
 	});
@@ -202,9 +203,12 @@ module.exports = function(knex, environment) {
 			logReqBody(environment, 'POST/profile req.body:', req.body);
 			logReqFile(environment, 'POST/profile req.file:', req.file);
 
+			let name = req.body.name.trim();
+			let bio = req.body.bio.trim();
+
 			return knex('users').where({id: req.currentUser.id}).update({
-				name: req.body.name,
-				bio: req.body.bio,
+				name: name !== '' ? name : null,
+				bio: bio !== '' ? bio : null,
 				pic: req.file != null ? req.file.filename : undefined
 			});
 		}).then(() => {

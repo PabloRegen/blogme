@@ -31,8 +31,6 @@ module.exports = function(knex, environment) {
 
 	/* upload */
 	router.get('/upload', requireSignin(environment), (req, res) => {
-		logReqBody(environment, 'GET/upload req.body: ', req.body);
-		
 		res.render('uploads/upload');
 	});
 
@@ -46,7 +44,7 @@ module.exports = function(knex, environment) {
 			if (req.file == null) {
 				res.render('uploads/upload', {
 					body: req.body,
-					message: 'You must choose an image'
+					message: 'Please choose an image'
 				});
 			} else {
 				return Promise.try(() => {
@@ -68,8 +66,8 @@ module.exports = function(knex, environment) {
 				});
 			}
 		});
-		// pic: req.files != null && req.files.postPic != null ? req.files.postPic[0] : undefined,
 	});
+	// pic: req.files != null && req.files.postPic != null ? req.files.postPic[0] : undefined,
 
 	/* edit */
 	router.get('/:id/edit', requireSignin(environment), (req, res) => {

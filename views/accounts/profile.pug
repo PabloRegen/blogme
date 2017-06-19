@@ -4,14 +4,21 @@ block title
 	|profile
 
 block content
-	h1 Create your profile
+	if name == null && bio == null && pic == null
+		h1 Create your profile
+	else
+		h1 Update your profile
+
+	if pic != null
+		img(src=`/uploads/${pic}`)
+
 	form(action='/accounts/profile' method='post' enctype='multipart/form-data')
+		p Picture <br/>
+			input(type='file' name='userPic')
 		p Name <br/>
 			input(type='text' name='name' value=name)
 		p Bio <br/>
 			textarea(name='bio' placeholder='Enter short bio')=bio
-		p Picture <br/>
-			input(type='file' name='userPic')
 		p
 			input(type='submit' name='save' value='Save draft')
 		p

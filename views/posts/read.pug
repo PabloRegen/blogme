@@ -6,7 +6,7 @@ block title
 block content
 	article
 		if user != null
-			img.userPic(src=`/uploads/usersPics/${user.pic}`)
+			img.userPic(src=`/uploads/${user.pic}`)
 			div.userName #{user.name}
 			div.userBio #{user.bio}
 
@@ -14,7 +14,7 @@ block content
 		h2.postSubtitle!= sanitizer.sanitize(post.subtitle)
 
 		if post.pic != null
-			img.postCoverImage(src=`/uploads/postsPics/${post.pic}`, alt='Alt post pic', title='Title Post Pic')
+			img.postCoverImage(src=`/uploads/${post.pic}`, alt='Alt post pic', title='Title Post Pic')
 
 		div.postBody!= sanitizer.sanitize(postBody)
 
