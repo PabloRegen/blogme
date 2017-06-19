@@ -32,7 +32,7 @@ module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 
 	let storage = multer.diskStorage({
-		destination: path.join(__dirname, '../uploads/usersPics'),
+		destination: path.join(__dirname, '../uploads'),
 		filename: (req, file, cb) => {
 			cb(null, `${uuidV4()}-${file.originalname}`);
 		}
@@ -103,8 +103,6 @@ module.exports = function(knex, environment) {
 
 	/* signin */
 	router.get('/signin', (req, res) => {
-		console.log('GET/signin');
-
 		res.render('accounts/signin');
 	});
 
@@ -167,8 +165,6 @@ module.exports = function(knex, environment) {
 
 	/* signout */
 	router.get('/signout', requireSignin(environment), (req, res) => {
-		logReqBody(environment, 'GET/signout req.body:', req.body);
-
 		return Promise.try(() => {
 			return req.destroySession();
 		}).then(() => {
@@ -178,8 +174,6 @@ module.exports = function(knex, environment) {
 
 	/* delete */
 	router.post('/delete', requireSignin(environment), (req, res) => {
-		logReqBody(environment, 'POST/delete req.body:', req.body);
-
 		return Promise.try(() => {
 			return knex('users').where({id: req.currentUser.id}).update({deletedAt: knex.fn.now()});
 		}).then(() => {
@@ -191,9 +185,14 @@ module.exports = function(knex, environment) {
 
 	/* profile */
 	router.get('/profile', requireSignin(environment), (req, res) => {
-		logReqBody(environment, 'GET/profile req.body:', req.body);
-
-		res.render('accounts/profile');
+		return Promise.try (() => {
+			return knex('users').where({id: req.currentUser.id});
+		}).then((users) => {
+			res.render('accounts/profile', {
+				name: users[0].name,
+				bio: users[0].bio
+			});
+		});
 	});
 
 	router.post('/profile', requireSignin(environment), (req, res) => {
@@ -206,7 +205,7 @@ module.exports = function(knex, environment) {
 			return knex('users').where({id: req.currentUser.id}).update({
 				name: req.body.name,
 				bio: req.body.bio,
-				pic: (req.file != null ? req.file.filename : undefined)
+				pic: req.file != null ? req.file.filename : undefined
 			});
 		}).then(() => {
 			res.redirect('/accounts/dashboard');
@@ -215,8 +214,6 @@ module.exports = function(knex, environment) {
 
 	/* dashboard */
 	router.get('/dashboard', requireSignin(environment), (req, res) => {
-		logReqBody(environment, 'GET/dashboard req.body:', req.body);
-
 		return Promise.try(() => {
 			return knex('posts').where({userId: req.currentUser.id}).limit(3).orderBy('id', 'desc');
 		}).then((posts) => {

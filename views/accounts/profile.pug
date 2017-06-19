@@ -7,9 +7,9 @@ block content
 	h1 Create your profile
 	form(action='/accounts/profile' method='post' enctype='multipart/form-data')
 		p Name <br/>
-			input(type='text' name='name' value=body.name)
+			input(type='text' name='name' value=name)
 		p Bio <br/>
-			textarea(name='bio' placeholder='Enter short bio')= body.bio
+			textarea(name='bio' placeholder='Enter short bio')=bio
 		p Picture <br/>
 			input(type='file' name='userPic')
 		p
