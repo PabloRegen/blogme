@@ -7,7 +7,7 @@ block content
 	h1 edit image data
 
 	form(action=`/uploads/${image.id}/edit` method='post')
-		img(src=`/uploads/postsImages/${image.currentName}`)
+		img(src=`/uploads/${image.path}` width='750')
 		p Caption <br/>
 			input(type='text' name='caption' value=image.caption)
 		p Owner's name <br/>

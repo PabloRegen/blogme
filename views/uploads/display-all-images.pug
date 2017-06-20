@@ -1,0 +1,16 @@
+extends ../layouts/layout
+
+block title
+	|image manager display
+
+block content
+	h1 Image manager
+	h2 Displaying all your images
+
+	ul
+		each image in images
+			img(src=`/uploads/${image.path}` width='350')
+			div #{image.originalName}
+			form(action=`/uploads/${image.id}` method='get')
+				p
+					input(type='submit' value='Select')

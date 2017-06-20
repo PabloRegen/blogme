@@ -6,19 +6,10 @@ block title
 block content
 	h1 Image manager upload
 
-	if message != null
-		div.invalid #{message}
+	div(class={invalid: message != null}) #{message}
 
 	form(action='/uploads/upload' method='post' enctype='multipart/form-data')
 		p Image <br/>
-			input(type='file' name='image' multiple)
-		p Caption <br/>
-			input(type='text' name='caption' value=body.caption)
-		p Owner's name <br/>
-			input(type='text' name='owner' value=body.owner)
-		p License type <br/>
-			input(type='text' name='license' value=body.license)
-		p Original URL <br/>
-			input(type='text' name='url' value=body.url)
+			input(type='file' name='images' multiple)
 		p
-			input(type='submit' value='Save image')
+			input(type='submit' value='Save images')

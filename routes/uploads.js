@@ -25,9 +25,15 @@ module.exports = function(knex, environment) {
 		}
 	});
 
-	let storeUpload = Promise.promisify(multer({storage: storage}).single('image'));
-	// let storeUpload = Promise.promisify(multer({storage: storage}).array('images'));
-	// req.files is array of `images` files
+	let limits = {
+		fileSize: 10000000,
+	};
+
+	let storeUpload = Promise.promisify(multer({
+		storage: storage,
+		limits: limits
+	}).array('images', 20));
+	// req.files is array of `images`. Optionally error out if more than maxCount files are uploaded
 
 	/* upload */
 	router.get('/upload', requireSignin(environment), (req, res) => {
@@ -39,30 +45,31 @@ module.exports = function(knex, environment) {
 			return storeUpload(req, res);
 		}).then(() => {
 			logReqBody(environment, 'POST/upload req.body: ', req.body);
-			logReqFile(environment, 'POST/upload req.file: ', req.file);
+			logReqFile(environment, 'POST/upload req.files: ', req.files);
 
-			if (req.file == null) {
+			if (req.files.length === 0) {
 				res.render('uploads/upload', {
-					body: req.body,
-					message: 'Please choose an image'
+					message: 'Please choose at least one image'
 				});
 			} else {
-				return Promise.try(() => {
+				return Promise.map(req.files, (image) => {
 					return knex('images').insert({
 						userId: req.currentUser.id,
-						path: req.file.filename,
-						originalName: req.file.originalname,
-						size: req.file.size,
-						caption: req.body.caption,
-						ownerName: req.body.owner,
-						licenseType: req.body.license,
-						originalURL: req.body.url,
+						path: image.filename,
+						originalName: image.originalname,
+						size: image.size,
+						// caption: req.body.caption,
+						// ownerName: req.body.owner,
+						// licenseType: req.body.license,
+						// originalURL: req.body.url,
 						// height: ,
 						// width: ,
 						// dated: 
 					}).returning('id');
-				}).then((imageIds) => {
-					res.redirect(`/uploads/${imageIds[0]}`);
+				}).then((imagesIds) => {
+					// imagesIds is an array of n arrays (n = images qty)
+
+					res.redirect('/uploads/upload');
 				});
 			}
 		});
@@ -83,7 +90,18 @@ module.exports = function(knex, environment) {
 	});
 
 	router.post('/:id/edit', requireSignin(environment), (req, res) => {
+		logReqBody(environment, 'POST/:id/edit req.body:', req.body);
 
+		return Promise.try(() => {
+			return knex('images').where({id: req.params.id}).update({
+				caption: req.body.caption != null ? req.body.caption : undefined,
+				ownerName: req.body.owner != null ? req.body.owner : undefined,
+				licenseType: req.body.license != null ? req.body.license : undefined,
+				originalURL: req.body.url != null ? req.body.url : undefined
+			});
+		}).then(() => {
+			res.redirect('/uploads');
+		});
 	});
 
 	/* delete */
@@ -93,12 +111,27 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('images').where({id: req.params.id}).update({deletedAt: knex.fn.now()});
 		}).then(() => {
-			res.redirect('/uploads/upload');
+			res.redirect('/uploads');
 		});
 	});
 
-	/* display 1 image */
-	router.get('/:id', (req, res) => {
+	/* display all images */
+	router.get('/', requireSignin(environment), (req, res) => {
+		return Promise.try(() => {
+			return knex('images').where({userId: req.currentUser.id});
+		}).then((images) => {
+			if (images.length === 0) {
+				throw new Error('You have no stored images');
+			} else {
+				res.render('uploads/display-all-images', {
+					images: images
+				});
+			}
+		});
+	});
+
+	/* display one image */
+	router.get('/:id', requireSignin(environment), (req, res) => {
 		logReqBody(environment, 'GET/:id req.body: ', req.body);
 
 		return Promise.try(() => {
@@ -109,7 +142,7 @@ module.exports = function(knex, environment) {
 			if (images.length === 0) {
 				throw new Error('The selected image does not exist');
 			} else {
-				res.render('uploads/display', {
+				res.render('uploads/display-one-image', {
 					image: images[0],
 					size: Math.round(images[0].size/1000)
 				});

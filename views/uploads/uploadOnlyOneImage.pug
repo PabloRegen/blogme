@@ -1,0 +1,24 @@
+extends ../layouts/layout
+
+block title
+	|image manager upload
+
+block content
+	h1 Image manager upload
+
+	if message != null
+		div.invalid #{message}
+
+	form(action='/uploads/upload' method='post' enctype='multipart/form-data')
+		p Image <br/>
+			input(type='file' name='image')
+		p Caption <br/>
+			input(type='text' name='caption' value=body.caption)
+		p Owner's name <br/>
+			input(type='text' name='owner' value=body.owner)
+		p License type <br/>
+			input(type='text' name='license' value=body.license)
+		p Original URL <br/>
+			input(type='text' name='url' value=body.url)
+		p
+			input(type='submit' value='Save image')
