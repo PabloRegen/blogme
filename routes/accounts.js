@@ -185,15 +185,7 @@ module.exports = function(knex, environment) {
 
 	/* profile */
 	router.get('/profile', requireSignin(environment), (req, res) => {
-		return Promise.try (() => {
-			return knex('users').where({id: req.currentUser.id});
-		}).then((users) => {
-			res.render('accounts/profile', {
-				name: users[0].name,
-				bio: users[0].bio,
-				pic: users[0].pic
-			});
-		});
+		res.render('accounts/profile');
 	});
 
 	router.post('/profile', requireSignin(environment), (req, res) => {

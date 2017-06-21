@@ -4,21 +4,18 @@ block title
 	|profile
 
 block content
-	if name == null && bio == null && pic == null
-		h1 Create your profile
-	else
-		h1 Update your profile
+	h1 Edit your profile
 
-	if pic != null
-		img(src=`/uploads/${pic}`)
+	if currentUser.pic != null
+		img(src=`/uploads/${currentUser.pic}`)
 
 	form(action='/accounts/profile' method='post' enctype='multipart/form-data')
 		p Picture <br/>
 			input(type='file' name='userPic')
 		p Name <br/>
-			input(type='text' name='name' value=name)
+			input(type='text' name='name' value=currentUser.name)
 		p Bio <br/>
-			textarea(name='bio' placeholder='Enter short bio')=bio
+			textarea(name='bio' placeholder='Enter short bio')=currentUser.bio
 		p
 			input(type='submit' name='save' value='Save draft')
 		p
