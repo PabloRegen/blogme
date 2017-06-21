@@ -16,7 +16,7 @@ block content
 		if post.pic != null
 			img.postCoverImage(src=`/uploads/${post.pic}`, alt='Alt post pic', title='Title Post Pic')
 
-		div.postBody!= sanitizer.sanitize(postBody)
+		div.postBody!= sanitizer.sanitize(postBody, function(url) { return url; })
 
 		if tags !== []
 			| tags
