@@ -4,7 +4,8 @@ block title
 	|image manager display
 
 block content
-	h1 Image manager display
+	h1 Image manager
+	h2 Image data
 
 	img(src=`/uploads/${image.path}` width='750')
 	<br/>
@@ -37,10 +38,8 @@ block content
 	div modified: #{image.modifiedAt}
 	div deleted: #{image.deletedAt}
 
-	form(action=`/uploads/${image.id}/edit` method='get')
-		p
-			input(type='submit' value='Edit image data')
+	a(href=`/uploads/${image.id}/edit`)
+		input(type='button' value='Edit data')
 
 	form(action=`/uploads/${image.id}/delete` method='post')
-		p
-			input(type='submit' value='Delete image')
+		input(type='submit' value='Delete image')

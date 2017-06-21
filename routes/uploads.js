@@ -58,10 +58,6 @@ module.exports = function(knex, environment) {
 						path: image.filename,
 						originalName: image.originalname,
 						size: image.size,
-						// caption: req.body.caption,
-						// ownerName: req.body.owner,
-						// licenseType: req.body.license,
-						// originalURL: req.body.url,
 						// height: ,
 						// width: ,
 						// dated: 
@@ -115,13 +111,15 @@ module.exports = function(knex, environment) {
 		});
 	});
 
-	/* display all images */
+	/* overview all images */
 	router.get('/', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
 			return knex('images').where({userId: req.currentUser.id});
 		}).then((images) => {
 			if (images.length === 0) {
-				throw new Error('You have no stored images');
+				res.render('uploads/display-all-images', {
+					message: 'You have no stored images'
+				});
 			} else {
 				res.render('uploads/display-all-images', {
 					images: images
