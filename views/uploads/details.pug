@@ -1,11 +1,11 @@
 extends ../layouts/layout
 
 block title
-	|image manager display
+	|image manager details
 
 block content
 	h1 Image manager
-	h2 Image data
+	h2 Image details
 
 	img(src=`/uploads/${image.path}` width='750')
 	<br/>
@@ -18,7 +18,7 @@ block content
 
 	div name: #{image.originalName}
 	div caption: #{image.caption}
-	div size: #{size} KB
+	div size: #{Math.round(image.size/1000)} KB
 
 	if image.width != null
 		div width: #{image.width} px

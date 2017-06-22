@@ -7,15 +7,12 @@ block content
 	h1 Image manager
 	h2 Overview
 
-	if message != null
-		div #{message} 
-		<br/>
-		a(href='/uploads/upload') Store images
-	else
-		ul
-			each image in images
+	ul
+		each image, index in images
+			if index < 4
 				a(href=`/uploads/${image.id}`)
 					img(src=`/uploads/${image.path}` width='350')
+				div index = #{index}
 				div #{image.originalName}
 				div #{Math.round(image.size/1000)} KB
 				div URL: /uploads/#{image.path}
@@ -23,4 +20,7 @@ block content
 					input(type='button' value='Edit data')
 				form(action=`/uploads/${image.id}/delete` method='post')
 					input(type='submit' value='Delete image')
-		a(href='/uploads/upload') Store more images
+		else
+			div You have not uploaded any images yet
+
+	a(href='/uploads/upload') Upload images

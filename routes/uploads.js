@@ -116,15 +116,9 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('images').where({userId: req.currentUser.id});
 		}).then((images) => {
-			if (images.length === 0) {
-				res.render('uploads/display-all-images', {
-					message: 'You have no stored images'
-				});
-			} else {
-				res.render('uploads/display-all-images', {
-					images: images
-				});
-			}
+			res.render('uploads/overview', {
+				images: images
+			});
 		});
 	});
 
@@ -135,14 +129,11 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('images').where({id: req.params.id});
 		}).then((images) => {
-			console.log(images);
-
 			if (images.length === 0) {
 				throw new Error('The selected image does not exist');
 			} else {
-				res.render('uploads/display-one-image', {
-					image: images[0],
-					size: Math.round(images[0].size/1000)
+				res.render('uploads/details', {
+					image: images[0]
 				});
 			}
 		});
