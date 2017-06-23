@@ -96,7 +96,7 @@ module.exports = function(knex, environment) {
 				originalURL: req.body.url != null ? req.body.url : undefined
 			});
 		}).then(() => {
-			res.redirect('/uploads');
+			res.redirect('/uploads/1/overview');
 		});
 	});
 
@@ -107,17 +107,41 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('images').where({id: req.params.id}).update({deletedAt: knex.fn.now()});
 		}).then(() => {
-			res.redirect('/uploads');
+			res.redirect('/uploads/1/overview');
 		});
 	});
 
-	/* overview all images */
-	router.get('/', requireSignin(environment), (req, res) => {
+	/* overview images */
+	router.get('/:page/overview', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
-			return knex('images').where({userId: req.currentUser.id});
+			return knex('images').where({userId: req.currentUser.id}).orderBy('id');
 		}).then((images) => {
+			let page = req.params.page;
+			let imagesPerPage = 4;
+			let numberOfPages = Math.ceil(images.length / imagesPerPage);
+			let imageNumber = (page - 1) * imagesPerPage;
+			// validate page
+			let currentPage = function() {
+				if (page < 1) {
+					return 1;
+				} else if (page > numberOfPages) {
+					return numberOfPages;
+				} else {
+					return page;
+				}
+			};
+
+			// console.log('images qty: ', images.length);
+			// console.log('imagesPerPage: ', imagesPerPage);
+			// console.log('numberOfPages: ', numberOfPages);
+			// console.log('imageNumber: ', imageNumber);
+			// console.log('page: ', page);
+			// console.log('currentPage: ', currentPage());
+
 			res.render('uploads/overview', {
-				images: images
+				images: images.slice(imageNumber, imageNumber + imagesPerPage),
+				currentPage: currentPage(),
+				numberOfPages: numberOfPages
 			});
 		});
 	});

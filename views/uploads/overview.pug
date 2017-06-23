@@ -9,18 +9,29 @@ block content
 
 	ul
 		each image, index in images
-			if index < 4
-				a(href=`/uploads/${image.id}`)
-					img(src=`/uploads/${image.path}` width='350')
-				div index = #{index}
-				div #{image.originalName}
-				div #{Math.round(image.size/1000)} KB
-				div URL: /uploads/#{image.path}
-				a(href=`/uploads/${image.id}/edit`)
-					input(type='button' value='Edit data')
-				form(action=`/uploads/${image.id}/delete` method='post')
-					input(type='submit' value='Delete image')
+			a(href=`/uploads/${image.id}`)
+				img(src=`/uploads/${image.path}` width='350')
+			div index = #{index}
+			div #{image.originalName}
+			div #{Math.round(image.size/1000)} KB
+			div URL: /uploads/#{image.path}
+			a(href=`/uploads/${image.id}/edit`)
+				input(type='button' value='Edit data')
+			form(action=`/uploads/${image.id}/delete` method='post')
+				input(type='submit' value='Delete image')
 		else
 			div You have not uploaded any images yet
 
+	if images.length > 0 && currentPage > 1
+		a(href=`/uploads/${currentPage - 1}/overview`) Prev - 
+
+	if images.length > 0 && currentPage < numberOfPages
+		a(href=`/uploads/${Number(currentPage) + 1}/overview`) Next - 
+
+	if images.length > 0 && currentPage > 0 && currentPage <= numberOfPages
+		|Page #{currentPage} / #{numberOfPages}
+
+
+	<br/>
+	<br/>
 	a(href='/uploads/upload') Upload images
