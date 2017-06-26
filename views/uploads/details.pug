@@ -8,13 +8,10 @@ block content
 	h2 Image details
 
 	img(src=`/uploads/${image.path}` width='750')
-	<br/>
-	<br/>
-	div To use this image anywhere within your post, copy and paste:
-		<br/>
-		|/uploads/#{image.path}
 
-	<br/>
+	div To use this image anywhere within your post, copy and paste:
+		|  /uploads/#{image.path}
+
 
 	div name: #{image.originalName}
 	div caption: #{image.caption}
@@ -31,8 +28,8 @@ block content
 		div height:
 
 	div dated: #{image.dated}
-	div owner: #{image.owner}
-	div license: #{image.license}
+	div owner: #{image.ownerName}
+	div license: #{image.licenseType}
 	div original URL: #{image.originalURL}
 	div uploaded: #{image.uploadedAt}
 	div modified: #{image.modifiedAt}

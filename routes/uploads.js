@@ -61,10 +61,8 @@ module.exports = function(knex, environment) {
 						// height: ,
 						// width: ,
 						// dated: 
-					}).returning('id');
-				}).then((imagesIds) => {
-					// imagesIds is an array of n arrays (n = images qty)
-
+					});
+				}).then(() => {
 					res.redirect('/uploads/upload');
 				});
 			}
@@ -75,7 +73,7 @@ module.exports = function(knex, environment) {
 	/* edit */
 	router.get('/:id/edit', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
-			return knex('images').where({id: req.params.id});
+			return knex('images').where({id: parseInt(req.params.id)});
 		}).then((images) => {
 			if (images.length === 0) {
 				throw new Error('The selected image does not exist');
@@ -89,14 +87,15 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, 'POST/:id/edit req.body:', req.body);
 
 		return Promise.try(() => {
-			return knex('images').where({id: req.params.id}).update({
-				caption: req.body.caption != null ? req.body.caption : undefined,
-				ownerName: req.body.owner != null ? req.body.owner : undefined,
-				licenseType: req.body.license != null ? req.body.license : undefined,
-				originalURL: req.body.url != null ? req.body.url : undefined
+			return knex('images').where({id: parseInt(req.params.id)}).update({
+				/* with bodyParser.urlencoded, values in req.body can never be null or undefined (they're always strings) */
+				caption: req.body.caption !== '' ? req.body.caption : undefined,
+				ownerName: req.body.owner !== '' ? req.body.owner : undefined,
+				licenseType: req.body.license !== '' ? req.body.license : undefined,
+				originalURL: req.body.url !== '' ? req.body.url : undefined
 			});
 		}).then(() => {
-			res.redirect('/uploads/1/overview');
+			res.redirect('/uploads/overview/1');
 		});
 	});
 
@@ -105,53 +104,46 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, 'POST/:id/delete req.body:', req.body);
 
 		return Promise.try(() => {
-			return knex('images').where({id: req.params.id}).update({deletedAt: knex.fn.now()});
+			return knex('images').where({id: parseInt(req.params.id)}).update({deletedAt: knex.fn.now()});
 		}).then(() => {
 			res.redirect('/uploads/1/overview');
 		});
 	});
 
-	/* overview images */
-	router.get('/:page/overview', requireSignin(environment), (req, res) => {
-		return Promise.try(() => {
-			return knex('images').where({userId: req.currentUser.id}).orderBy('id');
-		}).then((images) => {
-			let page = req.params.page;
-			let imagesPerPage = 4;
-			let numberOfPages = Math.ceil(images.length / imagesPerPage);
-			let imageNumber = (page - 1) * imagesPerPage;
-			// validate page
-			let currentPage = function() {
-				if (page < 1) {
-					return 1;
-				} else if (page > numberOfPages) {
-					return numberOfPages;
+	/* overview all images */
+	router.get('/overview/:page', requireSignin(environment), (req, res) => {
+		let page = parseInt(req.params.page);
+		let imagesPerPage = 4;
+		let imageNumber = (page - 1) * imagesPerPage;
+
+		if (page < 1) {
+			throw new Error('This page does not exist');
+		} else {
+			return Promise.all([
+				knex('images').where({userId: req.currentUser.id}).offset(imageNumber).limit(imagesPerPage), 
+				knex('images').where({userId: req.currentUser.id}).count()
+			]).spread((images, numberOfImages) => {
+				let numberOfPages = Math.ceil(parseInt(numberOfImages[0].count) / imagesPerPage);
+
+				if (page > numberOfPages) {
+					throw new Error('This page does not exist');
 				} else {
-					return page;
+					res.render('uploads/overview', {
+						images: images,
+						page: page,
+						numberOfPages: numberOfPages
+					});
 				}
-			};
-
-			// console.log('images qty: ', images.length);
-			// console.log('imagesPerPage: ', imagesPerPage);
-			// console.log('numberOfPages: ', numberOfPages);
-			// console.log('imageNumber: ', imageNumber);
-			// console.log('page: ', page);
-			// console.log('currentPage: ', currentPage());
-
-			res.render('uploads/overview', {
-				images: images.slice(imageNumber, imageNumber + imagesPerPage),
-				currentPage: currentPage(),
-				numberOfPages: numberOfPages
 			});
-		});
+		}
 	});
 
-	/* display one image */
+	/* display one image details */
 	router.get('/:id', requireSignin(environment), (req, res) => {
 		logReqBody(environment, 'GET/:id req.body: ', req.body);
 
 		return Promise.try(() => {
-			return knex('images').where({id: req.params.id});
+			return knex('images').where({id: parseInt(req.params.id)});
 		}).then((images) => {
 			if (images.length === 0) {
 				throw new Error('The selected image does not exist');

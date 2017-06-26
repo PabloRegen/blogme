@@ -96,7 +96,7 @@ module.exports = function(knex, environment) {
 	router.get('/:id/edit', requireSignin(environment), (req, res) => {
 		logReqBody(environment, 'GET/:id/edit req.body:', req.body);
 
-		let postId = req.params.id;
+		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
 			return knex('posts').where({id: postId});
@@ -118,7 +118,7 @@ module.exports = function(knex, environment) {
 	});
 
 	router.post('/:id/edit', requireSignin(environment), (req, res) => {
-		let postId = req.params.id;
+		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
 			return storeUpload(req, res);
@@ -172,7 +172,7 @@ module.exports = function(knex, environment) {
 	router.get('/:id', (req, res) => {
 		logReqBody(environment, 'GET/:id req.body:', req.body);
 
-		let postId = req.params.id;
+		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
 			return knex('posts').where({id: postId});
