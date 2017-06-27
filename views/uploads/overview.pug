@@ -26,6 +26,7 @@ block content
 	if page < numberOfPages
 		a(href=`/uploads/overview/${page + 1}`) Next
 
-	|  Page #{page} / #{numberOfPages}
+	if numberOfPages > 0
+		|  Page #{page} / #{numberOfPages}
 
 	a(href='/uploads/upload') Upload images

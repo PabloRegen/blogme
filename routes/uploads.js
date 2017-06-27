@@ -106,7 +106,7 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('images').where({id: parseInt(req.params.id)}).update({deletedAt: knex.fn.now()});
 		}).then(() => {
-			res.redirect('/uploads/1/overview');
+			res.redirect('/uploads/overview/1');
 		});
 	});
 
@@ -120,12 +120,14 @@ module.exports = function(knex, environment) {
 			throw new Error('This page does not exist');
 		} else {
 			return Promise.all([
-				knex('images').where({userId: req.currentUser.id}).offset(imageNumber).limit(imagesPerPage), 
-				knex('images').where({userId: req.currentUser.id}).count()
+				knex('images').where({userId: req.currentUser.id}).whereNull('deletedAt').offset(imageNumber).limit(imagesPerPage), 
+				knex('images').where({userId: req.currentUser.id}).whereNull('deletedAt').count()
 			]).spread((images, numberOfImages) => {
+				console.log('numberOfImages: ', parseInt(numberOfImages[0].count));
+
 				let numberOfPages = Math.ceil(parseInt(numberOfImages[0].count) / imagesPerPage);
 
-				if (page > numberOfPages) {
+				if (page > numberOfPages && numberOfPages > 0) {
 					throw new Error('This page does not exist');
 				} else {
 					res.render('uploads/overview', {

@@ -5,30 +5,30 @@ block title
 
 block content
 	h1 Dashboard
-	p Hi #{currentUser.username}
+	div Hi #{currentUser.username}
 		if currentUser.name != null
 			|
 			|AKA #{currentUser.name}
 		else
 			|
 			|AKA mistery person
-	p
+
+	div
 		a(href='/posts/create') Create a new post
-	p Your latest posts:
+
+	div Your latest posts:
 		ul
 			each post in latestPosts
 				li: a(href=`/posts/${post.id}`)= post.title
 			else
 				li You have no posts yet
-	
-	<br/> <br/>
 
-	p Your messages
-	p Your visitors
-	p Your most common referrers
-	p People following you
-	p People you are following
+	div Your current posts
+	div Your deleted posts
+	
+	div
+		a(href='/uploads/overview/1') Your current images
+	div Your deleted images
 
 	form(action='/accounts/delete' method='post')
-		p
-			input(type='submit' value='Delete account')
+		input(type='submit' value='Delete account')
