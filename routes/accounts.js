@@ -71,6 +71,7 @@ module.exports = function(knex, environment) {
 			}).returning('id');
 		}).then((userIDs) => {
 			// FIXME! Send a confirmation email instead?
+			/* Start a session by assigning the new user id to req.session.userId & saving the session */
 			return req.loginUser(userIDs[0]);
 		}).then(() => {
 			res.redirect('/accounts/dashboard');
@@ -136,7 +137,7 @@ module.exports = function(knex, environment) {
 				return Promise.try(() => {
 					return scryptForHumans.verifyHash(req.body.password, user.pwHash);
 				}).then(() => {
-					/* Start a session with user id as the session's only data */
+					/* Start a session by assigning the existing user id to req.session.userId & saving the session */
 					/* Or if user is already logged in change the user id in the session */
 					/* with the practical result of logging the user out and logging him back in as another user */
 					return req.loginUser(user.id);
