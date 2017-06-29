@@ -16,7 +16,8 @@ html
 							li Hi #{currentUser.username}!
 							li: a(href='/accounts/dashboard') Dashboard
 							li: a(href='/accounts/profile') Profile
-							li: a(href='/accounts/signout') Sign out
+							li: form(action='/accounts/signout' method='post')
+								input(type='submit' value='Sign out')
 				else
 					nav
 						ul

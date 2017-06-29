@@ -164,7 +164,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* signout */
-	router.get('/signout', requireSignin(environment), (req, res) => {
+	router.post('/signout', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
 			return req.destroySession();
 		}).then(() => {

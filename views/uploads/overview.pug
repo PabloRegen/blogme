@@ -15,8 +15,9 @@ block content
 			div #{Math.round(image.size/1000)} KB
 			div URL: /uploads/#{image.path}
 			a(href=`/uploads/${image.id}/edit`) Edit data
-			form(action=`/uploads/${image.id}/delete` method='post')
-				input(type='submit' value='Delete image')
+			if deleted !== '1'
+				form(action=`/uploads/${image.id}/delete` method='post')
+					input(type='submit' value='Delete image')
 		else
 			div You have not uploaded any images yet
 

@@ -28,7 +28,8 @@ block content
 	
 	div
 		a(href='/uploads/overview/1') Your current images
-	div Your deleted images
+	div
+		a(href='/uploads/overview/1?deleted=1') Your deleted images
 
 	form(action='/accounts/delete' method='post')
 		input(type='submit' value='Delete account')
