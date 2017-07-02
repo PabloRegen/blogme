@@ -116,8 +116,10 @@ module.exports = function(knex, environment) {
 				password: 'required'
 			}).run(req.body);
 		}).then(() => {
+			let usernameOrEmail = req.body.usernameOrEmail;
+
 			return knex('users').where(function() {
-				this.where({username: req.body.usernameOrEmail}).orWhere({email: req.body.usernameOrEmail})
+				this.where({username: usernameOrEmail}).orWhere({email: usernameOrEmail})
 			}).andWhere({deletedAt: null});
 		}).then((users) => {
 			if (users.length === 0) {
@@ -196,13 +198,13 @@ module.exports = function(knex, environment) {
 			logReqBody(environment, 'POST/profile req.body:', req.body);
 			logReqFile(environment, 'POST/profile req.file:', req.file);
 
-			let name = req.body.name.trim();
-			let bio = req.body.bio.trim();
+			let name = req.body.name;
+			let bio = req.body.bio;
 
 			return knex('users').where({id: req.currentUser.id}).update({
-				name: name !== '' ? name : null,
-				bio: bio !== '' ? bio : null,
-				pic: req.file != null ? req.file.filename : undefined
+				name: (name !== '' ? name : null),
+				bio: (bio !== '' ? bio : null),
+				pic: (req.file != null ? req.file.filename : undefined)
 			});
 		}).then(() => {
 			res.redirect('/accounts/dashboard');

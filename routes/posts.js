@@ -53,23 +53,28 @@ module.exports = function(knex, environment) {
 
 			return checkitPost(req.body);
 		}).then(() => {
+			let title = req.body.title;
+			let subtitle = req.body.subtitle;
+			let body = req.body.body;
+			let tags = req.body.tags;
+			let publish = req.body.publish;
+
 			return knex.transaction(function(trx) {
 				return Promise.try(() => {
 					return storePost(trx)({
 						userId: req.currentUser.id,
-						title: req.body.title,
-						subtitle: req.body.subtitle,
-						body: req.body.body,
+						title: title,
+						subtitle: (subtitle !== '' ? subtitle : null),
+						body: body,
 						pic: (req.file != null ? req.file.filename : undefined),
-						isDraft: (req.body.publish == null)
+						isDraft: (publish == null)
 					});
 				}).then((postIds) => {
 					let postId = postIds[0];
-					let tags = req.body.tags;
 
 					return Promise.all([
-						storeSlug(trx)(postId, slug(req.body.title)),
-						(tags != null) ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined
+						storeSlug(trx)(postId, slug(title)),
+						(tags !== '' ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
 					]).then(() => {
 						return postId;
 					});
@@ -84,7 +89,7 @@ module.exports = function(knex, environment) {
 			therefore the usual order: bodyparser, setting res.locals, route with route middleware does not work here
 			because bodyparser, which only parses urlencoded data, gets skipped 
 			& res.locals.body gets set before the request data gets handled
-			so body needs to be set within the route after multer, which handles multipart/form-data, runs */
+			so body needs to be set within the route after multer (which handles multipart/form-data) runs */
 			res.render('posts/create', {
 				errors: err.errors,
 				body: req.body
@@ -130,27 +135,33 @@ module.exports = function(knex, environment) {
 		}).then(() => {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
+			let titleOnDB = posts[0].title;
+			let title = req.body.title;
+			let subtitle = req.body.subtitle;
+			let body = req.body.body;
+			let tags = req.body.tags;
+			let publish = req.body.publish;
+
 			// return knex.transaction(function(trx) {
 				return Promise.try(() => {
-					/* only update slug if updated title !== title on db */
-					if (req.body.title !== posts[0].title) {
-						return storeSlug(knex)(postId, slug(req.body.title));
+					if (title !== titleOnDB) {
+						return storeSlug(knex)(postId, slug(title));
 					}
 				}).then(() => {
 					return updatePost(knex)(postId, {
-						title: req.body.title,
-						subtitle: req.body.subtitle,
-						body: req.body.body,
+						title: title,
+						subtitle: (subtitle !== '' ? subtitle : null),
+						body: body,
 						pic: (req.file != null ? req.file.filename : undefined),
-						isDraft: (req.body.publish == null),
+						isDraft: (publish == null),
 						updatedAt: knex.fn.now()
 					});
 				}).then(() => {
-					if (req.body.tags != null) {
-						return storeTags(knex)(postId, splitFilterTags(req.body.tags));
+					if (tags !== '') {
+						return storeTags(knex)(postId, splitFilterTags(tags));
 					}
 				}).then(() => {
-					return removeTags(knex)(postId, splitFilterTags(req.body.tags));
+					return removeTags(knex)(postId, splitFilterTags(tags));
 				});
 			// });
 		}).then(() => {

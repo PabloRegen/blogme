@@ -87,12 +87,17 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, 'POST/:id/edit req.body:', req.body);
 
 		return Promise.try(() => {
+			let caption = req.body.caption;
+			let owner = req.body.owner;
+			let license = req.body.license;
+			let url = req.body.url;
+
 			return knex('images').where({id: parseInt(req.params.id)}).update({
 				/* with bodyParser.urlencoded, values in req.body can never be null or undefined (they're always strings) */
-				caption: req.body.caption !== '' ? req.body.caption : undefined,
-				ownerName: req.body.owner !== '' ? req.body.owner : undefined,
-				licenseType: req.body.license !== '' ? req.body.license : undefined,
-				originalURL: req.body.url !== '' ? req.body.url : undefined
+				caption: (caption !== '' ? caption : null),
+				ownerName: (owner !== '' ? owner : null),
+				licenseType: (license !== '' ? license : null),
+				originalURL: (url !== '' ? url : null)
 			});
 		}).then(() => {
 			res.redirect('/uploads/overview/1');
