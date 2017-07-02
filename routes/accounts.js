@@ -15,6 +15,7 @@ const errors = rfr('lib/errors');
 const logReqBody = rfr('lib/log-req-body');
 const logReqFile = rfr('lib/log-req-file');
 const logError = rfr('lib/log-error');
+const nullIfEmptyString = rfr('lib/null-if-empty-string');
 
 let duplicateUsername = {
 	name: 'UniqueConstraintViolationError',
@@ -198,12 +199,9 @@ module.exports = function(knex, environment) {
 			logReqBody(environment, 'POST/profile req.body:', req.body);
 			logReqFile(environment, 'POST/profile req.file:', req.file);
 
-			let name = req.body.name;
-			let bio = req.body.bio;
-
 			return knex('users').where({id: req.currentUser.id}).update({
-				name: (name !== '' ? name : null),
-				bio: (bio !== '' ? bio : null),
+				name: nullIfEmptyString(req.body.name),
+				bio: nullIfEmptyString(req.body.bio),
 				pic: (req.file != null ? req.file.filename : undefined)
 			});
 		}).then(() => {

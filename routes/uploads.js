@@ -12,6 +12,7 @@ const requireSignin = rfr('middleware/require-signin');
 const logReqBody = rfr('lib/log-req-body');
 const logReqFile = rfr('lib/log-req-file');
 const logError = rfr('lib/log-error');
+const nullIfEmptyString = rfr('lib/null-if-empty-string');
 
 // const storeImages = rfr('lib/store-images');
 
@@ -87,17 +88,12 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, 'POST/:id/edit req.body:', req.body);
 
 		return Promise.try(() => {
-			let caption = req.body.caption;
-			let owner = req.body.owner;
-			let license = req.body.license;
-			let url = req.body.url;
-
 			return knex('images').where({id: parseInt(req.params.id)}).update({
 				/* with bodyParser.urlencoded, values in req.body can never be null or undefined (they're always strings) */
-				caption: (caption !== '' ? caption : null),
-				ownerName: (owner !== '' ? owner : null),
-				licenseType: (license !== '' ? license : null),
-				originalURL: (url !== '' ? url : null)
+				caption: nullIfEmptyString(req.body.caption),
+				ownerName: nullIfEmptyString(req.body.owner),
+				licenseType: nullIfEmptyString(req.body.license),
+				originalURL: nullIfEmptyString(req.body.url)
 			});
 		}).then(() => {
 			res.redirect('/uploads/overview/1');

@@ -16,6 +16,7 @@ const splitFilterTags = rfr('lib/split-filter-tags');
 const logReqBody = rfr('lib/log-req-body');
 const logReqFile = rfr('lib/log-req-file');
 const logError = rfr('lib/log-error');
+const nullIfEmptyString = rfr('lib/null-if-empty-string');
 
 const storeTags = rfr('lib/store-tags');
 const storeSlug = rfr('lib/store-slug');
@@ -39,8 +40,6 @@ module.exports = function(knex, environment) {
 
 	/* create */
 	router.get('/create', requireSignin(environment), (req, res) => {
-		logReqBody(environment, 'GET/create req.body:', req.body);
-
 		res.render('posts/create');
 	});
 
@@ -53,27 +52,22 @@ module.exports = function(knex, environment) {
 
 			return checkitPost(req.body);
 		}).then(() => {
-			let title = req.body.title;
-			let subtitle = req.body.subtitle;
-			let body = req.body.body;
-			let tags = req.body.tags;
-			let publish = req.body.publish;
-
 			return knex.transaction(function(trx) {
 				return Promise.try(() => {
 					return storePost(trx)({
 						userId: req.currentUser.id,
-						title: title,
-						subtitle: (subtitle !== '' ? subtitle : null),
-						body: body,
+						title: req.body.title,
+						subtitle: nullIfEmptyString(req.body.subtitle),
+						body: req.body.body,
 						pic: (req.file != null ? req.file.filename : undefined),
-						isDraft: (publish == null)
+						isDraft: (req.body.publish == null)
 					});
 				}).then((postIds) => {
 					let postId = postIds[0];
+					let tags = req.body.tags;
 
 					return Promise.all([
-						storeSlug(trx)(postId, slug(title)),
+						storeSlug(trx)(postId, slug(req.body.title)),
 						(tags !== '' ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
 					]).then(() => {
 						return postId;
@@ -135,25 +129,21 @@ module.exports = function(knex, environment) {
 		}).then(() => {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
-			let titleOnDB = posts[0].title;
 			let title = req.body.title;
-			let subtitle = req.body.subtitle;
-			let body = req.body.body;
 			let tags = req.body.tags;
-			let publish = req.body.publish;
 
 			// return knex.transaction(function(trx) {
 				return Promise.try(() => {
-					if (title !== titleOnDB) {
+					if (title !== posts[0].title) {
 						return storeSlug(knex)(postId, slug(title));
 					}
 				}).then(() => {
 					return updatePost(knex)(postId, {
 						title: title,
-						subtitle: (subtitle !== '' ? subtitle : null),
-						body: body,
+						subtitle: nullIfEmptyString(req.body.subtitle),
+						body: req.body.body,
 						pic: (req.file != null ? req.file.filename : undefined),
-						isDraft: (publish == null),
+						isDraft: (req.body.publish == null),
 						updatedAt: knex.fn.now()
 					});
 				}).then(() => {
