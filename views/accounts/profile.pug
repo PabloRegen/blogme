@@ -4,19 +4,25 @@ block title
 	|profile
 
 block content
-	h1 Edit your profile
+	h1 Your profile
 
 	if currentUser.pic != null
 		img(src=`/uploads/${currentUser.pic}`)
+		form(action='/accounts/profile' method='post')
+			input(type='submit' value='Delete picture')
+	else
+		img(src='/images/avatar.jpg')
+		| You may chose your own picture
 
-	form(action='/accounts/profile' method='post' enctype='multipart/form-data')
-		p Picture <br/>
-			input(type='file' name='userPic')
-		p Name <br/>
-			input(type='text' name='name' value=currentUser.name)
-		p Bio <br/>
-			textarea(name='bio' placeholder='Enter short bio')=currentUser.bio
-		p
-			input(type='submit' name='save' value='Save draft')
-		p
-			input(type='submit' name='publish' value='Publish profile')
+	div Name:
+		if currentUser.name != null
+			|  #{currentUser.name}
+		else 
+			|  N/A
+	div Bio:
+		if currentUser.bio != null
+			|  #{currentUser.bio}
+		else 
+			|  N/A
+	div 
+		a(href='/accounts/profile/edit') Edit profile

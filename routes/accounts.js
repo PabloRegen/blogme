@@ -194,10 +194,23 @@ module.exports = function(knex, environment) {
 
 	router.post('/profile', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
+			return knex('users').where({id: req.currentUser.id}).update({pic: null});
+		}).then(() => {
+			res.redirect('/accounts/profile');
+		});
+	});
+
+	/* edit profile */
+	router.get('/profile/edit', requireSignin(environment), (req, res) => {
+		res.render('accounts/profile-edit');
+	});
+
+	router.post('/profile/edit', requireSignin(environment), (req, res) => {
+		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {	
-			logReqBody(environment, 'POST/profile req.body:', req.body);
-			logReqFile(environment, 'POST/profile req.file:', req.file);
+			logReqBody(environment, 'POST/profile/edit req.body:', req.body);
+			logReqFile(environment, 'POST/profile/edit req.file:', req.file);
 
 			return knex('users').where({id: req.currentUser.id}).update({
 				name: nullIfEmptyString(req.body.name),
@@ -205,7 +218,7 @@ module.exports = function(knex, environment) {
 				pic: (req.file != null ? req.file.filename : undefined)
 			});
 		}).then(() => {
-			res.redirect('/accounts/dashboard');
+			res.redirect('/accounts/profile');
 		});
 	});
 
