@@ -189,15 +189,34 @@ module.exports = function(knex, environment) {
 					return Promise.try(() => {
 						return getTags(postId);
 					}).then((postTags) => {
-						res.render('posts/read', {
-							tags: postTags,
-							user: users[0],
-							post: post,
-							postBody: marked(post.body)
+						return Promise.try(() => {
+							return knex('likedposts').where({postId: postId}).count();
+						}).then((likes) => {
+							res.render('posts/read', {
+								tags: postTags,
+								user: users[0],
+								post: post,
+								postBody: marked(post.body),
+								likes: parseInt(likes[0].count)
+							});
 						});
 					});
 				});
 			}
+		});
+	});
+
+	/* like */
+	router.post('/:id/like', requireSignin(environment), (req, res) => {
+		let postId = req.params.id;
+
+		return Promise.try(() => {
+			return knex('likedposts').insert({
+				postId: postId,
+				userId: req.currentUser.id
+			}).then(() => {
+				res.redirect(`/posts/${postId}`);
+			});
 		});
 	});
 
