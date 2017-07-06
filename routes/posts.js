@@ -185,7 +185,9 @@ module.exports = function(knex, environment) {
 
 				return Promise.try(() => {
 					return knex('users').where({id: post.userId});
-				}).then((users) => {
+				}).then((postedByUsers) => {
+					let postedByUser = postedByUsers[0];
+
 					return Promise.try(() => {
 						return getTags(postId);
 					}).then((postTags) => {
@@ -197,15 +199,22 @@ module.exports = function(knex, environment) {
 								/* when a user is not logged-in, will result in an empty array */
 								/* similarly to when a logged-in user hasn't liked the post yet */
 								userId: req.currentUser != null ? req.currentUser.id : 0
+							}),
+							knex('followingusers').where({followedUserId: postedByUser.id}).count(),
+							knex('followingusers').where({
+								followedUserId: postedByUser.id,
+								userId: req.currentUser != null ? req.currentUser.id : 0
 							})
-						]).spread((likes, likedByCurrentUser) => {
+						]).spread((likes, likedByCurrentUser, followers, followedByCurrentUser) => {
 							res.render('posts/read', {
 								tags: postTags,
-								user: users[0],
+								postedByUser: postedByUser,
 								post: post,
 								postBody: marked(post.body),
 								likes: parseInt(likes[0].count),
-								likedByCurrentUserLength: likedByCurrentUser.length
+								likedByCurrentUserLength: likedByCurrentUser.length,
+								followers: parseInt(followers[0].count),
+								followedByCurrentUserLength: followedByCurrentUser.length
 							});
 						});
 					});
@@ -222,14 +231,14 @@ module.exports = function(knex, environment) {
 			return knex('likedposts').insert({
 				postId: postId,
 				userId: req.currentUser.id
-			// FIXME! Add an error filter once "database-error" library supports composite keys
-			// to .catch() only the unique violation instead of the current .catch() all below
-			}).catch((err) => {
-				/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
-				/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
-			}).then(() => {
-				res.redirect(`/posts/${postId}`);
 			});
+		// FIXME! Add an error filter once "database-error" library supports composite keys
+		// to .catch() only the unique violation instead of the current .catch() all below
+		}).catch((err) => {
+			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
+			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
+		}).then(() => {
+			res.redirect(`/posts/${postId}`);
 		});
 	});
 
@@ -241,9 +250,9 @@ module.exports = function(knex, environment) {
 			return knex('likedposts').delete().where({
 				postId: postId,
 				userId: req.currentUser.id
-			}).then(() => {
-				res.redirect(`/posts/${postId}`);
 			});
+		}).then(() => {
+			res.redirect(`/posts/${postId}`);
 		});
 	});
 

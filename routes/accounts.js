@@ -231,5 +231,34 @@ module.exports = function(knex, environment) {
 		});
 	});
 
+	/* follow user */
+	router.post('/:id/follow/:postId', requireSignin(environment), (req, res) => {
+		return Promise.try(() => {
+			return knex('followingusers').insert({
+				userId: req.currentUser.id,
+				followedUserId: req.params.id
+			});
+		// FIXME! Add an error filter once "database-error" library supports composite keys
+		// to .catch() only the unique violation instead of the current .catch() all below
+		}).catch((err) => {
+			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
+			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
+		}).then(() => {
+			res.redirect(`/posts/${req.params.postId}`);
+		});
+	});
+
+	/* unfollow user */
+	router.post('/:id/unfollow/:postId', requireSignin(environment), (req, res) => {
+		return Promise.try(() => {
+			return knex('followingusers').delete().where({
+				userId: req.currentUser.id,
+				followedUserId: req.params.id
+			});
+		}).then(() => {
+			res.redirect(`/posts/${req.params.postId}`);
+		});
+	});
+
 	return router;
 };

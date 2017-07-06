@@ -5,14 +5,24 @@ block title
 
 block content
 	article
-		if user.pic != null
-			img.userPic(src=`/uploads/${user.pic}`)
+		if postedByUser.pic != null
+			img.userPic(src=`/uploads/${postedByUser.pic}`)
 		else
 			img(src='/images/avatar.jpg')
-		if user.name != null
-			div.userName #{user.name}
-		if user.bio != null
-			div.userBio #{user.bio}
+		if postedByUser.name != null
+			div.userName #{postedByUser.name}
+		if postedByUser.bio != null
+			div.userBio #{postedByUser.bio}
+
+		if followedByCurrentUserLength === 0
+			// either user hasn't followed the post's owner yet or is not logged-in
+			form(action=`/accounts/${post.userId}/follow/${post.id}` method='post')
+				input(type='submit' value='Follow' disabled=(currentUser == null))
+		else
+			form(action=`/accounts/${post.userId}/unfollow/${post.id}` method='post')
+				input(type='submit' value='Unfollow' disabled=(currentUser == null))
+
+		| #{followers}
 
 		h1.postTitle!= sanitizer.sanitize(post.title)
 		h2.postSubtitle!= sanitizer.sanitize(post.subtitle)
