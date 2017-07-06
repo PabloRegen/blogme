@@ -22,14 +22,19 @@ block content
 
 		div.postBody!= sanitizer.sanitize(postBody, function(url) { return url; })
 
-		form(action=`/posts/${post.id}/like` method='post')
-			input(type='submit' value='Like' disabled=(currentUser == null))
+		if likedByCurrentUserLength === 0
+			// either user hasn't liked the post yet or is not logged-in
+			form(action=`/posts/${post.id}/like` method='post')
+				input(type='submit' value='Like' disabled=(currentUser == null))
+		else
+			form(action=`/posts/${post.id}/unlike` method='post')
+				input(type='submit' value='Unlike' disabled=(currentUser == null))
+
 		| #{likes}
 
-		<br/>
-		<br/>
-		if tags !== []
-			| tags
-			ul
-				each tag in tags
-					li= tag
+		div
+			if tags !== []
+				| tags
+				ul
+					each tag in tags
+						li= tag

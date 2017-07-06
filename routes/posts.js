@@ -159,8 +159,8 @@ module.exports = function(knex, environment) {
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
-			/* body needs to get passed within the render call because the form is multipart enctype 
-			See additional explanation at POST/create route */
+			/* body needs to get passed within the render call because the form is multipart enctype */
+			/* See additional explanation at POST/create route */
 			res.render('posts/edit', {
 				postId: postId,
 				errors: err.errors,
@@ -189,15 +189,23 @@ module.exports = function(knex, environment) {
 					return Promise.try(() => {
 						return getTags(postId);
 					}).then((postTags) => {
-						return Promise.try(() => {
-							return knex('likedposts').where({postId: postId}).count();
-						}).then((likes) => {
+						return Promise.all([
+							knex('likedposts').where({postId: postId}).count(),
+							knex('likedposts').where({
+								postId: postId,
+								/* Since by default user ids start at 1, assigning 0 to userId */
+								/* when a user is not logged-in, will result in an empty array */
+								/* similarly to when a logged-in user hasn't liked the post yet */
+								userId: req.currentUser != null ? req.currentUser.id : 0
+							})
+						]).spread((likes, likedByCurrentUser) => {
 							res.render('posts/read', {
 								tags: postTags,
 								user: users[0],
 								post: post,
 								postBody: marked(post.body),
-								likes: parseInt(likes[0].count)
+								likes: parseInt(likes[0].count),
+								likedByCurrentUserLength: likedByCurrentUser.length
 							});
 						});
 					});
@@ -214,11 +222,25 @@ module.exports = function(knex, environment) {
 			return knex('likedposts').insert({
 				postId: postId,
 				userId: req.currentUser.id
-			/* Add an error filter once "database-error" library supports composite keys */
-			/* to .catch() only the unique violation instead of the current .catch() all below */
+			// FIXME! Add an error filter once "database-error" library supports composite keys
+			// to .catch() only the unique violation instead of the current .catch() all below
 			}).catch((err) => {
 				/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
 				/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
+			}).then(() => {
+				res.redirect(`/posts/${postId}`);
+			});
+		});
+	});
+
+	/* unlike */
+	router.post('/:id/unlike', requireSignin(environment), (req, res) => {
+		let postId = req.params.id;
+
+		return Promise.try(() => {
+			return knex('likedposts').delete().where({
+				postId: postId,
+				userId: req.currentUser.id
 			}).then(() => {
 				res.redirect(`/posts/${postId}`);
 			});
