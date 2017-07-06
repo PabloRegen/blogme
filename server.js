@@ -47,7 +47,7 @@ app.use(expressSession({
 }));
 
 app.use(sessionsPromises);
-/* Make req.loginUser method available application-wide. Calling it with userID arg assigns to req.session.userId */
+/* Make req.loginUser method available application-wide. Calling it with userID arg assigns the userID to req.session.userId */
 app.use(loginUser);
 
 /* Make values available application-wide */

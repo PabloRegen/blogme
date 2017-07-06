@@ -22,10 +22,9 @@ block content
 
 		div.postBody!= sanitizer.sanitize(postBody, function(url) { return url; })
 
-		if currentUser != null
-			form(action=`/posts/${post.id}/like` method='post')
-				input(type='submit' value='Like')
-			| liked #{likes} times
+		form(action=`/posts/${post.id}/like` method='post')
+			input(type='submit' value='Like' disabled=(currentUser == null))
+		| #{likes}
 
 		<br/>
 		<br/>

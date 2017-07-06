@@ -214,6 +214,11 @@ module.exports = function(knex, environment) {
 			return knex('likedposts').insert({
 				postId: postId,
 				userId: req.currentUser.id
+			/* Add an error filter once "database-error" library supports composite keys */
+			/* to .catch() only the unique violation instead of the current .catch() all below */
+			}).catch((err) => {
+				/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
+				/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
 			}).then(() => {
 				res.redirect(`/posts/${postId}`);
 			});
