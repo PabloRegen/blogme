@@ -225,7 +225,7 @@ module.exports = function(knex, environment) {
 
 	/* like */
 	router.post('/:id/like', requireSignin(environment), (req, res) => {
-		let postId = req.params.id;
+		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
 			return knex('likedposts').insert({
@@ -244,7 +244,7 @@ module.exports = function(knex, environment) {
 
 	/* unlike */
 	router.post('/:id/unlike', requireSignin(environment), (req, res) => {
-		let postId = req.params.id;
+		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
 			return knex('likedposts').delete().where({

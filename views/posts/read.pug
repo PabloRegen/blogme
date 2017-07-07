@@ -17,7 +17,7 @@ block content
 		if followedByCurrentUserLength === 0
 			// either user hasn't followed the post's owner yet or is not logged-in
 			form(action=`/accounts/${post.userId}/follow/${post.id}` method='post')
-				input(type='submit' value='Follow' disabled=(currentUser == null))
+				input(type='submit' value='Follow' disabled=((currentUser == null) || (currentUser.id === postedByUser.id)))
 		else
 			form(action=`/accounts/${post.userId}/unfollow/${post.id}` method='post')
 				input(type='submit' value='Unfollow' disabled=(currentUser == null))
