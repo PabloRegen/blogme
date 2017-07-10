@@ -238,7 +238,7 @@ module.exports = function(knex, environment) {
 		let postId = parseInt(req.params.postId);
 
 		// FIXME! add constraint on db to prevent user from following himself instead of using an if statement
-		if (currentUserId !== followedUserId) {
+		// if (currentUserId !== followedUserId) {
 			return Promise.try(() => {
 				return knex('followingusers').insert({
 					userId: currentUserId,
@@ -252,9 +252,9 @@ module.exports = function(knex, environment) {
 			}).then(() => {
 				res.redirect(`/posts/${postId}`);
 			});
-		} else {
-			res.redirect(`/posts/${postId}`);
-		}
+		// } else {
+		// 	res.redirect(`/posts/${postId}`);
+		// }
 	});
 
 	/* unfollow user */

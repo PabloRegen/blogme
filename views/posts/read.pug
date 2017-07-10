@@ -14,15 +14,16 @@ block content
 		if postedByUser.bio != null
 			div.userBio #{postedByUser.bio}
 
-		if followedByCurrentUserLength === 0
-			// either user hasn't followed the post's owner yet or is not logged-in
-			form(action=`/accounts/${post.userId}/follow/${post.id}` method='post')
-				input(type='submit' value='Follow' disabled=((currentUser == null) || (currentUser.id === postedByUser.id)))
-		else
+		if alreadyFollowing
+			// user logged-in and already following post's author
 			form(action=`/accounts/${post.userId}/unfollow/${post.id}` method='post')
-				input(type='submit' value='Unfollow' disabled=(currentUser == null))
+				input(type='submit' value='Unfollow')
+		else
+			// user not logged-in or not following post's author yet
+			form(action=`/accounts/${post.userId}/follow/${post.id}` method='post')
+				input(type='submit' value='Follow' disabled=(!canFollow))
 
-		| #{followers}
+		| #{follows}
 
 		h1.postTitle!= sanitizer.sanitize(post.title)
 		h2.postSubtitle!= sanitizer.sanitize(post.subtitle)
@@ -32,13 +33,14 @@ block content
 
 		div.postBody!= sanitizer.sanitize(postBody, function(url) { return url; })
 
-		if likedByCurrentUserLength === 0
-			// either user hasn't liked the post yet or is not logged-in
-			form(action=`/posts/${post.id}/like` method='post')
-				input(type='submit' value='Like' disabled=(currentUser == null))
-		else
+		if alreadyLikedPost
+			// user logged-in and already liked post
 			form(action=`/posts/${post.id}/unlike` method='post')
-				input(type='submit' value='Unlike' disabled=(currentUser == null))
+				input(type='submit' value='Unlike')
+		else	
+			// user not logged-in or not liked post yet
+			form(action=`/posts/${post.id}/like` method='post')
+				input(type='submit' value='Like' disabled=(!canLike))
 
 		| #{likes}
 
