@@ -236,13 +236,14 @@ module.exports = function(knex, environment) {
 	});
 
 	/* like */
-	router.post('/:id/like', requireSignin(environment), (req, res) => {
+	router.post('/:id/like/:postOwnerId', requireSignin(environment), (req, res) => {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
 			return knex('likedposts').insert({
 				postId: postId,
-				userId: req.currentUser.id
+				userId: req.currentUser.id,
+				postOwnerId: parseInt(req.params.postOwnerId)
 			});
 		// FIXME! Add an error filter once "database-error" library supports composite keys
 		// to .catch() only the unique violation instead of the current .catch() all below

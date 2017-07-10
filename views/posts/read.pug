@@ -39,7 +39,7 @@ block content
 				input(type='submit' value='Unlike')
 		else	
 			// user not logged-in or not liked post yet
-			form(action=`/posts/${post.id}/like` method='post')
+			form(action=`/posts/${post.id}/like/${post.userId}` method='post')
 				input(type='submit' value='Like' disabled=(!canLike))
 
 		| #{likes}

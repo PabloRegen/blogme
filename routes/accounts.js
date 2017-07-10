@@ -237,24 +237,19 @@ module.exports = function(knex, environment) {
 		let followedUserId = parseInt(req.params.followedUserId);
 		let postId = parseInt(req.params.postId);
 
-		// FIXME! add constraint on db to prevent user from following himself instead of using an if statement
-		// if (currentUserId !== followedUserId) {
-			return Promise.try(() => {
-				return knex('followingusers').insert({
-					userId: currentUserId,
-					followedUserId: followedUserId
-				});
-			// FIXME! Add an error filter once "database-error" library supports composite keys
-			// to .catch() only the unique violation instead of the current .catch() all below
-			}).catch((err) => {
-				/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
-				/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
-			}).then(() => {
-				res.redirect(`/posts/${postId}`);
+		return Promise.try(() => {
+			return knex('followingusers').insert({
+				userId: currentUserId,
+				followedUserId: followedUserId
 			});
-		// } else {
-		// 	res.redirect(`/posts/${postId}`);
-		// }
+		// FIXME! Add an error filter once "database-error" library supports composite keys
+		// to .catch() only the unique violation instead of the current .catch() all below
+		}).catch((err) => {
+			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
+			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
+		}).then(() => {
+			res.redirect(`/posts/${postId}`);
+		});
 	});
 
 	/* unfollow user */
