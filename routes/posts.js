@@ -9,6 +9,7 @@ const path = require('path');
 const rfr = require('rfr');
 const marked = require('marked');
 const slug = require('slug');
+const databaseError = require('database-error');
 
 const requireSignin = rfr('middleware/require-signin');
 const checkitPost = rfr('lib/checkit-post');
@@ -23,6 +24,12 @@ const storeSlug = rfr('lib/store-slug');
 const storePost = rfr('lib/store-post');
 const removeTags = rfr('lib/remove-tags');
 const updatePost = rfr('lib/update-post');
+
+let likingOwnPost = {
+	name: 'CheckConstraintViolationError',
+	table: 'likedposts',
+	constraint: 'check_not_liking_self'
+};
 
 module.exports = function(knex, environment) {
 	const getTags = rfr('lib/get-tags')(knex);
@@ -245,11 +252,13 @@ module.exports = function(knex, environment) {
 				userId: req.currentUser.id,
 				postOwnerId: parseInt(req.params.postOwnerId)
 			});
+		}).catch(databaseError.rethrow).catch(likingOwnPost, (err) => {
+			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
+			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
+
 		// FIXME! Add an error filter once "database-error" library supports composite keys
 		// to .catch() only the unique violation instead of the current .catch() all below
 		}).catch((err) => {
-			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
-			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
 		}).then(() => {
 			res.redirect(`/posts/${postId}`);
 		});

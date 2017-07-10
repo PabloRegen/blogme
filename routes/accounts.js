@@ -29,6 +29,12 @@ let duplicateEmailAddress = {
 	column: 'email'
 };
 
+let followingSelf = {
+	name: 'CheckConstraintViolationError',
+	table: 'followingusers',
+	constraint: 'check_not_following_self'
+};
+
 module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 
@@ -242,11 +248,13 @@ module.exports = function(knex, environment) {
 				userId: currentUserId,
 				followedUserId: followedUserId
 			});
-		// FIXME! Add an error filter once "database-error" library supports composite keys
-		// to .catch() only the unique violation instead of the current .catch() all below
-		}).catch((err) => {
+		}).catch(databaseError.rethrow).catch(followingSelf, (err) => {
 			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
 			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
+
+		// FIXME! Add an error filter once "database-error" library supports composite keys
+		// to .catch() only the unique violation instead of the current .catch() all
+		}).catch((err) => {
 		}).then(() => {
 			res.redirect(`/posts/${postId}`);
 		});
