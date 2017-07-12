@@ -13,6 +13,7 @@ const logReqBody = rfr('lib/log-req-body');
 const logReqFile = rfr('lib/log-req-file');
 const logError = rfr('lib/log-error');
 const nullIfEmptyString = rfr('lib/null-if-empty-string');
+const errors = rfr('lib/errors');
 
 // const storeImages = rfr('lib/store-images');
 
@@ -79,7 +80,13 @@ module.exports = function(knex, environment) {
 			if (images.length === 0) {
 				throw new Error('The selected image does not exist');
 			} else {
-				res.render('uploads/edit', {image: images[0]});
+				let image = images[0];
+
+				if (image.userId !== req.currentUser.id) {
+					throw new errors.ForbiddenError("This is not your image! You can't edit it");
+				} else {
+					res.render('uploads/edit', {image: image});
+				}
 			}
 		});
 	});
@@ -87,14 +94,28 @@ module.exports = function(knex, environment) {
 	router.post('/:id/edit', requireSignin(environment), (req, res) => {
 		logReqBody(environment, 'POST/:id/edit req.body:', req.body);
 
+		let imageQuery = function() {
+			return knex('images').where({id: parseInt(req.params.id)});
+		};
+
 		return Promise.try(() => {
-			return knex('images').where({id: parseInt(req.params.id)}).update({
-				/* with bodyParser.urlencoded, values in req.body can never be null or undefined (they're always strings) */
-				caption: nullIfEmptyString(req.body.caption),
-				ownerName: nullIfEmptyString(req.body.owner),
-				licenseType: nullIfEmptyString(req.body.license),
-				originalURL: nullIfEmptyString(req.body.url)
-			});
+			return imageQuery();
+		}).then((images) => {
+			if (images.length === 0) {
+				throw new Error('The selected image does not exist');
+			} else {
+				if (images[0].userId !== req.currentUser.id) {
+					throw new errors.ForbiddenError("This is not your image! You can't edit it");
+				} else {
+					return imageQuery().update({
+						/* with bodyParser.urlencoded, values in req.body can never be null or undefined (they're always strings) */
+						caption: nullIfEmptyString(req.body.caption),
+						ownerName: nullIfEmptyString(req.body.owner),
+						licenseType: nullIfEmptyString(req.body.license),
+						originalURL: nullIfEmptyString(req.body.url)
+					});
+				}
+			}
 		}).then(() => {
 			res.redirect('/uploads/overview/1');
 		});
@@ -104,10 +125,43 @@ module.exports = function(knex, environment) {
 	router.post('/:id/delete', requireSignin(environment), (req, res) => {
 		logReqBody(environment, 'POST/:id/delete req.body:', req.body);
 
+		let imageQuery = function() {
+			return knex('images').where({id: parseInt(req.params.id)});
+		};
+
 		return Promise.try(() => {
-			return knex('images').where({id: parseInt(req.params.id)}).update({deletedAt: knex.fn.now()});
+			return imageQuery();
+		}).then((images) => {
+			if (images.length === 0) {
+				throw new Error('The selected image does not exist');
+			} else {
+				if (images[0].userId !== req.currentUser.id) {
+					throw new errors.ForbiddenError("This is not your image! You can't delete it");
+				} else {
+					return imageQuery().update({deletedAt: knex.fn.now()});
+				}
+			}
 		}).then(() => {
 			res.redirect('/uploads/overview/1');
+		});
+	});
+
+	/* display one image with its details */
+	router.get('/:id', requireSignin(environment), (req, res) => {
+		return Promise.try(() => {
+			return knex('images').where({id: parseInt(req.params.id)});
+		}).then((images) => {
+			if (images.length === 0) {
+				throw new Error('The selected image does not exist');
+			} else {
+				let image = images[0];
+
+				if (image.userId !== req.currentUser.id) {
+					throw new errors.ForbiddenError("This is not your image! You can't see it");
+				} else {
+					res.render('uploads/details', {image: image});
+				}
+			}
 		});
 	});
 
@@ -148,23 +202,6 @@ module.exports = function(knex, environment) {
 				}
 			});
 		}
-	});
-
-	/* display one image details */
-	router.get('/:id', requireSignin(environment), (req, res) => {
-		logReqBody(environment, 'GET/:id req.body: ', req.body);
-
-		return Promise.try(() => {
-			return knex('images').where({id: parseInt(req.params.id)});
-		}).then((images) => {
-			if (images.length === 0) {
-				throw new Error('The selected image does not exist');
-			} else {
-				res.render('uploads/details', {
-					image: images[0]
-				});
-			}
-		});
 	});
 
 	return router;

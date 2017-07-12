@@ -18,6 +18,7 @@ const logReqBody = rfr('lib/log-req-body');
 const logReqFile = rfr('lib/log-req-file');
 const logError = rfr('lib/log-error');
 const nullIfEmptyString = rfr('lib/null-if-empty-string');
+const errors = rfr('lib/errors');
 
 const storeTags = rfr('lib/store-tags');
 const storeSlug = rfr('lib/store-slug');
@@ -100,8 +101,6 @@ module.exports = function(knex, environment) {
 
 	/* edit */
 	router.get('/:id/edit', requireSignin(environment), (req, res) => {
-		logReqBody(environment, 'GET/:id/edit req.body:', req.body);
-
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
@@ -110,15 +109,21 @@ module.exports = function(knex, environment) {
 			if (posts.length === 0) {
 				throw new Error('The selected post does not exist');
 			} else {
-				return Promise.try(() => {
-					return getTags(postId);
-				}).then((tags) => {
-					res.render('posts/edit', {
-						postId: postId,
-						post: posts[0],
-						tags: tags.join(", ")
+				let post = posts[0];
+
+				if (post.userId !== req.currentUser.id) {
+					throw new errors.ForbiddenError("This is not your post! You can't edit it");
+				} else {
+					return Promise.try(() => {
+						return getTags(postId);
+					}).then((tags) => {
+						res.render('posts/edit', {
+							postId: postId,
+							post: post,
+							tags: tags.join(", ")
+						});
 					});
-				});
+				}
 			}
 		});
 	});
@@ -136,31 +141,41 @@ module.exports = function(knex, environment) {
 		}).then(() => {
 			return knex('posts').where({id: postId});
 		}).then((posts) => {
-			let title = req.body.title;
-			let tags = req.body.tags;
+			if (posts.length === 0) {
+				throw new Error('The selected post does not exist');
+			} else {
+				let post = posts[0];
 
-			// return knex.transaction(function(trx) {
-				return Promise.try(() => {
-					if (title !== posts[0].title) {
-						return storeSlug(knex)(postId, slug(title));
-					}
-				}).then(() => {
-					return updatePost(knex)(postId, {
-						title: title,
-						subtitle: nullIfEmptyString(req.body.subtitle),
-						body: req.body.body,
-						pic: (req.file != null ? req.file.filename : undefined),
-						isDraft: (req.body.publish == null),
-						updatedAt: knex.fn.now()
-					});
-				}).then(() => {
-					if (tags !== '') {
-						return storeTags(knex)(postId, splitFilterTags(tags));
-					}
-				}).then(() => {
-					return removeTags(knex)(postId, splitFilterTags(tags));
-				});
-			// });
+				if (req.currentUser.id !== post.userId) {
+					throw new errors.ForbiddenError("This is not your post! You can't edit it");
+				} else {
+					let title = req.body.title;
+					let tags = req.body.tags;
+
+					// return knex.transaction(function(trx) {
+						return Promise.try(() => {
+							if (title !== post.title) {
+								return storeSlug(knex)(postId, slug(title));
+							}
+						}).then(() => {
+							return updatePost(knex)(postId, {
+								title: title,
+								subtitle: nullIfEmptyString(req.body.subtitle),
+								body: req.body.body,
+								pic: (req.file != null ? req.file.filename : undefined),
+								isDraft: (req.body.publish == null),
+								updatedAt: knex.fn.now()
+							});
+						}).then(() => {
+							if (tags !== '') {
+								return storeTags(knex)(postId, splitFilterTags(tags));
+							}
+						}).then(() => {
+							return removeTags(knex)(postId, splitFilterTags(tags));
+						});
+					// });
+				}
+			}
 		}).then(() => {
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
