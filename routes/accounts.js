@@ -127,9 +127,9 @@ module.exports = function(knex, environment) {
 
 			return knex('users').where(function() {
 				this.where({username: usernameOrEmail}).orWhere({email: usernameOrEmail})
-			}).andWhere({deletedAt: null});
-		}).then((users) => {
-			if (users.length === 0) {
+			}).andWhere({deletedAt: null}).first();
+		}).then((user) => {
+			if (user == null) {
 				logError(environment, 'User Error', 'Invalid username or email');
 
 				let errors = {
@@ -141,8 +141,6 @@ module.exports = function(knex, environment) {
 				res.render('accounts/signin', {errors: errors});
 				// throw new errors.UnauthorizedError('Invalid username or email');
 			} else {
-				let user = users[0];
-
 				return Promise.try(() => {
 					return scryptForHumans.verifyHash(req.body.password, user.pwHash);
 				}).then(() => {
@@ -185,7 +183,7 @@ module.exports = function(knex, environment) {
 	/* delete */
 	router.post('/delete', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
-			return knex('users').where({id: req.currentUser.id}).update({deletedAt: knex.fn.now()});
+			return knex('users').where({id: req.currentUser.id}).first().update({deletedAt: knex.fn.now()});
 		}).then(() => {
 			return req.destroySession();
 		}).then(() => {
@@ -200,7 +198,7 @@ module.exports = function(knex, environment) {
 
 	router.post('/profile', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
-			return knex('users').where({id: req.currentUser.id}).update({pic: null});
+			return knex('users').where({id: req.currentUser.id}).first().update({pic: null});
 		}).then(() => {
 			res.redirect('/accounts/profile');
 		});
@@ -218,7 +216,7 @@ module.exports = function(knex, environment) {
 			logReqBody(environment, 'POST/profile/edit req.body:', req.body);
 			logReqFile(environment, 'POST/profile/edit req.file:', req.file);
 
-			return knex('users').where({id: req.currentUser.id}).update({
+			return knex('users').where({id: req.currentUser.id}).first().update({
 				name: nullIfEmptyString(req.body.name),
 				bio: nullIfEmptyString(req.body.bio),
 				pic: (req.file != null ? req.file.filename : undefined)

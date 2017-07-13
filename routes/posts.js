@@ -104,13 +104,11 @@ module.exports = function(knex, environment) {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
-			return knex('posts').where({id: postId});
-		}).then((posts) => {
-			if (posts.length === 0) {
+			return knex('posts').where({id: postId}).first();
+		}).then((post) => {
+			if (post == null) {
 				throw new Error('The selected post does not exist');
 			} else {
-				let post = posts[0];
-
 				if (post.userId !== req.currentUser.id) {
 					throw new errors.ForbiddenError("This is not your post! You can't edit it");
 				} else {
@@ -139,13 +137,11 @@ module.exports = function(knex, environment) {
 
 			return checkitPost(req.body);
 		}).then(() => {
-			return knex('posts').where({id: postId});
-		}).then((posts) => {
-			if (posts.length === 0) {
+			return knex('posts').where({id: postId}).first();
+		}).then((post) => {
+			if (post == null) {
 				throw new Error('The selected post does not exist');
 			} else {
-				let post = posts[0];
-
 				if (req.currentUser.id !== post.userId) {
 					throw new errors.ForbiddenError("This is not your post! You can't edit it");
 				} else {
@@ -198,56 +194,61 @@ module.exports = function(knex, environment) {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
-			return knex('posts').where({id: postId});
-		}).then((posts) => {
-			if (posts.length === 0) {
+			return knex('posts').where({id: postId}).first();
+		}).then((post) => {
+			if (post == null) {
 				throw new Error('The selected post does not exist');
 			} else {
-				let post = posts[0];
-
 				return Promise.try(() => {
-					return knex('users').where({id: post.userId});
-				}).then((postedByUsers) => {
-					let postedByUser = postedByUsers[0];
-
+					return knex('users').where({id: post.userId}).first();
+				}).then((postedByUser) => {
 					return Promise.try(() => {
 						return getTags(postId);
 					}).then((postTags) => {
-						let likesByCurrentUser;
-						let followsByCurrentUser;
+						let likedByCurrentUser;
+						let followedByCurrentUser;
 
-						if (req.currentUser == null) {
-							/* Prevent from unnecessary running these 2 queries at the Promise.all if the user is not logged-in */
-							likesByCurrentUser = [];
-							followsByCurrentUser = [];
-						} else {
-							likesByCurrentUser = knex('likedposts').where({
+						/* Only run these 2 queries at the Promise.all if the user is logged-in. Otherwise it's unnecessary to run them */
+						if (req.currentUser != null) {
+							likedByCurrentUser = knex('likedposts').where({
 								postId: postId,
 								userId: req.currentUser.id
-							});
+							}).first();
 
-							followsByCurrentUser = knex('followingusers').where({
+							followedByCurrentUser = knex('followingusers').where({
 								followedUserId: postedByUser.id,
 								userId: req.currentUser.id
-							});
+							}).first();
 						}
 
 						return Promise.all([
 							knex('likedposts').where({postId: postId}).count(),
-							likesByCurrentUser,
+							likedByCurrentUser,
 							knex('followingusers').where({followedUserId: postedByUser.id}).count(),
-							followsByCurrentUser
-						]).spread((likes, likesByCurrentUser, follows, followsByCurrentUser) => {
+							followedByCurrentUser
+						]).spread((likes, likedByCurrentUser, follows, followedByCurrentUser) => {
+							console.log(likes);
+							console.log(likedByCurrentUser);
+							console.log(follows);
+							console.log(followedByCurrentUser);
+
+							console.log('likedByCurrentUser != null: ', likedByCurrentUser != null);
+							console.log('followedByCurrentUser != null: ', followedByCurrentUser != null);
+
+							console.log('req.currentUser.id: ', req.currentUser.id)
+							console.log('postedByUser.id: ', postedByUser.id)
+
+
 							res.render('posts/read', {
 								post: post,
 								postBody: marked(post.body),
 								postedByUser: postedByUser,
 								tags: postTags,
 								likes: parseInt(likes[0].count),
-								alreadyLikedPost: likesByCurrentUser.length !== 0,
+								alreadyLikedPost: likedByCurrentUser != null,
 								canLike:  (req.currentUser != null) && (req.currentUser.id !== postedByUser.id),
 								follows: parseInt(follows[0].count),
-								alreadyFollowing: followsByCurrentUser.length !== 0,
+								alreadyFollowing: followedByCurrentUser != null,
 								canFollow: (req.currentUser != null) && (req.currentUser.id !== postedByUser.id)
 							});
 						});

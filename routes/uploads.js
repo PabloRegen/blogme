@@ -75,13 +75,11 @@ module.exports = function(knex, environment) {
 	/* edit */
 	router.get('/:id/edit', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
-			return knex('images').where({id: parseInt(req.params.id)});
-		}).then((images) => {
-			if (images.length === 0) {
+			return knex('images').where({id: parseInt(req.params.id)}).first();
+		}).then((image) => {
+			if (image == null) {
 				throw new Error('The selected image does not exist');
 			} else {
-				let image = images[0];
-
 				if (image.userId !== req.currentUser.id) {
 					throw new errors.ForbiddenError("This is not your image! You can't edit it");
 				} else {
@@ -95,16 +93,16 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, 'POST/:id/edit req.body:', req.body);
 
 		let imageQuery = function() {
-			return knex('images').where({id: parseInt(req.params.id)});
+			return knex('images').where({id: parseInt(req.params.id)}).first();
 		};
 
 		return Promise.try(() => {
 			return imageQuery();
-		}).then((images) => {
-			if (images.length === 0) {
+		}).then((image) => {
+			if (image == null) {
 				throw new Error('The selected image does not exist');
 			} else {
-				if (images[0].userId !== req.currentUser.id) {
+				if (image.userId !== req.currentUser.id) {
 					throw new errors.ForbiddenError("This is not your image! You can't edit it");
 				} else {
 					return imageQuery().update({
@@ -126,16 +124,16 @@ module.exports = function(knex, environment) {
 		logReqBody(environment, 'POST/:id/delete req.body:', req.body);
 
 		let imageQuery = function() {
-			return knex('images').where({id: parseInt(req.params.id)});
+			return knex('images').where({id: parseInt(req.params.id)}).first();
 		};
 
 		return Promise.try(() => {
 			return imageQuery();
-		}).then((images) => {
-			if (images.length === 0) {
+		}).then((image) => {
+			if (image == null) {
 				throw new Error('The selected image does not exist');
 			} else {
-				if (images[0].userId !== req.currentUser.id) {
+				if (image.userId !== req.currentUser.id) {
 					throw new errors.ForbiddenError("This is not your image! You can't delete it");
 				} else {
 					return imageQuery().update({deletedAt: knex.fn.now()});
@@ -149,13 +147,11 @@ module.exports = function(knex, environment) {
 	/* display one image with its details */
 	router.get('/:id', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
-			return knex('images').where({id: parseInt(req.params.id)});
-		}).then((images) => {
-			if (images.length === 0) {
+			return knex('images').where({id: parseInt(req.params.id)}).first();
+		}).then((image) => {
+			if (image == null) {
 				throw new Error('The selected image does not exist');
 			} else {
-				let image = images[0];
-
 				if (image.userId !== req.currentUser.id) {
 					throw new errors.ForbiddenError("This is not your image! You can't see it");
 				} else {
