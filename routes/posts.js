@@ -32,6 +32,10 @@ let likingOwnPost = {
 	constraint: 'check_not_liking_self'
 };
 
+let fetchPost = function(id) {
+	return knex('posts').where({id: id}).first(); 
+};
+
 module.exports = function(knex, environment) {
 	const getTags = rfr('lib/get-tags')(knex);
 
@@ -104,7 +108,7 @@ module.exports = function(knex, environment) {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
-			return knex('posts').where({id: postId}).first();
+			return fetchPost(postId);
 		}).then((post) => {
 			if (post == null) {
 				throw new Error('The selected post does not exist');
@@ -137,12 +141,12 @@ module.exports = function(knex, environment) {
 
 			return checkitPost(req.body);
 		}).then(() => {
-			return knex('posts').where({id: postId}).first();
+			return fetchPost(postId);
 		}).then((post) => {
 			if (post == null) {
 				throw new Error('The selected post does not exist');
 			} else {
-				if (req.currentUser.id !== post.userId) {
+				if (post.userId !== req.currentUser.id) {
 					throw new errors.ForbiddenError("This is not your post! You can't edit it");
 				} else {
 					let title = req.body.title;
@@ -189,12 +193,10 @@ module.exports = function(knex, environment) {
 
 	/* read */
 	router.get('/:id', (req, res) => {
-		logReqBody(environment, 'GET/:id req.body:', req.body);
-
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
-			return knex('posts').where({id: postId}).first();
+			return fetchPost(postId);
 		}).then((post) => {
 			if (post == null) {
 				throw new Error('The selected post does not exist');
@@ -227,18 +229,6 @@ module.exports = function(knex, environment) {
 							knex('followingusers').where({followedUserId: postedByUser.id}).count(),
 							followedByCurrentUser
 						]).spread((likes, likedByCurrentUser, follows, followedByCurrentUser) => {
-							console.log(likes);
-							console.log(likedByCurrentUser);
-							console.log(follows);
-							console.log(followedByCurrentUser);
-
-							console.log('likedByCurrentUser != null: ', likedByCurrentUser != null);
-							console.log('followedByCurrentUser != null: ', followedByCurrentUser != null);
-
-							console.log('req.currentUser.id: ', req.currentUser.id)
-							console.log('postedByUser.id: ', postedByUser.id)
-
-
 							res.render('posts/read', {
 								post: post,
 								postBody: marked(post.body),
@@ -263,13 +253,17 @@ module.exports = function(knex, environment) {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
-			return knex('posts').where({id: postId}).first();
+			return fetchPost(postId);
 		}).then((post) => {
-			return knex('likedposts').insert({
-				postId: postId,
-				userId: req.currentUser.id,
-				postOwnerId: post.userId
-			});
+			if (post == null) {
+				throw new Error('The selected post does not exist');
+			} else {
+				return knex('likedposts').insert({
+					postId: postId,
+					userId: req.currentUser.id,
+					postOwnerId: post.userId
+				});
+			}
 		}).catch(databaseError.rethrow).catch(likingOwnPost, (err) => {
 			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
 			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
