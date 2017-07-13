@@ -238,15 +238,11 @@ module.exports = function(knex, environment) {
 	});
 
 	/* follow user */
-	router.post('/:followedUserId/follow/:postId', requireSignin(environment), (req, res) => {
-		let currentUserId = req.currentUser.id;
-		let followedUserId = parseInt(req.params.followedUserId);
-		let postId = parseInt(req.params.postId);
-
+	router.post('/:followedUserId/follow', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
 			return knex('followingusers').insert({
-				userId: currentUserId,
-				followedUserId: followedUserId
+				userId: req.currentUser.id,
+				followedUserId: parseInt(req.params.followedUserId)
 			});
 		}).catch(databaseError.rethrow).catch(followingSelf, (err) => {
 			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
@@ -256,19 +252,19 @@ module.exports = function(knex, environment) {
 		// to .catch() only the unique violation instead of the current .catch() all
 		}).catch((err) => {
 		}).then(() => {
-			res.redirect(`/posts/${postId}`);
+			res.redirect(`/posts/${parseInt(req.query.redirectToPost)}`);
 		});
 	});
 
 	/* unfollow user */
-	router.post('/:followedUserId/unfollow/:postId', requireSignin(environment), (req, res) => {
+	router.post('/:followedUserId/unfollow', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
 			return knex('followingusers').delete().where({
 				userId: req.currentUser.id,
 				followedUserId: parseInt(req.params.followedUserId)
 			});
 		}).then(() => {
-			res.redirect(`/posts/${parseInt(req.params.postId)}`);
+			res.redirect(`/posts/${parseInt(req.query.redirectToPost)}`);
 		});
 	});
 

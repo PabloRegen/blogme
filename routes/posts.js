@@ -258,14 +258,16 @@ module.exports = function(knex, environment) {
 	});
 
 	/* like */
-	router.post('/:id/like/:postOwnerId', requireSignin(environment), (req, res) => {
+	router.post('/:id/like', requireSignin(environment), (req, res) => {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
+			return knex('posts').where({id: postId}).first();
+		}).then((post) => {
 			return knex('likedposts').insert({
 				postId: postId,
 				userId: req.currentUser.id,
-				postOwnerId: parseInt(req.params.postOwnerId)
+				postOwnerId: post.userId
 			});
 		}).catch(databaseError.rethrow).catch(likingOwnPost, (err) => {
 			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
