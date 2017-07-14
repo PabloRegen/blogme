@@ -32,10 +32,6 @@ let likingOwnPost = {
 	constraint: 'check_not_liking_self'
 };
 
-let fetchPost = function(id) {
-	return knex('posts').where({id: id}).first(); 
-};
-
 module.exports = function(knex, environment) {
 	const getTags = rfr('lib/get-tags')(knex);
 
@@ -49,6 +45,18 @@ module.exports = function(knex, environment) {
 	});
 
 	let storeUpload = Promise.promisify(multer({storage: storage}).single('postPic'));
+
+	let fetchPost = function(id) {
+		return Promise.try(() => {
+			return knex('posts').where({id: id}).first();
+		}).then((post) => {
+			if (post == null) {
+				throw new Error('The selected post does not exist');
+			} else {
+				return post;
+			}
+		});
+	};
 
 	/* create */
 	router.get('/create', requireSignin(environment), (req, res) => {
@@ -110,22 +118,18 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return fetchPost(postId);
 		}).then((post) => {
-			if (post == null) {
-				throw new Error('The selected post does not exist');
+			if (post.userId !== req.currentUser.id) {
+				throw new errors.ForbiddenError("This is not your post! You can't edit it");
 			} else {
-				if (post.userId !== req.currentUser.id) {
-					throw new errors.ForbiddenError("This is not your post! You can't edit it");
-				} else {
-					return Promise.try(() => {
-						return getTags(postId);
-					}).then((tags) => {
-						res.render('posts/edit', {
-							postId: postId,
-							post: post,
-							tags: tags.join(", ")
-						});
+				return Promise.try(() => {
+					return getTags(postId);
+				}).then((tags) => {
+					res.render('posts/edit', {
+						postId: postId,
+						post: post,
+						tags: tags.join(", ")
 					});
-				}
+				});
 			}
 		});
 	});
@@ -143,38 +147,34 @@ module.exports = function(knex, environment) {
 		}).then(() => {
 			return fetchPost(postId);
 		}).then((post) => {
-			if (post == null) {
-				throw new Error('The selected post does not exist');
+			if (post.userId !== req.currentUser.id) {
+				throw new errors.ForbiddenError("This is not your post! You can't edit it");
 			} else {
-				if (post.userId !== req.currentUser.id) {
-					throw new errors.ForbiddenError("This is not your post! You can't edit it");
-				} else {
-					let title = req.body.title;
-					let tags = req.body.tags;
+				let title = req.body.title;
+				let tags = req.body.tags;
 
-					// return knex.transaction(function(trx) {
-						return Promise.try(() => {
-							if (title !== post.title) {
-								return storeSlug(knex)(postId, slug(title));
-							}
-						}).then(() => {
-							return updatePost(knex)(postId, {
-								title: title,
-								subtitle: nullIfEmptyString(req.body.subtitle),
-								body: req.body.body,
-								pic: (req.file != null ? req.file.filename : undefined),
-								isDraft: (req.body.publish == null),
-								updatedAt: knex.fn.now()
-							});
-						}).then(() => {
-							if (tags !== '') {
-								return storeTags(knex)(postId, splitFilterTags(tags));
-							}
-						}).then(() => {
-							return removeTags(knex)(postId, splitFilterTags(tags));
+				// return knex.transaction(function(trx) {
+					return Promise.try(() => {
+						if (title !== post.title) {
+							return storeSlug(knex)(postId, slug(title));
+						}
+					}).then(() => {
+						return updatePost(knex)(postId, {
+							title: title,
+							subtitle: nullIfEmptyString(req.body.subtitle),
+							body: req.body.body,
+							pic: (req.file != null ? req.file.filename : undefined),
+							isDraft: (req.body.publish == null),
+							updatedAt: knex.fn.now()
 						});
-					// });
-				}
+					}).then(() => {
+						if (tags !== '') {
+							return storeTags(knex)(postId, splitFilterTags(tags));
+						}
+					}).then(() => {
+						return removeTags(knex)(postId, splitFilterTags(tags));
+					});
+				// });
 			}
 		}).then(() => {
 			res.redirect(`/posts/${postId}`);
@@ -198,53 +198,49 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return fetchPost(postId);
 		}).then((post) => {
-			if (post == null) {
-				throw new Error('The selected post does not exist');
-			} else {
+			return Promise.try(() => {
+				return knex('users').where({id: post.userId}).first();
+			}).then((postedByUser) => {
 				return Promise.try(() => {
-					return knex('users').where({id: post.userId}).first();
-				}).then((postedByUser) => {
-					return Promise.try(() => {
-						return getTags(postId);
-					}).then((postTags) => {
-						let likedByCurrentUser;
-						let followedByCurrentUser;
+					return getTags(postId);
+				}).then((postTags) => {
+					let likedByCurrentUser;
+					let followedByCurrentUser;
 
-						/* Only run these 2 queries at the Promise.all if the user is logged-in. Otherwise it's unnecessary to run them */
-						if (req.currentUser != null) {
-							likedByCurrentUser = knex('likedposts').where({
-								postId: postId,
-								userId: req.currentUser.id
-							}).first();
+					/* Only run these 2 queries at the Promise.all if the user is logged-in. Otherwise it's unnecessary to run them */
+					if (req.currentUser != null) {
+						likedByCurrentUser = knex('likedposts').where({
+							postId: postId,
+							userId: req.currentUser.id
+						}).first();
 
-							followedByCurrentUser = knex('followingusers').where({
-								followedUserId: postedByUser.id,
-								userId: req.currentUser.id
-							}).first();
-						}
+						followedByCurrentUser = knex('followingusers').where({
+							followedUserId: postedByUser.id,
+							userId: req.currentUser.id
+						}).first();
+					}
 
-						return Promise.all([
-							knex('likedposts').where({postId: postId}).count(),
-							likedByCurrentUser,
-							knex('followingusers').where({followedUserId: postedByUser.id}).count(),
-							followedByCurrentUser
-						]).spread((likes, likedByCurrentUser, follows, followedByCurrentUser) => {
-							res.render('posts/read', {
-								post: post,
-								postBody: marked(post.body),
-								postedByUser: postedByUser,
-								tags: postTags,
-								likes: parseInt(likes[0].count),
-								alreadyLikedPost: likedByCurrentUser != null,
-								canLike:  (req.currentUser != null) && (req.currentUser.id !== postedByUser.id),
-								follows: parseInt(follows[0].count),
-								alreadyFollowing: followedByCurrentUser != null,
-								canFollow: (req.currentUser != null) && (req.currentUser.id !== postedByUser.id)
-							});
+					return Promise.all([
+						knex('likedposts').where({postId: postId}).count(),
+						likedByCurrentUser,
+						knex('followingusers').where({followedUserId: postedByUser.id}).count(),
+						followedByCurrentUser
+					]).spread((likes, likedByCurrentUser, follows, followedByCurrentUser) => {
+						res.render('posts/read', {
+							post: post,
+							postBody: marked(post.body),
+							postedByUser: postedByUser,
+							tags: postTags,
+							likes: parseInt(likes[0].count),
+							alreadyLikedPost: likedByCurrentUser != null,
+							canLike:  (req.currentUser != null) && (req.currentUser.id !== postedByUser.id),
+							follows: parseInt(follows[0].count),
+							alreadyFollowing: followedByCurrentUser != null,
+							canFollow: (req.currentUser != null) && (req.currentUser.id !== postedByUser.id)
 						});
 					});
 				});
-			}
+			});
 		});
 	});
 
@@ -255,15 +251,11 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return fetchPost(postId);
 		}).then((post) => {
-			if (post == null) {
-				throw new Error('The selected post does not exist');
-			} else {
-				return knex('likedposts').insert({
-					postId: postId,
-					userId: req.currentUser.id,
-					postOwnerId: post.userId
-				});
-			}
+			return knex('likedposts').insert({
+				postId: postId,
+				userId: req.currentUser.id,
+				postOwnerId: post.userId
+			});
 		}).catch(databaseError.rethrow).catch(likingOwnPost, (err) => {
 			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
 			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
