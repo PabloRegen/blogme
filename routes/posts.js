@@ -26,6 +26,12 @@ const storePost = rfr('lib/store-post');
 const removeTags = rfr('lib/remove-tags');
 const updatePost = rfr('lib/update-post');
 
+let duplicateLike = {
+	name: 'UniqueConstraintViolationError',
+	table: 'likedposts',
+	columns: ['postId', 'userId']
+};
+
 let likingOwnPost = {
 	name: 'CheckConstraintViolationError',
 	table: 'likedposts',
@@ -267,12 +273,9 @@ module.exports = function(knex, environment) {
 				postOwnerId: post.userId
 			});
 		}).catch(databaseError.rethrow).catch(likingOwnPost, (err) => {
-			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
-			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
-
-		// FIXME! Add an error filter once "database-error" library supports composite keys
-		// to .catch() only the unique violation instead of the current .catch() all below
-		}).catch((err) => {
+		}).catch(duplicateLike, (err) => {
+			/* Intentionally do nothing on these 2 .catch() because both, the .catch() and the .then() redirect to the same URL */
+			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */ 
 		}).then(() => {
 			res.redirect(`/posts/${postId}`);
 		});

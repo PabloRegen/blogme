@@ -29,6 +29,12 @@ let duplicateEmailAddress = {
 	column: 'email'
 };
 
+let duplicateFollow = {
+	name: 'UniqueConstraintViolationError',
+	table: 'followingusers',
+	columns: ['userId', 'followedUserId']
+};
+
 let followingSelf = {
 	name: 'CheckConstraintViolationError',
 	table: 'followingusers',
@@ -247,12 +253,9 @@ module.exports = function(knex, environment) {
 				followedUserId: parseInt(req.params.followedUserId)
 			});
 		}).catch(databaseError.rethrow).catch(followingSelf, (err) => {
-			/* Intentionally do nothing here because both .catch() and .then() redirect to the same URL */
+		}).catch(duplicateFollow, (err) => {
+			/* Intentionally do nothing on these 2 .catch() because both, the .catch() and the .then() redirect to the same URL */
 			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
-
-		// FIXME! Add an error filter once "database-error" library supports composite keys
-		// to .catch() only the unique violation instead of the current .catch() all
-		}).catch((err) => {
 		}).then(() => {
 			res.redirect(`/posts/${parseInt(req.query.redirectToPost)}`);
 		});
