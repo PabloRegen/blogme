@@ -64,7 +64,7 @@ module.exports = function(knex, environment) {
 				req.image = image;
 			}
 		});
-	}
+	});
 
 	/* upload */
 	router.get('/upload', (req, res) => {

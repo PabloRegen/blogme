@@ -47,7 +47,9 @@ module.exports = function(knex, environment) {
 
 	let storeUpload = Promise.promisify(multer({storage: storage}).single('userPic'));
 
-	let user = knex('users').where({id: req.currentUser.id}).first();
+	let userQuery = function(id) {
+		return knex('users').where({id: id}).first();
+	};
 	
 	/* signup */
 	router.get('/signup', (req, res) => {
@@ -185,7 +187,7 @@ module.exports = function(knex, environment) {
 	/* delete */
 	router.post('/delete', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
-			return user.update({deletedAt: knex.fn.now()});
+			return userQuery(req.currentUser.id).update({deletedAt: knex.fn.now()});
 		}).then(() => {
 			return req.destroySession();
 		}).then(() => {
@@ -200,7 +202,7 @@ module.exports = function(knex, environment) {
 
 	router.post('/profile', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
-			return user.update({pic: null});
+			return userQuery(req.currentUser.id).update({pic: null});
 		}).then(() => {
 			res.redirect('/accounts/profile');
 		});
@@ -218,7 +220,7 @@ module.exports = function(knex, environment) {
 			logReqBody(environment, 'POST/profile/edit req.body:', req.body);
 			logReqFile(environment, 'POST/profile/edit req.file:', req.file);
 
-			return user.update({
+			return userQuery(req.currentUser.id).update({
 				name: nullIfEmptyString(req.body.name),
 				bio: nullIfEmptyString(req.body.bio),
 				pic: (req.file != null ? req.file.filename : undefined)
