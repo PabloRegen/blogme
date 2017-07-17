@@ -37,44 +37,41 @@ module.exports = function(knex, environment) {
 	}).array('images', 20));
 	// req.files is array of `images`. Optionally error out if more than maxCount files are uploaded
 
-	// Option 1 - include 1 error
-	// let fetchImage = function(id) {
-	// 	return Promise.try(() => {
-	// 		return knex('images').where({id: id}).first();
-	// 	}).then((image) => {
-	// 		if (image == null) {
-	// 			throw new Error('The selected image does not exist');
-	// 		} else {
-	// 			return image;
-	// 		}
-	// 	});
-	// };
 
-	// Option 2 - include both errors
+	let imageQuery = function(id) {
+		return knex('images').where({id: id}).first();
+	};
+
 	let fetchImage = function(id) {
 		return Promise.try(() => {
-			return knex('images').where({id: id}).first();
+			return imageQuery(id);
 		}).then((image) => {
 			if (image == null) {
 				throw new Error('The selected image does not exist');
-			} else if (image.userId !== req.currentUser.id) {
-				throw new errors.ForbiddenError('This is not your image!');
 			} else {
 				return image;
 			}
 		});
 	};
 
-	let imageQuery = function(id) {
-		return knex('images').where({id: id}).first();
-	};
+	router.param('id', requireSignin(environment), (req, res, next, id) => {
+		return Promise.try(() => {
+			return fetchImage(id);
+		}).then((image) => {
+			if (image.userId !== req.currentUser.id) {
+				throw new errors.ForbiddenError('This is not your image!');
+			} else {
+				req.image = image;
+			}
+		});
+	}
 
 	/* upload */
-	router.get('/upload', requireSignin(environment), (req, res) => {
+	router.get('/upload', (req, res) => {
 		res.render('uploads/upload');
 	});
 
-	router.post('/upload', requireSignin(environment), (req, res) => {
+	router.post('/upload', (req, res) => {
 		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {
@@ -105,23 +102,15 @@ module.exports = function(knex, environment) {
 	// pic: req.files != null && req.files.postPic != null ? req.files.postPic[0] : undefined,
 
 	/* edit */
-	router.get('/:id/edit', requireSignin(environment), (req, res) => {
-		return Promise.try(() => {
-			return fetchImage(parseInt(req.params.id));
-		}).then((image) => {
-			res.render('uploads/edit', {image: image});
-		});
+	router.get('/:id/edit', (req, res) => {
+		res.render('uploads/edit', {image: req.image});
 	});
 
-	router.post('/:id/edit', requireSignin(environment), (req, res) => {
+	router.post('/:id/edit', (req, res) => {
 		logReqBody(environment, 'POST/:id/edit req.body:', req.body);
 
-		let imageId = parseInt(req.params.id);
-
 		return Promise.try(() => {
-			return fetchImage(imageId);
-		}).then(() => {
-			return imageQuery(imageId).update({
+			return imageQuery(parseInt(req.params.id)).update({
 				/* with bodyParser.urlencoded, values in req.body can never be null or undefined (they're always strings) */
 				caption: nullIfEmptyString(req.body.caption),
 				ownerName: nullIfEmptyString(req.body.owner),
@@ -134,31 +123,23 @@ module.exports = function(knex, environment) {
 	});
 
 	/* delete */
-	router.post('/:id/delete', requireSignin(environment), (req, res) => {
+	router.post('/:id/delete', (req, res) => {
 		logReqBody(environment, 'POST/:id/delete req.body:', req.body);
 
-		let imageId = parseInt(req.params.id);
-
 		return Promise.try(() => {
-			return fetchImage(imageId);
-		}).then(() => {
-			return imageQuery(imageId).update({deletedAt: knex.fn.now()});
+			return imageQuery(parseInt(req.params.id)).update({deletedAt: knex.fn.now()});
 		}).then(() => {
 			res.redirect('/uploads/overview/1');
 		});
 	});
 
 	/* display one image with its details */
-	router.get('/:id', requireSignin(environment), (req, res) => {
-		return Promise.try(() => {
-			return fetchImage(parseInt(req.params.id));
-		}).then((image) => {
-			res.render('uploads/details', {image: image});
-		});
+	router.get('/:id', (req, res) => {
+		res.render('uploads/details', {image: req.image});
 	});
 
 	/* overview all images */
-	router.get('/overview/:page', requireSignin(environment), (req, res) => {
+	router.get('/overview/:page', (req, res) => {
 		let page = parseInt(req.params.page);
 		let imagesPerPage = 4;
 		let imageNumber = (page - 1) * imagesPerPage;
