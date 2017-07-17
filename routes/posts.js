@@ -46,9 +46,13 @@ module.exports = function(knex, environment) {
 
 	let storeUpload = Promise.promisify(multer({storage: storage}).single('postPic'));
 
+	let postQuery = function(id) {
+		return knex('posts').where({id: id}).first();
+	};
+
 	let fetchPost = function(id) {
 		return Promise.try(() => {
-			return knex('posts').where({id: id}).first();
+			return postQuery(id);
 		}).then((post) => {
 			if (post == null) {
 				throw new Error('The selected post does not exist');
@@ -56,6 +60,20 @@ module.exports = function(knex, environment) {
 				return post;
 			}
 		});
+	};
+
+	let mustOwn = function(id) {
+		return function(req, res) {
+			return Promise.try(() => {
+				return fetchPost(id);
+			}).then((post) => {
+				if (post.userId !== req.currentUser.id) {
+					throw new errors.ForbiddenError('This is not your post!');
+				} else {
+					req.post = post;
+				}
+			});
+		};
 	};
 
 	/* create */
@@ -116,21 +134,17 @@ module.exports = function(knex, environment) {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
-			return fetchPost(postId);
-		}).then((post) => {
-			if (post.userId !== req.currentUser.id) {
-				throw new errors.ForbiddenError("This is not your post! You can't edit it");
-			} else {
-				return Promise.try(() => {
-					return getTags(postId);
-				}).then((tags) => {
-					res.render('posts/edit', {
-						postId: postId,
-						post: post,
-						tags: tags.join(", ")
-					});
+			return mustOwn(postId)();
+		}).then(() => {
+			return Promise.try(() => {
+				return getTags(postId);
+			}).then((tags) => {
+				res.render('posts/edit', {
+					postId: postId,
+					post: req.post,
+					tags: tags.join(", ")
 				});
-			}
+			});
 		});
 	});
 
@@ -138,6 +152,8 @@ module.exports = function(knex, environment) {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
+			return mustOwn(postId)();
+		}).then(() => {
 			return storeUpload(req, res);
 		}).then(() => {
 			logReqBody(environment, 'POST/:id/edit req.body: ', req.body);
@@ -145,37 +161,31 @@ module.exports = function(knex, environment) {
 
 			return checkitPost(req.body);
 		}).then(() => {
-			return fetchPost(postId);
-		}).then((post) => {
-			if (post.userId !== req.currentUser.id) {
-				throw new errors.ForbiddenError("This is not your post! You can't edit it");
-			} else {
-				let title = req.body.title;
-				let tags = req.body.tags;
+			let title = req.body.title;
+			let tags = req.body.tags;
 
-				// return knex.transaction(function(trx) {
-					return Promise.try(() => {
-						if (title !== post.title) {
-							return storeSlug(knex)(postId, slug(title));
-						}
-					}).then(() => {
-						return updatePost(knex)(postId, {
-							title: title,
-							subtitle: nullIfEmptyString(req.body.subtitle),
-							body: req.body.body,
-							pic: (req.file != null ? req.file.filename : undefined),
-							isDraft: (req.body.publish == null),
-							updatedAt: knex.fn.now()
-						});
-					}).then(() => {
-						if (tags !== '') {
-							return storeTags(knex)(postId, splitFilterTags(tags));
-						}
-					}).then(() => {
-						return removeTags(knex)(postId, splitFilterTags(tags));
+			// return knex.transaction(function(trx) {
+				return Promise.try(() => {
+					if (title !== req.post.title) {
+						return storeSlug(knex)(postId, slug(title));
+					}
+				}).then(() => {
+					return updatePost(knex)(postId, {
+						title: title,
+						subtitle: nullIfEmptyString(req.body.subtitle),
+						body: req.body.body,
+						pic: (req.file != null ? req.file.filename : undefined),
+						isDraft: (req.body.publish == null),
+						updatedAt: knex.fn.now()
 					});
-				// });
-			}
+				}).then(() => {
+					if (tags !== '') {
+						return storeTags(knex)(postId, splitFilterTags(tags));
+					}
+				}).then(() => {
+					return removeTags(knex)(postId, splitFilterTags(tags));
+				});
+			// });
 		}).then(() => {
 			res.redirect(`/posts/${postId}`);
 		}).catch(checkit.Error, (err) => {
