@@ -42,23 +42,13 @@ module.exports = function(knex, environment) {
 		return knex('images').where({id: id}).first();
 	};
 
-	let fetchImage = function(id) {
+	router.param('id', requireSignin(environment), (req, res, next, id) => {
 		return Promise.try(() => {
 			return imageQuery(id);
 		}).then((image) => {
 			if (image == null) {
 				throw new Error('The selected image does not exist');
-			} else {
-				return image;
-			}
-		});
-	};
-
-	router.param('id', requireSignin(environment), (req, res, next, id) => {
-		return Promise.try(() => {
-			return fetchImage(id);
-		}).then((image) => {
-			if (image.userId !== req.currentUser.id) {
+			} else if (image.userId !== req.currentUser.id) {
 				throw new errors.ForbiddenError('This is not your image!');
 			} else {
 				req.image = image;

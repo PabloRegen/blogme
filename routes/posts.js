@@ -56,31 +56,25 @@ module.exports = function(knex, environment) {
 		return knex('posts').where({id: id}).first();
 	};
 
-	let fetchPost = function(id) {
+	let mustOwn = function(req, res, next) {
+		if (req.post.userId !== req.currentUser.id) {
+			next(new errors.ForbiddenError('This is not your post!'));
+		} else {
+			next();
+		}
+	};
+
+	router.param('id', (req, res, next, id) => {
 		return Promise.try(() => {
 			return postQuery(id);
 		}).then((post) => {
 			if (post == null) {
 				throw new Error('The selected post does not exist');
-			} else {
-				return post;
+			} else {	
+				req.post = post;
 			}
 		});
-	};
-
-	let mustOwn = function(id) {
-		return function(req, res) {
-			return Promise.try(() => {
-				return fetchPost(id);
-			}).then((post) => {
-				if (post.userId !== req.currentUser.id) {
-					throw new errors.ForbiddenError('This is not your post!');
-				} else {
-					req.post = post;
-				}
-			});
-		};
-	};
+	});
 
 	/* create */
 	router.get('/create', requireSignin(environment), (req, res) => {
@@ -136,30 +130,24 @@ module.exports = function(knex, environment) {
 	});
 
 	/* edit */
-	router.get('/:id/edit', requireSignin(environment), (req, res) => {
+	router.get('/:id/edit', requireSignin(environment), mustOwn, (req, res) => {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
-			return mustOwn(postId)();
-		}).then(() => {
-			return Promise.try(() => {
-				return getTags(postId);
-			}).then((tags) => {
-				res.render('posts/edit', {
-					postId: postId,
-					post: req.post,
-					tags: tags.join(", ")
-				});
+			return getTags(postId);
+		}).then((tags) => {
+			res.render('posts/edit', {
+				postId: postId,
+				post: req.post,
+				tags: tags.join(", ")
 			});
 		});
 	});
 
-	router.post('/:id/edit', requireSignin(environment), (req, res) => {
+	router.post('/:id/edit', requireSignin(environment), mustOwn, (req, res) => {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
-			return mustOwn(postId)();
-		}).then(() => {
 			return storeUpload(req, res);
 		}).then(() => {
 			logReqBody(environment, 'POST/:id/edit req.body: ', req.body);
@@ -212,48 +200,44 @@ module.exports = function(knex, environment) {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
-			return fetchPost(postId);
-		}).then((post) => {
+			return knex('users').where({id: req.post.userId}).first();
+		}).then((postedByUser) => {
 			return Promise.try(() => {
-				return knex('users').where({id: post.userId}).first();
-			}).then((postedByUser) => {
-				return Promise.try(() => {
-					return getTags(postId);
-				}).then((postTags) => {
-					let likedByCurrentUser;
-					let followedByCurrentUser;
+				return getTags(postId);
+			}).then((postTags) => {
+				let likedByCurrentUser;
+				let followedByCurrentUser;
 
-					/* Only run these 2 queries at the Promise.all if the user is logged-in. Otherwise it's unnecessary to run them */
-					if (req.currentUser != null) {
-						likedByCurrentUser = knex('likedposts').where({
-							postId: postId,
-							userId: req.currentUser.id
-						}).first();
+				/* Only run these 2 queries at the Promise.all if the user is logged-in. Otherwise it's unnecessary to run them */
+				if (req.currentUser != null) {
+					likedByCurrentUser = knex('likedposts').where({
+						postId: postId,
+						userId: req.currentUser.id
+					}).first();
 
-						followedByCurrentUser = knex('followingusers').where({
-							followedUserId: postedByUser.id,
-							userId: req.currentUser.id
-						}).first();
-					}
+					followedByCurrentUser = knex('followingusers').where({
+						followedUserId: postedByUser.id,
+						userId: req.currentUser.id
+					}).first();
+				}
 
-					return Promise.all([
-						knex('likedposts').where({postId: postId}).count(),
-						likedByCurrentUser,
-						knex('followingusers').where({followedUserId: postedByUser.id}).count(),
-						followedByCurrentUser
-					]).spread((likes, likedByCurrentUser, follows, followedByCurrentUser) => {
-						res.render('posts/read', {
-							post: post,
-							postBody: marked(post.body),
-							postedByUser: postedByUser,
-							tags: postTags,
-							likes: parseInt(likes[0].count),
-							alreadyLikedPost: likedByCurrentUser != null,
-							canLike:  (req.currentUser != null) && (req.currentUser.id !== postedByUser.id),
-							follows: parseInt(follows[0].count),
-							alreadyFollowing: followedByCurrentUser != null,
-							canFollow: (req.currentUser != null) && (req.currentUser.id !== postedByUser.id)
-						});
+				return Promise.all([
+					knex('likedposts').where({postId: postId}).count(),
+					likedByCurrentUser,
+					knex('followingusers').where({followedUserId: postedByUser.id}).count(),
+					followedByCurrentUser
+				]).spread((likes, likedByCurrentUser, follows, followedByCurrentUser) => {
+					res.render('posts/read', {
+						post: req.post,
+						postBody: marked(req.post.body),
+						postedByUser: postedByUser,
+						tags: postTags,
+						likes: parseInt(likes[0].count),
+						alreadyLikedPost: likedByCurrentUser != null,
+						canLike:  (req.currentUser != null) && (req.currentUser.id !== postedByUser.id),
+						follows: parseInt(follows[0].count),
+						alreadyFollowing: followedByCurrentUser != null,
+						canFollow: (req.currentUser != null) && (req.currentUser.id !== postedByUser.id)
 					});
 				});
 			});
@@ -265,12 +249,10 @@ module.exports = function(knex, environment) {
 		let postId = parseInt(req.params.id);
 
 		return Promise.try(() => {
-			return fetchPost(postId);
-		}).then((post) => {
 			return knex('likedposts').insert({
 				postId: postId,
 				userId: req.currentUser.id,
-				postOwnerId: post.userId
+				postOwnerId: req.post.userId
 			});
 		}).catch(databaseError.rethrow).catch(likingOwnPost, (err) => {
 		}).catch(duplicateLike, (err) => {
