@@ -42,7 +42,10 @@ module.exports = function(knex, environment) {
 		return knex('images').where({id: id}).first();
 	};
 
-	router.param('id', requireSignin(environment), (req, res, next, id) => {
+	// FIXME!!! TEMPORARY remove requireSignin from router.param since router.param does not run with it
+	// router.param('id', requireSignin(environment), (req, res, next, id) => {
+	router.param('id', (req, res, next, id) => {
+		console.log('router.param');
 		return Promise.try(() => {
 			return imageQuery(id);
 		}).then((image) => {
@@ -52,6 +55,7 @@ module.exports = function(knex, environment) {
 				throw new errors.ForbiddenError('This is not your image!');
 			} else {
 				req.image = image;
+				next();
 			}
 		});
 	});
