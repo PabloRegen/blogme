@@ -257,7 +257,7 @@ module.exports = function(knex, environment) {
 			/* Intentionally do nothing on these 2 .catch() because both, the .catch() and the .then() redirect to the same URL */
 			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */
 		}).then(() => {
-			res.redirect(`/posts/${parseInt(req.query.redirectToPost)}`);
+			res.redirect(`/posts/${req.query.redirectToPost}`);
 		});
 	});
 
@@ -269,7 +269,7 @@ module.exports = function(knex, environment) {
 				followedUserId: parseInt(req.params.followedUserId)
 			});
 		}).then(() => {
-			res.redirect(`/posts/${parseInt(req.query.redirectToPost)}`);
+			res.redirect(`/posts/${req.query.redirectToPost}`);
 		});
 	});
 

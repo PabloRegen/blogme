@@ -54,10 +54,6 @@ module.exports = function(knex, environment) {
 
 	let storeUpload = Promise.promisify(multer({storage: storage}).single('postPic'));
 
-	let postQuery = function(id) {
-		return knex('posts').where({id: id}).first();
-	};
-
 	let mustOwn = function(req, res, next) {
 		if (req.post.userId !== req.currentUser.id) {
 			next(new errors.ForbiddenError('This is not your post!'));
@@ -66,16 +62,23 @@ module.exports = function(knex, environment) {
 		}
 	};
 
-	router.param('id', (req, res, next, id) => {
+	router.param('slug', (req, res, next, slugName) => {
+		console.log('router.param - slugName: ', slugName);
+
 		return Promise.try(() => {
-			return postQuery(id);
-		}).then((post) => {
-			if (post == null) {
+			return knex('slugs').where({
+				name: slugName,
+				isCurrent: true
+			}).first();
+		}).then((slug) => {
+			if (slug == null) {
 				throw new Error('The selected post does not exist');
-			} else {	
-				req.post = post;
-				next();
+			} else {
+				return knex('posts').where({id: slug.postId}).first();
 			}
+		}).then((post) => {
+			req.post = post;
+			next();
 		});
 	});
 
@@ -118,7 +121,7 @@ module.exports = function(knex, environment) {
 				});
 			});
 		}).then((postId) => {				
-			res.redirect(`/posts/${postId}`);
+			res.redirect(`/posts/${slug(req.body.title)}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
@@ -135,22 +138,20 @@ module.exports = function(knex, environment) {
 	});
 
 	/* edit */
-	router.get('/:id/edit', requireSignin(environment), mustOwn, (req, res) => {
-		let postId = parseInt(req.params.id);
-
+	router.get('/:slug/edit', requireSignin(environment), mustOwn, (req, res) => {
 		return Promise.try(() => {
-			return getTags(postId);
+			return getTags(req.post.id);
 		}).then((tags) => {
 			res.render('posts/edit', {
-				postId: postId,
+				slug: req.params.slug,
 				post: req.post,
 				tags: tags.join(", ")
 			});
 		});
 	});
 
-	router.post('/:id/edit', requireSignin(environment), mustOwn, (req, res) => {
-		let postId = parseInt(req.params.id);
+	router.post('/:slug/edit', requireSignin(environment), mustOwn, (req, res) => {
+		let postId = req.post.id;
 
 		return Promise.try(() => {
 			return storeUpload(req, res);
@@ -186,14 +187,14 @@ module.exports = function(knex, environment) {
 				});
 			// });
 		}).then(() => {
-			res.redirect(`/posts/${postId}`);
+			res.redirect(`/posts/${req.params.slug}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
 			/* body needs to get passed within the render call because the form is multipart enctype */
 			/* See additional explanation at POST/create route */
 			res.render('posts/edit', {
-				postId: postId,
+				slug: req.params.slug,
 				errors: err.errors,
 				body: req.body
 			});
@@ -201,8 +202,8 @@ module.exports = function(knex, environment) {
 	});
 
 	/* read */
-	router.get('/:id', (req, res) => {
-		let postId = parseInt(req.params.id);
+	router.get('/:slug', (req, res) => {
+		let postId = req.post.id;
 
 		return Promise.try(() => {
 			return knex('users').where({id: req.post.userId}).first();
@@ -233,6 +234,7 @@ module.exports = function(knex, environment) {
 					followedByCurrentUser
 				]).spread((likes, likedByCurrentUser, follows, followedByCurrentUser) => {
 					res.render('posts/read', {
+						slug: req.params.slug,
 						post: req.post,
 						postBody: marked(req.post.body),
 						postedByUser: postedByUser,
@@ -250,8 +252,8 @@ module.exports = function(knex, environment) {
 	});
 
 	/* like */
-	router.post('/:id/like', requireSignin(environment), (req, res) => {
-		let postId = parseInt(req.params.id);
+	router.post('/:slug/like', requireSignin(environment), (req, res) => {
+		let postId = req.post.id;
 
 		return Promise.try(() => {
 			return knex('likedposts').insert({
@@ -264,13 +266,13 @@ module.exports = function(knex, environment) {
 			/* Intentionally do nothing on these 2 .catch() because both, the .catch() and the .then() redirect to the same URL */
 			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */ 
 		}).then(() => {
-			res.redirect(`/posts/${postId}`);
+			res.redirect(`/posts/${req.params.slug}`);
 		});
 	});
 
 	/* unlike */
-	router.post('/:id/unlike', requireSignin(environment), (req, res) => {
-		let postId = parseInt(req.params.id);
+	router.post('/:slug/unlike', requireSignin(environment), (req, res) => {
+		let postId = req.post.id;
 
 		return Promise.try(() => {
 			return knex('likedposts').delete().where({
@@ -278,7 +280,7 @@ module.exports = function(knex, environment) {
 				userId: req.currentUser.id
 			});
 		}).then(() => {
-			res.redirect(`/posts/${postId}`);
+			res.redirect(`/posts/${req.params.slug}`);
 		});
 	});
 

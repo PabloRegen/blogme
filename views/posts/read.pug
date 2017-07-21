@@ -16,11 +16,11 @@ block content
 
 		if alreadyFollowing
 			// user logged-in and already following post's author
-			form(action=`/accounts/${post.userId}/unfollow?redirectToPost=${post.id}` method='post')
+			form(action=`/accounts/${post.userId}/unfollow?redirectToPost=${slug}` method='post')
 				input(type='submit' value='Unfollow')
 		else
 			// user not logged-in or not following post's author yet
-			form(action=`/accounts/${post.userId}/follow?redirectToPost=${post.id}` method='post')
+			form(action=`/accounts/${post.userId}/follow?redirectToPost=${slug}` method='post')
 				input(type='submit' value='Follow' disabled=(!canFollow))
 
 		| #{follows}
@@ -35,11 +35,11 @@ block content
 
 		if alreadyLikedPost
 			// user logged-in and already liked post
-			form(action=`/posts/${post.id}/unlike` method='post')
+			form(action=`/posts/${slug}/unlike` method='post')
 				input(type='submit' value='Unlike')
 		else	
 			// user not logged-in or not liked post yet
-			form(action=`/posts/${post.id}/like` method='post')
+			form(action=`/posts/${slug}/like` method='post')
 				input(type='submit' value='Like' disabled=(!canLike))
 
 		| #{likes}
