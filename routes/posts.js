@@ -68,17 +68,28 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('slugs').where({
 				name: slugName,
-				isCurrent: true
+				// isCurrent: true
 			}).first();
 		}).then((slug) => {
 			if (slug == null) {
 				throw new Error('The selected post does not exist');
+			} else if (slug.isCurrent === false) {
+				return Promise.try(() => {
+					return knex('slugs').where({
+						postId: slug.postId,
+						isCurrent: true
+					}).first();
+				}).then((slug) => {
+					res.redirect(`/posts/${slug.name}`);
+				});
 			} else {
-				return knex('posts').where({id: slug.postId}).first();
+				return Promise.try(() => {
+					return knex('posts').where({id: slug.postId}).first();
+				}).then((post) => {
+					req.post = post;
+					next();
+				});
 			}
-		}).then((post) => {
-			req.post = post;
-			next();
 		});
 	});
 
@@ -120,7 +131,8 @@ module.exports = function(knex, environment) {
 					});
 				});
 			});
-		}).then((postId) => {				
+		}).then((postId) => {	
+		 	// FIXME!!! point to new slug from store-slug instead of directly from req.body.title		
 			res.redirect(`/posts/${slug(req.body.title)}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
@@ -187,7 +199,7 @@ module.exports = function(knex, environment) {
 				});
 			// });
 		}).then(() => {
-			res.redirect(`/posts/${req.params.slug}`);
+			res.redirect(`/posts/${slug(req.body.title)}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
