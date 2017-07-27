@@ -66,14 +66,22 @@ module.exports = function(knex, environment) {
 		console.log('router.param - slugName: ', slugName);
 
 		return Promise.try(() => {
-			return knex('slugs').where({
-				name: slugName,
-				// isCurrent: true
-			}).first();
+			return knex('slugs').where({name: slugName}).first();
 		}).then((slug) => {
 			if (slug == null) {
 				throw new Error('The selected post does not exist');
-			} else if (slug.isCurrent === false) {
+			} else if (slug.isCurrent) {
+				return Promise.try(() => {
+					return knex('posts').where({id: slug.postId}).first();
+				}).then((post) => {
+					if (post == null) {
+						throw new Error('The selected post does not exist');
+					} else {
+						req.post = post;
+						next();
+					}
+				});
+			} else {
 				return Promise.try(() => {
 					return knex('slugs').where({
 						postId: slug.postId,
@@ -81,13 +89,6 @@ module.exports = function(knex, environment) {
 					}).first();
 				}).then((slug) => {
 					res.redirect(`/posts/${slug.name}`);
-				});
-			} else {
-				return Promise.try(() => {
-					return knex('posts').where({id: slug.postId}).first();
-				}).then((post) => {
-					req.post = post;
-					next();
 				});
 			}
 		});
@@ -126,14 +127,13 @@ module.exports = function(knex, environment) {
 						// FIXME!!! temp storeRemoveTags
 						// (tags !== '' ? storeRemoveTags(trx)(postId, splitFilterTags(tags)) : undefined)
 						(tags !== '' ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
-					]).then(() => {
-						return postId;
+					]).spread((slugName, _) => {
+						return slugName;
 					});
 				});
 			});
-		}).then((postId) => {	
-		 	// FIXME!!! point to new slug from store-slug instead of directly from req.body.title		
-			res.redirect(`/posts/${slug(req.body.title)}`);
+		}).then((slugName) => {
+			res.redirect(`/posts/${slugName}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
@@ -199,6 +199,7 @@ module.exports = function(knex, environment) {
 				});
 			// });
 		}).then(() => {
+			// FIXME!!! redirect to new slug from store-slug instead of directly from req.body.title
 			res.redirect(`/posts/${slug(req.body.title)}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
