@@ -68,9 +68,18 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('slugs').where({name: slugName}).first();
 		}).then((slug) => {
+			console.log('--------');
+			console.log('slug: ', slug);
+
 			if (slug == null) {
+				console.log('--------');
+				console.log('slug == null');
+
 				throw new Error('The selected post does not exist');
 			} else if (slug.isCurrent) {
+				console.log('--------');
+				console.log('slug.isCurrent');
+
 				return Promise.try(() => {
 					return knex('posts').where({id: slug.postId}).first();
 				}).then((post) => {
@@ -82,6 +91,8 @@ module.exports = function(knex, environment) {
 					}
 				});
 			} else {
+				console.log('!slug.isCurrent');
+
 				return Promise.try(() => {
 					return knex('slugs').where({
 						postId: slug.postId,
@@ -128,6 +139,9 @@ module.exports = function(knex, environment) {
 						// (tags !== '' ? storeRemoveTags(trx)(postId, splitFilterTags(tags)) : undefined)
 						(tags !== '' ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
 					]).spread((slugName, _) => {
+						console.log('slugName: ', slugName);
+						console.log('_: ', _);
+
 						return slugName;
 					});
 				});
@@ -173,34 +187,38 @@ module.exports = function(knex, environment) {
 
 			return checkitPost(req.body);
 		}).then(() => {
-			let title = req.body.title;
-			let tags = req.body.tags;
-
+			// FIXME!!! Make this a transaction after figuring out why the transaction is giving me an error
 			// return knex.transaction(function(trx) {
 				return Promise.try(() => {
-					if (title !== req.post.title) {
-						return storeSlug(knex)(postId, slug(title));
+					if (req.body.title !== req.post.title) {
+						return storeSlug(knex)(postId, req.params.slug);
+					} else {
+						return req.params.slug;
 					}
-				}).then(() => {
-					return updatePost(knex)(postId, {
-						title: title,
-						subtitle: nullIfEmptyString(req.body.subtitle),
-						body: req.body.body,
-						pic: (req.file != null ? req.file.filename : undefined),
-						isDraft: (req.body.publish == null),
-						updatedAt: knex.fn.now()
+				}).then((slugName) => {
+					let tags = req.body.tags;
+
+					return Promise.try(() => {
+						return updatePost(knex)(postId, {
+							title: req.body.title,
+							subtitle: nullIfEmptyString(req.body.subtitle),
+							body: req.body.body,
+							pic: (req.file != null ? req.file.filename : undefined),
+							isDraft: (req.body.publish == null),
+							updatedAt: knex.fn.now()
+						});
+					}).then(() => {
+						if (tags !== '') {
+							return storeTags(knex)(postId, splitFilterTags(tags));
+						}
+					}).then(() => {
+						return removeTags(knex)(postId, splitFilterTags(tags));
+					// FIXME!!! Whenever the transaction bug is solved, figure out how to move the redirect out of the transaction
+					}).then(() => {
+						res.redirect(`/posts/${slugName}`);
 					});
-				}).then(() => {
-					if (tags !== '') {
-						return storeTags(knex)(postId, splitFilterTags(tags));
-					}
-				}).then(() => {
-					return removeTags(knex)(postId, splitFilterTags(tags));
 				});
 			// });
-		}).then(() => {
-			// FIXME!!! redirect to new slug from store-slug instead of directly from req.body.title
-			res.redirect(`/posts/${slug(req.body.title)}`);
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
