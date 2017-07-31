@@ -19,7 +19,7 @@ block content
 	div Your latest posts:
 		ul
 			each post in latestPosts
-				li: a(href=`/posts/${post.id}`)= post.title
+				li: a(href=`/posts/${post.slug}`)= post.title
 			else
 				li You have no posts yet
 

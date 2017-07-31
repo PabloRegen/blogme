@@ -240,8 +240,22 @@ module.exports = function(knex, environment) {
 	router.get('/dashboard', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
 			return knex('posts').where({userId: req.currentUser.id}).limit(3).orderBy('id', 'desc');
-		}).then((posts) => {
-			res.render('accounts/dashboard', {latestPosts: posts});
+		}).map((posts) => {
+			return Promise.try(() => {
+				return knex('slugs').where({
+					postId: posts.id,
+					isCurrent: true
+				}).first();
+			}).then((slug) => {
+				if (slug != null) {
+					posts.slug = slug.name;
+					return posts;
+				} else {
+					throw new Error('The slug is missing');
+				}
+			});
+		}).then((postWithSlugs) => {
+			res.render('accounts/dashboard', {latestPosts: postWithSlugs});
 		});
 	});
 
