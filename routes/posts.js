@@ -63,23 +63,12 @@ module.exports = function(knex, environment) {
 	};
 
 	router.param('slug', (req, res, next, slugName) => {
-		console.log('router.param - slugName: ', slugName);
-
 		return Promise.try(() => {
 			return knex('slugs').where({name: slugName}).first();
 		}).then((slug) => {
-			// console.log('--------');
-			// console.log('slug: ', slug);
-
 			if (slug == null) {
-				// console.log('--------');
-				// console.log('slug == null');
-
 				throw new Error('The selected post does not exist');
 			} else if (slug.isCurrent) {
-				// console.log('--------');
-				// console.log('slug.isCurrent');
-
 				return Promise.try(() => {
 					return knex('posts').where({id: slug.postId}).first();
 				}).then((post) => {
@@ -91,8 +80,6 @@ module.exports = function(knex, environment) {
 					}
 				});
 			} else {
-				// console.log('!slug.isCurrent');
-
 				return Promise.try(() => {
 					return knex('slugs').where({
 						postId: slug.postId,
@@ -139,9 +126,6 @@ module.exports = function(knex, environment) {
 						// (tags !== '' ? storeRemoveTags(trx)(postId, splitFilterTags(tags)) : undefined)
 						(tags !== '' ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
 					]).spread((slugName, _) => {
-						console.log('slugName: ', slugName);
-						console.log('_: ', _);
-
 						return slugName;
 					});
 				});
