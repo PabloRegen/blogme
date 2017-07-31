@@ -68,17 +68,17 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return knex('slugs').where({name: slugName}).first();
 		}).then((slug) => {
-			console.log('--------');
-			console.log('slug: ', slug);
+			// console.log('--------');
+			// console.log('slug: ', slug);
 
 			if (slug == null) {
-				console.log('--------');
-				console.log('slug == null');
+				// console.log('--------');
+				// console.log('slug == null');
 
 				throw new Error('The selected post does not exist');
 			} else if (slug.isCurrent) {
-				console.log('--------');
-				console.log('slug.isCurrent');
+				// console.log('--------');
+				// console.log('slug.isCurrent');
 
 				return Promise.try(() => {
 					return knex('posts').where({id: slug.postId}).first();
@@ -91,7 +91,7 @@ module.exports = function(knex, environment) {
 					}
 				});
 			} else {
-				console.log('!slug.isCurrent');
+				// console.log('!slug.isCurrent');
 
 				return Promise.try(() => {
 					return knex('slugs').where({
@@ -191,7 +191,7 @@ module.exports = function(knex, environment) {
 			// return knex.transaction(function(trx) {
 				return Promise.try(() => {
 					if (req.body.title !== req.post.title) {
-						return storeSlug(knex)(postId, req.params.slug);
+						return storeSlug(knex)(postId, slug(req.body.title));
 					} else {
 						return req.params.slug;
 					}
