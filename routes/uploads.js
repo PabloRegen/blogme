@@ -55,7 +55,8 @@ module.exports = function(knex, environment) {
 				throw new errors.ForbiddenError('This is not your image!');
 			} else {
 				req.image = image;
-				next();
+				/* resolve 'next' (as a string) to make express-promise-router call next() internally */
+				return 'next';
 			}
 		});
 	});
@@ -105,7 +106,8 @@ module.exports = function(knex, environment) {
 
 		return Promise.try(() => {
 			return imageQuery(parseInt(req.params.id)).update({
-				/* with bodyParser.urlencoded, values in req.body can never be null or undefined (they're always strings) */
+				/* with bodyParser.urlencoded, values in req.body can never be null or undefined */
+				/* they're always strings */
 				caption: nullIfEmptyString(req.body.caption),
 				ownerName: nullIfEmptyString(req.body.owner),
 				licenseType: nullIfEmptyString(req.body.license),

@@ -76,7 +76,8 @@ module.exports = function(knex, environment) {
 						throw new Error('The selected post does not exist');
 					} else {
 						req.post = post;
-						next();
+						/* resolve 'next' (as a string) to make express-promise-router call next() internally */
+						return 'next';
 					}
 				});
 			} else {
