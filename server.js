@@ -9,6 +9,7 @@ const sanitizer = require('sanitizer');
 const expressSession = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(expressSession);
 
+const requireSignin = rfr('middleware/require-signin');
 const errors = rfr('lib/errors');
 const errorHandler = rfr('middleware/error-handler');
 const fetchCurrentUser = rfr('middleware/fetch-current-user');
@@ -73,7 +74,7 @@ app.use((req,res,next) => {
 app.use('/', rfr('routes/home'));
 app.use('/accounts', rfr('routes/accounts')(knex, environment));
 app.use('/posts', rfr('routes/posts')(knex, environment));
-app.use('/uploads', rfr('routes/uploads')(knex, environment));
+app.use('/uploads', requireSignin(environment), rfr('routes/uploads')(knex, environment));
 
 /* 404 Page not found error handler */
 app.use((req, res, next) => {

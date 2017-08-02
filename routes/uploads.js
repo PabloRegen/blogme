@@ -42,10 +42,7 @@ module.exports = function(knex, environment) {
 		return knex('images').where({id: id}).first();
 	};
 
-	// FIXME!!! TEMPORARY remove requireSignin from router.param since router.param does not run with it
-	// router.param('id', requireSignin(environment), (req, res, next, id) => {
 	router.param('id', (req, res, next, id) => {
-		console.log('router.param');
 		return Promise.try(() => {
 			return imageQuery(id);
 		}).then((image) => {
