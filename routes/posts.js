@@ -193,11 +193,15 @@ module.exports = function(knex, environment) {
 							updatedAt: knex.fn.now()
 						});
 					}).then(() => {
+						// console.log('about to storeRemoveTags');
+						// storeRemoveTags(knex)(postId, splitFilterTags(tags))
+
 						if (tags !== '') {
 							return storeTags(knex)(postId, splitFilterTags(tags));
 						}
 					}).then(() => {
 						return removeTags(knex)(postId, splitFilterTags(tags));
+
 					// FIXME!!! Whenever the transaction bug is solved, figure out how to move the redirect out of the transaction
 					}).then(() => {
 						res.redirect(`/posts/${slugName}`);
