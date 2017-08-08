@@ -87,7 +87,11 @@ module.exports = function(knex, environment) {
 						isCurrent: true
 					}).first();
 				}).then((slug) => {
-					res.redirect(`/posts/${slug.name}`);
+					if (slug == null) {
+						throw new Error('The is a problem with the selected post');
+					} else {
+						res.redirect(`/posts/${slug.name}`);
+					}
 				});
 			}
 		});

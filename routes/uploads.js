@@ -15,8 +15,6 @@ const logError = rfr('lib/log-error');
 const nullIfEmptyString = rfr('lib/null-if-empty-string');
 const errors = rfr('lib/errors');
 
-// const storeImages = rfr('lib/store-images');
-
 module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 
@@ -91,7 +89,6 @@ module.exports = function(knex, environment) {
 			}
 		});
 	});
-	// pic: req.files != null && req.files.postPic != null ? req.files.postPic[0] : undefined,
 
 	/* edit */
 	router.get('/:id/edit', (req, res) => {

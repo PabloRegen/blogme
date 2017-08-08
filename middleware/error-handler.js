@@ -4,8 +4,8 @@ const http = require('http');
 
 module.exports = function(environment) {
 	return function(err, req, res, next) {
+		console.log('error-handler.js');
 		console.log(err);
-
 
 		if (res.headersSent) {
 			console.log('res.headersSent === true');
@@ -14,10 +14,6 @@ module.exports = function(environment) {
     		return next(err);
   		} else {
   			let errorCode;
-
-  			// temporary logs to fix isCustomBlogmeError bug
-			console.log(`isCustomBlogmeError: ${err.isCustomBlogmeError}`);
-			console.log(`statusCode: ${err.statusCode}`);
 
   			if (err.isCustomBlogmeError) {
   				errorCode = err.statusCode;
@@ -28,7 +24,10 @@ module.exports = function(environment) {
 	  		res.status(errorCode);
 
 			if (environment === 'development') {
-				res.render('error', {errorTitle: err.message, errorStacktrace: err.stack});
+				res.render('error', {
+					errorTitle: err.message, 
+					errorStacktrace: err.stack
+				});
 			} else {
 				if (errorCode >= 400 && errorCode < 500) {
 					res.render('error', {errorTitle: err.message});
