@@ -239,7 +239,10 @@ module.exports = function(knex, environment) {
 	/* dashboard */
 	router.get('/dashboard', requireSignin(environment), (req, res) => {
 		return Promise.try(() => {
-			return knex('posts').where({userId: req.currentUser.id}).limit(3).orderBy('id', 'desc');
+			return knex('posts').where({
+				userId: req.currentUser.id,
+				deletedAt: null
+			}).limit(3).orderBy('id', 'desc');
 		}).map((post) => {
 			return Promise.try(() => {
 				return knex('slugs').where({

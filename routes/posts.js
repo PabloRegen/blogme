@@ -157,6 +157,15 @@ module.exports = function(knex, environment) {
 		});
 	});
 
+	/* delete */
+	router.post('/:slug/delete', requireSignin(environment), mustOwn, (req, res) => {
+		return Promise.try(() => {
+			return knex('posts').update({deletedAt: knex.fn.now()}).where({id: req.post.id});
+		}).then(() => {
+			res.redirect('/accounts/dashboard');
+		});
+	});
+
 	/* edit */
 	router.get('/:slug/edit', requireSignin(environment), mustOwn, (req, res) => {
 		return Promise.try(() => {
@@ -273,7 +282,8 @@ module.exports = function(knex, environment) {
 						canLike:  (req.currentUser != null) && (req.currentUser.id !== postedByUser.id),
 						follows: parseInt(follows[0].count),
 						alreadyFollowing: followedByCurrentUser != null,
-						canFollow: (req.currentUser != null) && (req.currentUser.id !== postedByUser.id)
+						canFollow: (req.currentUser != null) && (req.currentUser.id !== postedByUser.id),
+						canEditAndDelete: (req.currentUser != null) && (req.currentUser.id === postedByUser.id)
 					});
 				});
 			});
@@ -312,8 +322,6 @@ module.exports = function(knex, environment) {
 			res.redirect(`/posts/${req.params.slug}`);
 		});
 	});
-
-	/* delete */
 
 	return router;
 };
