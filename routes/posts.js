@@ -40,6 +40,11 @@ let likingOwnPost = {
 	constraint: 'check_not_liking_self'
 };
 
+marked.setOptions({
+	gfm: true,
+	tables: true
+});
+
 module.exports = function(knex, environment) {
 	const getTags = rfr('lib/get-tags')(knex);
 

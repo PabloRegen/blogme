@@ -9,8 +9,8 @@ block content
 
 	img(src=`/uploads/${image.path}` width='750')
 
-	div To use this image anywhere within your post, copy and paste:
-		|  /uploads/#{image.path}
+	div To use this image copy the following and paste anywhere within your post's body:
+		|  ![#{image.caption}](/uploads/#{image.path})
 
 
 	div name: #{image.originalName}
