@@ -72,20 +72,10 @@ module.exports = function(knex, environment) {
 			return knex('slugs').where({name: slugName}).first();
 		}).then((slug) => {
 			if (slug == null) {
-				throw new Error('The selected post does not exist');
-			} else if (slug.isCurrent) {
-				return Promise.try(() => {
-					return knex('posts').where({id: slug.postId}).first();
-				}).then((post) => {
-					if (post == null) {
-						throw new Error('The selected post does not exist');
-					} else {
-						req.post = post;
-						/* resolve 'next' (as a string) to make express-promise-router call next() internally */
-						return 'next';
-					}
-				});
-			} else {
+				throw new Error('The selected post or slug does not exist');
+			} else if (slug.isCurrent == null) {
+				throw new Error('There is a problem with the selected post');
+			} else if (!slug.isCurrent) {
 				return Promise.try(() => {
 					return knex('slugs').where({
 						postId: slug.postId,
@@ -93,9 +83,25 @@ module.exports = function(knex, environment) {
 					}).first();
 				}).then((slug) => {
 					if (slug == null) {
-						throw new Error('The is a problem with the selected post');
+						throw new Error('There is a problem with the selected post');
 					} else {
 						res.redirect(`/posts/${slug.name}`);
+					}
+				});
+			} else {
+				return Promise.try(() => {
+					return knex('posts').where({id: slug.postId}).first();
+				}).then((post) => {
+					if (post == null) {
+						throw new Error('There is a problem with the selected post');
+					} else if(post.deletedAt != null) {
+						throw new Error('The selected post has been deleted');
+					} else if(!post.isVisible) {
+						throw new Error('The selected post is temporarily unavailable');
+					} else {
+						req.post = post;
+						/* resolve 'next' (as a string) to make express-promise-router call next() internally */
+						return 'next';
 					}
 				});
 			}

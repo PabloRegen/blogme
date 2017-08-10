@@ -242,7 +242,8 @@ module.exports = function(knex, environment) {
 			Promise.try(() => {
 				return knex('posts').where({
 					userId: req.currentUser.id,
-					deletedAt: null
+					deletedAt: null,
+					isVisible: true
 				}).limit(3).orderBy('id', 'desc');
 			}).map((post) => {
 				return Promise.try(() => {
