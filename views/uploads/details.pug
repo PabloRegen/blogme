@@ -35,8 +35,7 @@ block content
 	div modified: #{image.modifiedAt}
 	div deleted: #{image.deletedAt}
 
-	a(href=`/uploads/${image.id}/edit`)
-		input(type='button' value='Edit data')
+	a(href=`/uploads/${image.id}/edit`) Edit data
 
 	form(action=`/uploads/${image.id}/delete` method='post')
 		input(type='submit' value='Delete image')

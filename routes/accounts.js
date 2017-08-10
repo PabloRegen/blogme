@@ -238,26 +238,38 @@ module.exports = function(knex, environment) {
 
 	/* dashboard */
 	router.get('/dashboard', requireSignin(environment), (req, res) => {
-		return Promise.try(() => {
-			return knex('posts').where({
-				userId: req.currentUser.id,
-				deletedAt: null
-			}).limit(3).orderBy('id', 'desc');
-		}).map((post) => {
-			return Promise.try(() => {
-				return knex('slugs').where({
-					postId: post.id,
-					isCurrent: true
-				}).first();
-			}).then((slug) => {
-				if (slug != null) {
-					return Object.assign({slug: slug.name}, post);
-				} else {
-					throw new Error('The slug is missing');
-				}
+		return Promise.all([
+			Promise.try(() => {
+				return knex('posts').where({
+					userId: req.currentUser.id,
+					deletedAt: null
+				}).limit(3).orderBy('id', 'desc');
+			}).map((post) => {
+				return Promise.try(() => {
+					return knex('slugs').where({
+						postId: post.id,
+						isCurrent: true
+					}).first();
+				}).then((slug) => {
+					if (slug != null) {
+						return Object.assign({slug: slug.name}, post);
+					} else {
+						throw new Error('The slug is missing');
+					}
+				});
+			}),
+			knex('likedposts').where({postOwnerId: req.currentUser.id}).count(),
+			knex('likedposts').where({userId: req.currentUser.id}).count(),
+			knex('followingusers').where({followedUserId: req.currentUser.id}).count(),
+			knex('followingusers').where({userId: req.currentUser.id}).count()
+		]).spread((postsWithSlugs, likes, liking, follows, following) => {
+			res.render('accounts/dashboard', {
+				latestPosts: postsWithSlugs,
+				likes: parseInt(likes[0].count),
+				liking: parseInt(liking[0].count),
+				follows: parseInt(follows[0].count),
+				following: parseInt(following[0].count)
 			});
-		}).then((postsWithSlugs) => {
-			res.render('accounts/dashboard', {latestPosts: postsWithSlugs});
 		});
 	});
 
