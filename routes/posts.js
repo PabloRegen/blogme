@@ -20,6 +20,7 @@ const logError = rfr('lib/log-error');
 const nullIfEmptyString = rfr('lib/null-if-empty-string');
 const errors = rfr('lib/errors');
 
+const auth = rfr('middleware/auth');
 const storeTags = rfr('lib/store-tags');
 // FIXME!!! Temp storeRemoveTags
 const storeRemoveTags = rfr('lib/store-remove-tags');
@@ -59,13 +60,13 @@ module.exports = function(knex, environment) {
 
 	let storeUpload = Promise.promisify(multer({storage: storage}).single('postPic'));
 
-	let mustOwn = function(req, res, next) {
-		if (req.post.userId !== req.currentUser.id) {
-			next(new errors.ForbiddenError('This is not your post!'));
-		} else {
-			next();
-		}
-	};
+	// let mustOwn = function(req, res, next) {
+	// 	if (req.post.userId !== req.currentUser.id) {
+	// 		next(new errors.ForbiddenError('This is not your post!'));
+	// 	} else {
+	// 		next();
+	// 	}
+	// };
 
 	router.param('slug', (req, res, next, slugName) => {
 		return Promise.try(() => {
@@ -164,7 +165,8 @@ module.exports = function(knex, environment) {
 	});
 
 	/* delete */
-	router.post('/:slug/delete', requireSignin(environment), mustOwn, (req, res) => {
+	// router.post('/:slug/delete', requireSignin(environment), mustOwn, (req, res) => {
+	router.post('/:slug/delete', requireSignin(environment), auth(knex, 2), (req, res) => {
 		return Promise.try(() => {
 			return knex('posts').update({deletedAt: knex.fn.now()}).where({id: req.post.id});
 		}).then(() => {
@@ -173,7 +175,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* edit */
-	router.get('/:slug/edit', requireSignin(environment), mustOwn, (req, res) => {
+	router.get('/:slug/edit', requireSignin(environment), auth(knex, 2), (req, res) => {
 		return Promise.try(() => {
 			return getTags(req.post.id);
 		}).then((tags) => {
@@ -185,7 +187,7 @@ module.exports = function(knex, environment) {
 		});
 	});
 
-	router.post('/:slug/edit', requireSignin(environment), mustOwn, (req, res) => {
+	router.post('/:slug/edit', requireSignin(environment), auth(knex, 2), (req, res) => {
 		let postId = req.post.id;
 
 		return Promise.try(() => {
