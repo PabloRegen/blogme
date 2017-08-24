@@ -140,8 +140,8 @@ module.exports = function(knex, environment) {
 					return Promise.all([
 						storeSlug(trx)(postId, slug(req.body.title)),
 						// FIXME!!! temp storeRemoveTags
-						// (tags !== '' ? storeRemoveTags(trx)(postId, splitFilterTags(tags)) : undefined)
-						(tags !== '' ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
+						(tags !== '' ? storeRemoveTags(trx)(postId, splitFilterTags(tags)) : undefined)
+						// (tags !== '' ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
 					]).spread((slugName, _) => {
 						return slugName;
 					});
@@ -199,10 +199,10 @@ module.exports = function(knex, environment) {
 			return checkitPost(req.body);
 		}).then(() => {
 			// FIXME!!! Make this a transaction after figuring out why the transaction is giving me an error
-			// return knex.transaction(function(trx) {
+			return knex.transaction(function(trx) {
 				return Promise.try(() => {
 					if (req.body.title !== req.post.title) {
-						return storeSlug(knex)(postId, slug(req.body.title));
+						return storeSlug(trx)(postId, slug(req.body.title));
 					} else {
 						return req.params.slug;
 					}
@@ -210,7 +210,7 @@ module.exports = function(knex, environment) {
 					let tags = req.body.tags;
 
 					return Promise.try(() => {
-						return updatePost(knex)(postId, {
+						return updatePost(trx)(postId, {
 							title: req.body.title,
 							subtitle: nullIfEmptyString(req.body.subtitle),
 							body: req.body.body,
@@ -220,20 +220,20 @@ module.exports = function(knex, environment) {
 						});
 					}).then(() => {
 						// console.log('about to storeRemoveTags');
-						// storeRemoveTags(knex)(postId, splitFilterTags(tags))
+						storeRemoveTags(trx)(postId, splitFilterTags(tags))
 
-						if (tags !== '') {
-							return storeTags(knex)(postId, splitFilterTags(tags));
-						}
-					}).then(() => {
-						return removeTags(knex)(postId, splitFilterTags(tags));
+					// 	if (tags !== '') {
+					// 		return storeTags(knex)(postId, splitFilterTags(tags));
+					// 	}
+					// }).then(() => {
+					// 	return removeTags(knex)(postId, splitFilterTags(tags));
 
 					// FIXME!!! Whenever the transaction bug is solved, figure out how to move the redirect out of the transaction
 					}).then(() => {
 						res.redirect(`/posts/${slugName}`);
 					});
 				});
-			// });
+			});
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
