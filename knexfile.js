@@ -3,6 +3,7 @@
 let config = require('./config.json');
 
 module.exports = {
+    debug: true,
     client: 'postgresql',
     connection: {
         host:     config.database.hostname,
