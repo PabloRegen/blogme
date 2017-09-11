@@ -137,13 +137,19 @@ module.exports = function(knex, environment) {
 					let postId = postIds[0];
 					let tags = req.body.tags;
 
-					return Promise.all([
-						storeSlug(trx)(postId, slug(req.body.title)),
-						// FIXME!!! temp storeRemoveTags
-						(tags !== '' ? storeRemoveTags(trx)(postId, splitFilterTags(tags)) : undefined)
-						// (tags !== '' ? storeTags(trx)(postId, splitFilterTags(tags)) : undefined)
-					]).spread((slugName, _) => {
-						return slugName;
+					/* FIXME!!! There is a bug with knex subtransactions. See issue https://github.com/tgriesser/knex/issues/2213.
+					When running multiple subtransactions concurrently, they don't wait for one another; 
+					and if they complete in any order other than "the exact reverse of the order in which they were initiated", 
+					the savepoints are released in the wrong order.
+					As a workaround I removed the Promise.all that combined the tag and slug queries (both containing subtransactions),
+					and made it sequential (using .then) instead.
+					As long as there's no multiple subtransactions going on at the same time, the issue doesn't occur */
+					return Promise.try(() => {
+						if (tags !== '') {
+							return storeRemoveTags(trx)(postId, splitFilterTags(tags));
+						}
+					}).then(() => {
+						return storeSlug(trx)(postId, slug(req.body.title));
 					});
 				});
 			});
