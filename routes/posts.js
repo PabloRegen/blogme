@@ -228,7 +228,7 @@ module.exports = function(knex, environment) {
 					}).then(() => {
 						console.log('About to access storeRemoveTags from POST /edit');
 
-						storeRemoveTags(trx)(postId, splitFilterTags(tags)); // FIXME!!! RETURN!!!!!!!
+						return storeRemoveTags(trx)(postId, splitFilterTags(tags)); // FIXME!!! RETURN!!!!!!!
 
 					// 	if (tags !== '') {
 					// 		return storeTags(knex)(postId, splitFilterTags(tags));
