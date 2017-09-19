@@ -146,6 +146,8 @@ module.exports = function(knex, environment) {
 					As long as there's no multiple subtransactions going on at the same time, the issue doesn't occur */
 					return Promise.try(() => {
 						if (tags !== '') {
+							console.log('About to access storeRemoveTags from POST /create');
+
 							return storeRemoveTags(trx)(postId, splitFilterTags(tags));
 						}
 					}).then(() => {
@@ -204,7 +206,6 @@ module.exports = function(knex, environment) {
 
 			return checkitPost(req.body);
 		}).then(() => {
-			// FIXME!!! Make this a transaction after figuring out why the transaction is giving me an error
 			return knex.transaction(function(trx) {
 				return Promise.try(() => {
 					if (req.body.title !== req.post.title) {
@@ -225,8 +226,9 @@ module.exports = function(knex, environment) {
 							updatedAt: knex.fn.now()
 						});
 					}).then(() => {
-						// console.log('about to storeRemoveTags');
-						storeRemoveTags(trx)(postId, splitFilterTags(tags))
+						console.log('About to access storeRemoveTags from POST /edit');
+
+						storeRemoveTags(trx)(postId, splitFilterTags(tags)); // FIXME!!! RETURN!!!!!!!
 
 					// 	if (tags !== '') {
 					// 		return storeTags(knex)(postId, splitFilterTags(tags));
