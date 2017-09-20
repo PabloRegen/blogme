@@ -146,8 +146,6 @@ module.exports = function(knex, environment) {
 					As long as there's no multiple subtransactions going on at the same time, the issue doesn't occur */
 					return Promise.try(() => {
 						if (tags !== '') {
-							console.log('About to access storeRemoveTags from POST /create');
-
 							return storeRemoveTags(trx)(postId, splitFilterTags(tags));
 						}
 					}).then(() => {
@@ -226,27 +224,19 @@ module.exports = function(knex, environment) {
 							updatedAt: knex.fn.now()
 						});
 					}).then(() => {
-						console.log('About to access storeRemoveTags from POST /edit');
-
-						return storeRemoveTags(trx)(postId, splitFilterTags(tags)); // FIXME!!! RETURN!!!!!!!
-
-					// 	if (tags !== '') {
-					// 		return storeTags(knex)(postId, splitFilterTags(tags));
-					// 	}
-					// }).then(() => {
-					// 	return removeTags(knex)(postId, splitFilterTags(tags));
-
-					// FIXME!!! Whenever the transaction bug is solved, figure out how to move the redirect out of the transaction
+						return storeRemoveTags(trx)(postId, splitFilterTags(tags));
 					}).then(() => {
-						res.redirect(`/posts/${slugName}`);
+						return slugName;
 					});
 				});
 			});
+		}).then((slugName) => {
+			res.redirect(`/posts/${slugName}`);	
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
-			/* body needs to get passed within the render call because the form is multipart enctype */
-			/* See additional explanation at POST/create route */
+			/* body needs to get passed within the render call because the form is multipart enctype
+			See additional explanation at POST/create route */
 			res.render('posts/edit', {
 				slug: req.params.slug,
 				errors: err.errors,
@@ -318,8 +308,8 @@ module.exports = function(knex, environment) {
 			});
 		}).catch(databaseError.rethrow).catch(likingOwnPost, (err) => {
 		}).catch(duplicateLike, (err) => {
-			/* Intentionally do nothing on these 2 .catch() because both, the .catch() and the .then() redirect to the same URL */
-			/* The error is handled, .catch() returns a promise, and the next .then() will be executed */ 
+			/* Intentionally do nothing on these 2 .catch() because both, the .catch() and the .then() redirect to the same URL
+			The error is handled, .catch() returns a promise, and the next .then() will be executed */ 
 		}).then(() => {
 			res.redirect(`/posts/${req.params.slug}`);
 		});
