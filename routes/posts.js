@@ -21,12 +21,9 @@ const nullIfEmptyString = rfr('lib/null-if-empty-string');
 const errors = rfr('lib/errors');
 
 const auth = rfr('middleware/auth');
-const storeTags = rfr('lib/store-tags');
-// FIXME!!! Temp storeRemoveTags
 const storeRemoveTags = rfr('lib/store-remove-tags');
 const storeSlug = rfr('lib/store-slug');
 const storePost = rfr('lib/store-post');
-const removeTags = rfr('lib/remove-tags');
 const updatePost = rfr('lib/update-post');
 
 let duplicateLike = {
