@@ -105,6 +105,33 @@ module.exports = function(knex, environment) {
 			}
 		});
 	});
+	
+	/* overview all posts */
+	router.get('/overview', requireSignin(environment), (req, res) => {
+		return Promise.try(() => {
+			return knex('posts').where({userId: req.currentUser.id}).orderBy('postedAt', 'desc');
+		}).map((post) => {
+			return Promise.all([
+				knex('likedposts').where({postId: post.id}).count(),
+				Promise.try(() => {
+					return knex('slugs').where({
+						postId: post.id,
+						isCurrent: true
+					}).first();
+				}).then((slug) => {
+					if (slug != null) {
+						return slug;
+					} else {
+						throw new Error('The slug is missing');
+					}
+				})
+			]).spread((likes, slug) => {
+				return Object.assign({likes: parseInt(likes[0].count)}, {slug: slug.name}, post);
+			});
+		}).then((postsWithLikesAndSlugs) => {
+			res.render('posts/overview', {postsWithLikesAndSlugs: postsWithLikesAndSlugs});
+		});
+	});
 
 	/* create */
 	router.get('/create', requireSignin(environment), (req, res) => {

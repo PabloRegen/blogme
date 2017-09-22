@@ -1,0 +1,57 @@
+extends ../layouts/layout
+
+block title
+	|posts overview
+
+block content
+
+	- var posts = postsWithLikesAndSlugs
+
+	h1 Posts overview
+
+	h2 Your current posts
+
+	ul
+		each post in posts
+			if post.deletedAt == null
+				div: a(href=`/posts/${post.slug}`)= post.title 
+				div #{post.subtitle}
+				div posted on #{post.postedAt}
+				if post.updatedAt != null
+					div updated on #{post.updatedAt}
+				div #{post.likes} likes
+				if post.isVisible
+					div is visible
+				else
+					div is not visible
+				if post.isDraft
+					div is draft
+				else
+					div is not draft
+				div ---
+		else
+			div You don't have any current posts yet
+
+	h2 Your deleted posts
+
+	ul
+		each post in posts
+			if post.deletedAt != null
+				div: a(href=`/posts/${post.slug}`)= post.title
+				div #{post.subtitle}
+				div posted on #{post.postedAt}
+				if post.updatedAt != null
+					div updated on #{post.updatedAt}
+				div deleted on #{post.deletedAt}
+				div #{post.likes} likes
+				if post.isVisible
+					div is visible
+				else
+					div is not visible
+				if post.isDraft
+					div is draft
+				else
+					div is not draft
+				div ---
+		else
+			div You don't have any deleted posts
