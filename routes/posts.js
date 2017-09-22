@@ -70,9 +70,9 @@ module.exports = function(knex, environment) {
 			return knex('slugs').where({name: slugName}).first();
 		}).then((slug) => {
 			if (slug == null) {
-				throw new Error('The selected post or slug does not exist');
+				throw new Error('This slug does not exist');
 			} else if (slug.isCurrent == null) {
-				throw new Error('There is a problem with the selected post');
+				throw new Error('This slug exists but its isCurrent property does not');
 			} else if (!slug.isCurrent) {
 				return Promise.try(() => {
 					return knex('slugs').where({
@@ -81,7 +81,7 @@ module.exports = function(knex, environment) {
 					}).first();
 				}).then((slug) => {
 					if (slug == null) {
-						throw new Error('There is a problem with the selected post');
+						throw new Error('This is an old slug with no current version for the post');
 					} else {
 						res.redirect(`/posts/${slug.name}`);
 					}
@@ -90,12 +90,15 @@ module.exports = function(knex, environment) {
 				return Promise.try(() => {
 					return knex('posts').where({id: slug.postId}).first();
 				}).then((post) => {
+					/* define userCase as not logged-in or logged-in but not an admin and not the post owner */
+					let userCase = !req.currentUser || (req.currentUser && req.currentUser.role < 2 && req.currentUser.id !== post.userId)
+
 					if (post == null) {
-						throw new Error('There is a problem with the selected post');
-					} else if(post.deletedAt != null) {
-						throw new Error('The selected post has been deleted');
-					} else if(!post.isVisible) {
-						throw new Error('The selected post is temporarily unavailable');
+						throw new Error('The post associated to the current version of the slug does not exist');
+					} else if(post.deletedAt != null && userCase) {
+						throw new Error('The post associated to the current version of the slug has been deleted'); // FIXME!!! make it custom error
+					} else if(!post.isVisible && userCase) {
+						throw new Error('The post associated to the current version of the slug is not visible'); // FIXME!!! make it custom error
 					} else {
 						req.post = post;
 						/* resolve 'next' (as a string) to make express-promise-router call next() internally */
