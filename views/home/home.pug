@@ -4,6 +4,9 @@ block title
 	|homepage
 
 block content
+
+	- var posts = postsWithSlugsAndOwner
+
 	p.homeTitle Create your blog. Share your stories
 
 	img(src='/images/homepage1.jpg' alt='Homepage picture')
@@ -16,6 +19,17 @@ block content
 		li Discover
 		li Follow people
 		li Like posts
+
+	h2 Latest posts
+
+	ul
+		each post in posts
+			div: a(href=`/posts/${post.slug}`)= post.title 
+			div #{post.subtitle}
+			div #{post.postedAt}
+			div #{post.owner}
+			// FIXME!!! Delete <br/>
+			<br/>
 
 	a(href='about') About the blogging platform
 	a(href='contact') Contact me

@@ -71,7 +71,7 @@ app.use((req,res,next) => {
     next();
 });
 
-app.use('/', rfr('routes/home'));
+app.use('/', rfr('routes/home')(knex, environment));
 app.use('/accounts', rfr('routes/accounts')(knex, environment));
 app.use('/posts', rfr('routes/posts')(knex, environment));
 app.use('/uploads', requireSignin(environment), rfr('routes/uploads')(knex, environment));
