@@ -23,11 +23,9 @@ module.exports = function(knex, environment) {
 			next();
 		} else {
 			return Promise.try(() => {
-				return knex('users').where({id: req.session.userId});
-			}).then((users) => {
-				let user = users[0];
-
-				if (users.length === 0 || user.deletedAt != null) {
+				return knex('users').where({id: req.session.userId}).first();
+			}).then((user) => {
+				if (user == null || user.deletedAt != null) {
 					logDestroySession(environment);
 
 					/* User still logged in but no longer exists in the db or was soft deleted, so log user out */
