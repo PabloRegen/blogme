@@ -182,7 +182,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* signout */
-	router.post('/signout', requireSignin(environment), (req, res) => {
+	router.post('/signout', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			return req.destroySession();
 		}).then(() => {
@@ -191,7 +191,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* delete */
-	router.post('/delete', requireSignin(environment), (req, res) => {
+	router.post('/delete', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			return userQuery(req.currentUser.id).update({deletedAt: knex.fn.now()});
 		}).then(() => {
@@ -202,11 +202,11 @@ module.exports = function(knex, environment) {
 	});
 
 	/* profile */
-	router.get('/profile', requireSignin(environment), (req, res) => {
+	router.get('/profile', requireSignin, (req, res) => {
 		res.render('accounts/profile');
 	});
 
-	router.post('/profile', requireSignin(environment), (req, res) => {
+	router.post('/profile', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			return userQuery(req.currentUser.id).update({pic: null});
 		}).then(() => {
@@ -215,11 +215,11 @@ module.exports = function(knex, environment) {
 	});
 
 	/* edit profile */
-	router.get('/profile/edit', requireSignin(environment), (req, res) => {
+	router.get('/profile/edit', requireSignin, (req, res) => {
 		res.render('accounts/profile-edit');
 	});
 
-	router.post('/profile/edit', requireSignin(environment), (req, res) => {
+	router.post('/profile/edit', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {	
@@ -237,7 +237,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* dashboard */
-	router.get('/dashboard', requireSignin(environment), (req, res) => {
+	router.get('/dashboard', requireSignin, (req, res) => {
 		return Promise.all([
 			Promise.try(() => {
 				return knex('posts').where({
@@ -275,7 +275,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* follow user */
-	router.post('/:followedUserId/follow', requireSignin(environment), (req, res) => {
+	router.post('/:followedUserId/follow', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			return knex('followingusers').insert({
 				userId: req.currentUser.id,
@@ -291,7 +291,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* unfollow user */
-	router.post('/:followedUserId/unfollow', requireSignin(environment), (req, res) => {
+	router.post('/:followedUserId/unfollow', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			return knex('followingusers').delete().where({
 				userId: req.currentUser.id,

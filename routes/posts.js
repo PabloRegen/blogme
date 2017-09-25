@@ -110,7 +110,7 @@ module.exports = function(knex, environment) {
 	});
 	
 	/* overview all posts */
-	router.get('/overview', requireSignin(environment), (req, res) => {
+	router.get('/overview', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			return knex('posts').where({userId: req.currentUser.id}).orderBy('postedAt', 'desc');
 		}).map((post) => {
@@ -137,11 +137,11 @@ module.exports = function(knex, environment) {
 	});
 
 	/* create */
-	router.get('/create', requireSignin(environment), (req, res) => {
+	router.get('/create', requireSignin, (req, res) => {
 		res.render('posts/create');
 	});
 
-	router.post('/create', requireSignin(environment), (req, res) => {
+	router.post('/create', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			return storeUpload(req, res);
 		}).then(() => {
@@ -198,8 +198,8 @@ module.exports = function(knex, environment) {
 	});
 
 	/* delete */
-	// router.post('/:slug/delete', requireSignin(environment), mustOwn, (req, res) => {
-	router.post('/:slug/delete', requireSignin(environment), auth(knex, 2), (req, res) => {
+	// router.post('/:slug/delete', requireSignin, mustOwn, (req, res) => {
+	router.post('/:slug/delete', requireSignin, auth(knex, 2), (req, res) => {
 		return Promise.try(() => {
 			return knex('posts').update({deletedAt: knex.fn.now()}).where({id: req.post.id});
 		}).then(() => {
@@ -208,7 +208,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* edit */
-	router.get('/:slug/edit', requireSignin(environment), auth(knex, 2), (req, res) => {
+	router.get('/:slug/edit', requireSignin, auth(knex, 2), (req, res) => {
 		return Promise.try(() => {
 			return getTags(req.post.id);
 		}).then((tags) => {
@@ -220,7 +220,7 @@ module.exports = function(knex, environment) {
 		});
 	});
 
-	router.post('/:slug/edit', requireSignin(environment), auth(knex, 2), (req, res) => {
+	router.post('/:slug/edit', requireSignin, auth(knex, 2), (req, res) => {
 		let postId = req.post.id;
 
 		return Promise.try(() => {
@@ -324,7 +324,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* like */
-	router.post('/:slug/like', requireSignin(environment), (req, res) => {
+	router.post('/:slug/like', requireSignin, (req, res) => {
 		let postId = req.post.id;
 
 		return Promise.try(() => {
@@ -343,7 +343,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* unlike */
-	router.post('/:slug/unlike', requireSignin(environment), (req, res) => {
+	router.post('/:slug/unlike', requireSignin, (req, res) => {
 		let postId = req.post.id;
 
 		return Promise.try(() => {
