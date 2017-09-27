@@ -73,22 +73,24 @@ module.exports = function(knex, environment) {
 					message: 'Please choose at least one image'
 				});
 			} else {
-				// return knex.transaction((trx) => {
-					return Promise.map(req.files, (image) => {
-						return knex('images').insert({
-							userId: req.currentUser.id,
-							path: image.filename,
-							originalName: image.originalname,
-							size: image.size,
-							// height: ,
-							// width: ,
-							// dated: 
+				return Promise.try(() => {
+					return knex.transaction((trx) => {
+						return Promise.map(req.files, (image) => {
+							return knex('images').insert({
+								userId: req.currentUser.id,
+								path: image.filename,
+								originalName: image.originalname,
+								size: image.size,
+								// height: ,
+								// width: ,
+								// dated: 
+							});
 						});
 					});
-				// });
+				}).then(() => {
+					res.redirect('/uploads/upload');
+				});
 			}
-		}).then(() => {
-			res.redirect('/uploads/upload');
 		});
 	});
 
