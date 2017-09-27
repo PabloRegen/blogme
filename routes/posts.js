@@ -108,33 +108,6 @@ module.exports = function(knex, environment) {
 			}
 		});
 	});
-	
-	/* overview all posts */
-	router.get('/overview', requireSignin, (req, res) => {
-		return Promise.try(() => {
-			return knex('posts').where({userId: req.currentUser.id}).orderBy('postedAt', 'desc');
-		}).map((post) => {
-			return Promise.all([
-				knex('likedposts').where({postId: post.id}).count(),
-				Promise.try(() => {
-					return knex('slugs').where({
-						postId: post.id,
-						isCurrent: true
-					}).first();
-				}).then((slug) => {
-					if (slug != null) {
-						return slug;
-					} else {
-						throw new Error('The slug is missing');
-					}
-				})
-			]).spread((likes, slug) => {
-				return Object.assign({likes: parseInt(likes[0].count)}, {slug: slug.name}, post);
-			});
-		}).then((postsWithLikesAndSlugs) => {
-			res.render('posts/overview', {postsWithLikesAndSlugs: postsWithLikesAndSlugs});
-		});
-	});
 
 	/* create */
 	router.get('/create', requireSignin, (req, res) => {
@@ -194,6 +167,33 @@ module.exports = function(knex, environment) {
 				errors: err.errors,
 				body: req.body
 			});
+		});
+	});
+
+	/* overview all posts */
+	router.get('/overview', requireSignin, (req, res) => {
+		return Promise.try(() => {
+			return knex('posts').where({userId: req.currentUser.id}).orderBy('postedAt', 'desc');
+		}).map((post) => {
+			return Promise.all([
+				knex('likedposts').where({postId: post.id}).count(),
+				Promise.try(() => {
+					return knex('slugs').where({
+						postId: post.id,
+						isCurrent: true
+					}).first();
+				}).then((slug) => {
+					if (slug != null) {
+						return slug;
+					} else {
+						throw new Error('The slug is missing');
+					}
+				})
+			]).spread((likes, slug) => {
+				return Object.assign({likes: parseInt(likes[0].count)}, {slug: slug.name}, post);
+			});
+		}).then((postsWithLikesAndSlugs) => {
+			res.render('posts/overview', {posts: postsWithLikesAndSlugs});
 		});
 	});
 
@@ -272,6 +272,39 @@ module.exports = function(knex, environment) {
 		});
 	});
 
+	/* like */
+	router.post('/:slug/like', requireSignin, (req, res) => {
+		let postId = req.post.id;
+
+		return Promise.try(() => {
+			return knex('likedposts').insert({
+				postId: postId,
+				userId: req.currentUser.id,
+				postOwnerId: req.post.userId
+			});
+		}).catch(databaseError.rethrow).catch(likingOwnPost, (err) => {
+		}).catch(duplicateLike, (err) => {
+			/* Intentionally do nothing on these 2 .catch() because both, the .catch() and the .then() redirect to the same URL
+			The error is handled, .catch() returns a promise, and the next .then() will be executed */ 
+		}).then(() => {
+			res.redirect(`/posts/${req.params.slug}`);
+		});
+	});
+
+	/* unlike */
+	router.post('/:slug/unlike', requireSignin, (req, res) => {
+		let postId = req.post.id;
+
+		return Promise.try(() => {
+			return knex('likedposts').delete().where({
+				postId: postId,
+				userId: req.currentUser.id
+			});
+		}).then(() => {
+			res.redirect(`/posts/${req.params.slug}`);
+		});
+	});
+
 	/* read */
 	router.get('/:slug', (req, res) => {
 		let postId = req.post.id;
@@ -320,39 +353,6 @@ module.exports = function(knex, environment) {
 					});
 				});
 			});
-		});
-	});
-
-	/* like */
-	router.post('/:slug/like', requireSignin, (req, res) => {
-		let postId = req.post.id;
-
-		return Promise.try(() => {
-			return knex('likedposts').insert({
-				postId: postId,
-				userId: req.currentUser.id,
-				postOwnerId: req.post.userId
-			});
-		}).catch(databaseError.rethrow).catch(likingOwnPost, (err) => {
-		}).catch(duplicateLike, (err) => {
-			/* Intentionally do nothing on these 2 .catch() because both, the .catch() and the .then() redirect to the same URL
-			The error is handled, .catch() returns a promise, and the next .then() will be executed */ 
-		}).then(() => {
-			res.redirect(`/posts/${req.params.slug}`);
-		});
-	});
-
-	/* unlike */
-	router.post('/:slug/unlike', requireSignin, (req, res) => {
-		let postId = req.post.id;
-
-		return Promise.try(() => {
-			return knex('likedposts').delete().where({
-				postId: postId,
-				userId: req.currentUser.id
-			});
-		}).then(() => {
-			res.redirect(`/posts/${req.params.slug}`);
 		});
 	});
 
