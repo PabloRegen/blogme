@@ -55,7 +55,7 @@ module.exports = function(knex, environment) {
 		}).then((postsWithSlugsAndOwner) => {
 			res.render('home/home', {
 				title: 'home',
-				postsWithSlugsAndOwner: postsWithSlugsAndOwner
+				posts: postsWithSlugsAndOwner
 			});
 		});
 	});
