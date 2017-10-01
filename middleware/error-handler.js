@@ -4,13 +4,15 @@ const http = require('http');
 
 module.exports = function(environment) {
 	return function(err, req, res, next) {
-		console.log('error-handler.js');
-		console.log(err);
+		if (environment === 'development') {
+			console.log('error-handler.js');
+			console.log(err);
+		}
 
 		if (res.headersSent) {
-			console.log('res.headersSent === true');
-			/* the headers have already been sent to the client so we can't start writing a new response */
-			/* therefore delegate error to Express' default error handling mechanism which kills the connection */
+			if (environment === 'development') console.log('res.headersSent === true');
+			/* the headers have already been sent to the client so we can't start writing a new response
+			therefore delegate error to Express' default error handling mechanism which kills the connection */
     		return next(err);
   		} else {
   			let errorCode;
