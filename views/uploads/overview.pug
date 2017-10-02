@@ -11,13 +11,11 @@ block content
 		each image in images
 			a(href=`/uploads/${image.id}`)
 				img(src=`/uploads/${image.path}` width='350')
-			div #{image.originalName}
-			div #{Math.round(image.size/1000)} KB
-			div URL: /uploads/#{image.path}
-			a(href=`/uploads/${image.id}/edit`) Edit data
+				div Details
+			a(href=`/uploads/${image.id}/edit`) Edit
 			if deleted !== '1'
 				form(action=`/uploads/${image.id}/delete` method='post')
-					input(type='submit' value='Delete image')
+					input(type='submit' value='Delete')
 		else
 			div You have not uploaded any images yet
 
