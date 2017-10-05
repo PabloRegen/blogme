@@ -41,9 +41,7 @@ let likingOwnPost = {
 marked.setOptions({
 	highlight: function(code) {
 		return require('highlight.js').highlightAuto(code).value;
-	},
-	gfm: true,
-	tables: true
+	}
 });
 
 module.exports = function(knex, environment) {
