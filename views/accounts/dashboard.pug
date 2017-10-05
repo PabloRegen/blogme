@@ -37,3 +37,7 @@ block content
 
 	form(action='/accounts/delete' method='post')
 		input(type='submit' value='Delete account')
+
+	if currentUser.role > 1
+		h2 Admins only
+		a(href='/accounts/passwordUpdate/admin') Update user password

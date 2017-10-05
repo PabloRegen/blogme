@@ -17,6 +17,8 @@ const logReqFile = rfr('lib/log-req-file');
 const logError = rfr('lib/log-error');
 const nullIfEmptyString = rfr('lib/null-if-empty-string');
 
+const auth = rfr('middleware/auth');
+
 let duplicateUsername = {
 	name: 'UniqueConstraintViolationError',
 	table: 'users',
@@ -178,6 +180,56 @@ module.exports = function(knex, environment) {
 
 			res.render('accounts/signin', {errors: errors});
 			// throw new errors.UnauthorizedError('Invalid password');
+		});
+	});
+
+	/* password update by admin */
+	router.get('/passwordUpdate/admin', auth(knex, 2), (req, res) => {
+		res.render('accounts/password-update-admin');
+	});
+
+	router.post('/passwordUpdate/admin', auth(knex, 2), (req, res) => {
+		logReqBody(environment, 'POST/passwordUpdate/admin req.body:', req.body);
+
+		return Promise.try(() => {
+			return checkit({
+				username: 'required',
+				email: ['required', 'email'],
+				password: ['required', 'minLength:8', 'maxLength:1024']
+			}).run(req.body);
+		}).then(() => {
+			return knex('users').where({
+				username: req.body.username,
+				email: req.body.email
+			}).first();
+		}).then((user) => {
+			if (user == null) {
+				logError(environment, 'User Error', 'Invalid username or email');
+
+				let errors = {
+					username: { message: 'Invalid username or email' },
+					email: { message: 'Invalid username or email' }
+				};
+
+				res.render('accounts/password-update-admin', {errors: errors});
+				// throw new errors.UnauthorizedError('Invalid username or email');
+			} else {
+				return Promise.try(() => {
+					return scryptForHumans.hash(req.body.password);
+				}).then((hash) => {
+					return knex('users').update({pwHash: hash}).where({
+						username: req.body.username,
+						email: req.body.email //FIXME!!! needed if I already look for username which is unique???
+					});
+				}).then(() => {
+					res.redirect('/accounts/dashboard');
+				});
+			}
+		}).catch(checkit.Error, (err) => {
+			logError(environment, 'checkitError', err);
+
+			res.render('accounts/password-update-admin', {errors: err.errors});
+			// throw new errors.ValidationError('Must enter both fields', {errors: err.errors});
 		});
 	});
 
