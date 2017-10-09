@@ -9,8 +9,7 @@ module.exports = function(knex, requiredRole) {
 			/* currentUser has enough permission or owns post */
 			next();
 		} else {
-			throw new errors.UnauthorizedError('You do not have the required permissions to access this page');
-			// next(new errors.UnauthorizedError('You do not have the required permissions to access this page'));
+			next(new errors.UnauthorizedError('You do not have the required permissions to access this page'));
 		}
 	};
 };
