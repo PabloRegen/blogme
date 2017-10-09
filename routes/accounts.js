@@ -43,6 +43,16 @@ let followingSelf = {
 	constraint: 'check_not_following_self'
 };
 
+let adminsOnlyAuth = function(requiredRole) {
+	return function(req, res, next) {
+		if (req.currentUser.role >= requiredRole) {
+			next();
+		} else {
+			throw new errors.UnauthorizedError('You do not have the required permissions to access this page');
+		}
+	};
+};
+
 module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 
@@ -184,11 +194,11 @@ module.exports = function(knex, environment) {
 	});
 
 	/* password update by admin */
-	router.get('/passwordUpdate/admin', auth(knex, 2), (req, res) => {
+	router.get('/passwordUpdate/admin', adminsOnlyAuth(2), (req, res) => {
 		res.render('accounts/password-update-admin');
 	});
 
-	router.post('/passwordUpdate/admin', auth(knex, 2), (req, res) => {
+	router.post('/passwordUpdate/admin', adminsOnlyAuth(2), (req, res) => {
 		logReqBody(environment, 'POST/passwordUpdate/admin req.body:', req.body);
 
 		return Promise.try(() => {
