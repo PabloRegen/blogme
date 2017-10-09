@@ -31,6 +31,10 @@ let knex = require('knex')(rfr('knexfile'));
 
 let app = express();
 
+/* Set values as application-wide locals variables so they are available to the templates */
+app.locals.siteName = 'BLOGME';
+app.locals.sanitizer = sanitizer;
+
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -48,17 +52,14 @@ app.use(expressSession({
 }));
 
 app.use(sessionsPromises);
-/* Make req.loginUser method available application-wide. Calling it with userID arg assigns the userID to req.session.userId */
-app.use(loginUser);
 
-/* Make values available application-wide */
-app.locals.siteName = 'BLOGME';
-app.locals.sanitizer = sanitizer;
+/* Make req.loginUser method available application-wide. Calling it with userID argument assigns the userID to req.session.userId */
+app.use(loginUser);
 
 /* Fetch current user (if logged in) so it's available application-wide as req.currentUser */
 app.use(fetchCurrentUser(knex, environment));
 
- /* Set values as request-wide template locals variables so they are available for every res.render */
+ /* Set values as request-wide locals variables so they are available only to the templates rendered during that request/response cycle */
 app.use((req,res,next) => {
     res.locals.currentUser = req.currentUser;
 
