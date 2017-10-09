@@ -194,12 +194,12 @@ module.exports = function(knex, environment) {
 	});
 
 	/* password update by admin */
-	router.get('/passwordUpdate/admin', adminsOnlyAuth(2), (req, res) => {
-		res.render('accounts/password-update-admin');
+	router.get('/users/change-password/admin', adminsOnlyAuth(2), (req, res) => {
+		res.render('accounts/change-password-admin');
 	});
 
-	router.post('/passwordUpdate/admin', adminsOnlyAuth(2), (req, res) => {
-		logReqBody(environment, 'POST/passwordUpdate/admin req.body:', req.body);
+	router.post('/users/change-password/admin', adminsOnlyAuth(2), (req, res) => {
+		logReqBody(environment, 'POST/users/change-password/admin req.body:', req.body);
 
 		return Promise.try(() => {
 			return checkit({
@@ -221,7 +221,7 @@ module.exports = function(knex, environment) {
 					email: { message: 'Invalid username or email' }
 				};
 
-				res.render('accounts/password-update-admin', {errors: errors});
+				res.render('accounts/change-password-admin', {errors: errors});
 				// throw new errors.UnauthorizedError('Invalid username or email');
 			} else {
 				return Promise.try(() => {
@@ -238,7 +238,7 @@ module.exports = function(knex, environment) {
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
-			res.render('accounts/password-update-admin', {errors: err.errors});
+			res.render('accounts/change-password-admin', {errors: err.errors});
 			// throw new errors.ValidationError('Must enter both fields', {errors: err.errors});
 		});
 	});
