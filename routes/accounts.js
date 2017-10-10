@@ -161,7 +161,6 @@ module.exports = function(knex, environment) {
 				};
 
 				res.render('accounts/signin', {errors: errors});
-				// throw new errors.UnauthorizedError('Invalid username or email');
 			} else {
 				return Promise.try(() => {
 					return scryptForHumans.verifyHash(req.body.password, user.pwHash);
@@ -178,7 +177,6 @@ module.exports = function(knex, environment) {
 			logError(environment, 'checkitError', err);
 
 			res.render('accounts/signin', {errors: err.errors});
-			// throw new errors.ValidationError('Must enter both fields', {errors: err.errors});
 		}).catch(scryptForHumans.PasswordError, (err) => {
 			logError(environment, 'scryptForHumans error', err);
 
@@ -189,7 +187,6 @@ module.exports = function(knex, environment) {
 			};
 
 			res.render('accounts/signin', {errors: errors});
-			// throw new errors.UnauthorizedError('Invalid password');
 		});
 	});
 
@@ -209,6 +206,7 @@ module.exports = function(knex, environment) {
 			}).run(req.body);
 		}).then(() => {
 			return knex('users').where({
+				/* Even if username and email are unique it's safer to input both values to protect against typo errors */
 				username: req.body.username,
 				email: req.body.email
 			}).first();
@@ -221,16 +219,14 @@ module.exports = function(knex, environment) {
 					email: { message: 'Invalid username or email' }
 				};
 
+				// FIXME!!! The render currently displays the same error message in both fields
+				// Either display which one of the two is the error or display the error just once and not for each filed
 				res.render('accounts/change-password-admin', {errors: errors});
-				// throw new errors.UnauthorizedError('Invalid username or email');
 			} else {
 				return Promise.try(() => {
 					return scryptForHumans.hash(req.body.password);
 				}).then((hash) => {
-					return knex('users').update({pwHash: hash}).where({
-						username: req.body.username,
-						email: req.body.email //FIXME!!! needed if I already look for username which is unique???
-					});
+					return knex('users').update({pwHash: hash}).where({id: user.id});
 				}).then(() => {
 					res.redirect('/accounts/dashboard');
 				});
@@ -239,7 +235,6 @@ module.exports = function(knex, environment) {
 			logError(environment, 'checkitError', err);
 
 			res.render('accounts/change-password-admin', {errors: err.errors});
-			// throw new errors.ValidationError('Must enter both fields', {errors: err.errors});
 		});
 	});
 
