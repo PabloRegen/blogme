@@ -102,6 +102,7 @@ module.exports = function(knex, environment) {
 						throw new Error('The post associated to the current version of the slug is not visible'); // FIXME!!! make it custom error
 					} else {
 						req.post = post;
+						req.ownerId = req.post.userId;
 						/* resolve 'next' (as a string) to make express-promise-router call next() internally */
 						return 'next';
 					}
@@ -200,7 +201,7 @@ module.exports = function(knex, environment) {
 
 	/* delete */
 	// router.post('/:slug/delete', requireSignin, mustOwn, (req, res) => {
-	router.post('/:slug/delete', requireSignin, auth(knex, 2), (req, res) => {
+	router.post('/:slug/delete', requireSignin, auth(2, true), (req, res) => {
 		return Promise.try(() => {
 			return knex('posts').update({deletedAt: knex.fn.now()}).where({id: req.post.id});
 		}).then(() => {
@@ -209,7 +210,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* edit */
-	router.get('/:slug/edit', requireSignin, auth(knex, 2), (req, res) => {
+	router.get('/:slug/edit', requireSignin, auth(2, true), (req, res) => {
 		return Promise.try(() => {
 			return getTags(req.post.id);
 		}).then((tags) => {
@@ -221,7 +222,7 @@ module.exports = function(knex, environment) {
 		});
 	});
 
-	router.post('/:slug/edit', requireSignin, auth(knex, 2), (req, res) => {
+	router.post('/:slug/edit', requireSignin, auth(2, true), (req, res) => {
 		let postId = req.post.id;
 
 		return Promise.try(() => {
