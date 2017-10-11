@@ -3,10 +3,11 @@
 const rfr = require('rfr');
 const errors = rfr('lib/errors');
 
-module.exports = function(knex, requiredRole) {
+module.exports = function(requiredRole, ownerAllowed = false) {
 	return function(req, res, next) {
-		if (req.currentUser.role >= requiredRole || req.currentUser.id === req.post.userId) {
-			/* currentUser has enough permission or owns post */
+		if (req.currentUser.role >= requiredRole) {
+			next();
+		} else if (ownerAllowed && req.currentUser.id === req.ownerId) {
 			next();
 		} else {
 			next(new errors.UnauthorizedError('You do not have the required permissions to access this page'));
