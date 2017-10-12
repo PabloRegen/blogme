@@ -58,14 +58,6 @@ module.exports = function(knex, environment) {
 
 	let storeUpload = Promise.promisify(multer({storage: storage}).single('postPic'));
 
-	// let mustOwn = function(req, res, next) {
-	// 	if (req.post.userId !== req.currentUser.id) {
-	// 		next(new errors.ForbiddenError('This is not your post!'));
-	// 	} else {
-	// 		next();
-	// 	}
-	// };
-
 	router.param('slug', (req, res, next, slugName) => {
 		return Promise.try(() => {
 			return knex('slugs').where({name: slugName}).first();
@@ -91,18 +83,17 @@ module.exports = function(knex, environment) {
 				return Promise.try(() => {
 					return knex('posts').where({id: slug.postId}).first();
 				}).then((post) => {
-					/* define userCase as not logged-in or logged-in but not an admin and not the post owner */
-					let userCase = !req.currentUser || (req.currentUser && req.currentUser.role < 2 && req.currentUser.id !== post.userId)
+					let isLoggedIn = (req.currentUser != null);
+					let isAdmin = (req.currentUser.role >= 2);
+					let isOwnPost = (req.currentUser.id === post.userId);
+					let userCase = (!isLoggedIn || (isLoggedIn && !isAdmin && !isOwnPost));
 
-					if (post == null) {
-						throw new Error('The post associated to the current version of the slug does not exist');
-					} else if(post.deletedAt != null && userCase) {
-						throw new Error('The post associated to the current version of the slug has been deleted'); // FIXME!!! make it custom error
-					} else if(!post.isVisible && userCase) {
-						throw new Error('The post associated to the current version of the slug is not visible'); // FIXME!!! make it custom error
+					if (post == null || (userCase && (post.deletedAt != null || !post.isVisible))) {
+						// FIXME!!! make it custom error 404 No special identifiable error message
+						throw new Error('The post associated to the current version of the slug is not visible');
 					} else {
 						req.post = post;
-						req.ownerId = req.post.userId;
+						req.ownerId = post.userId;
 						/* resolve 'next' (as a string) to make express-promise-router call next() internally */
 						return 'next';
 					}
@@ -200,7 +191,6 @@ module.exports = function(knex, environment) {
 	});
 
 	/* delete */
-	// router.post('/:slug/delete', requireSignin, mustOwn, (req, res) => {
 	router.post('/:slug/delete', requireSignin, auth(2, true), (req, res) => {
 		return Promise.try(() => {
 			return knex('posts').update({deletedAt: knex.fn.now()}).where({id: req.post.id});
