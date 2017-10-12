@@ -22,11 +22,7 @@ module.exports = function(knex, environment) {
 					}).first();
 				}).then((slug) => {
 					if (slug != null) {
-						if (slug.name != null) {
-							return slug;
-						} else {
-							throw new Error('The post slug name is missing');
-						}
+						return slug;
 					} else {
 						throw new Error('The post slug is missing');
 					}
@@ -35,11 +31,7 @@ module.exports = function(knex, environment) {
 					return knex('users').where({id: post.userId}).first();
 				}).then((user) => {
 					if (user != null) {
-						if (user.username != null) {
-							return user;
-						} else {
-							throw new Error('The post owner name is missing');
-						}
+						return user;
 					} else {
 						throw new Error('The post owner is missing');
 					}
