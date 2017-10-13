@@ -83,10 +83,18 @@ module.exports = function(knex, environment) {
 				return Promise.try(() => {
 					return knex('posts').where({id: slug.postId}).first();
 				}).then((post) => {
+					// FIXME!!! check how to simplify userCase definition by splitting it
+					// The first set throws an error if req.currentUser == null because currentUser is not defined
+
 					// let isLoggedIn = (req.currentUser != null);
 					// let isAdmin = (req.currentUser.role >= 2);
 					// let isOwnPost = (req.currentUser.id === post.userId);
 					// let userCase = (!isLoggedIn || (isLoggedIn && !isAdmin && !isOwnPost));
+
+					// let isLoggedIn = (req.currentUser != null);
+					// let isAdmin = isLoggedIn && (req.currentUser.role >= 2);
+					// let isOwnPost = isLoggedIn && (req.currentUser.id === post.userId);
+					// let userCase = (!isLoggedIn || (!isAdmin && !isOwnPost));
 
 					let userCase = (req.currentUser == null || (req.currentUser != null && req.currentUser.role < 2 && req.currentUser.id !== post.userId));
 
@@ -343,7 +351,7 @@ module.exports = function(knex, environment) {
 						follows: parseInt(follows[0].count),
 						alreadyFollowing: followedByCurrentUser != null,
 						canFollow: (req.currentUser != null) && (req.currentUser.id !== postedByUser.id),
-						canEditAndDelete: (req.currentUser != null) && (req.currentUser.id === postedByUser.id)
+						canEditAndDelete: (req.currentUser != null) && (req.currentUser.id === postedByUser.id || req.currentUser.role >= 2)
 					});
 				});
 			});
