@@ -16,7 +16,6 @@ const logReqBody = rfr('lib/log-req-body');
 const logReqFile = rfr('lib/log-req-file');
 const logError = rfr('lib/log-error');
 const nullIfEmptyString = rfr('lib/null-if-empty-string');
-
 const auth = rfr('middleware/auth');
 
 let duplicateUsername = {
@@ -180,12 +179,12 @@ module.exports = function(knex, environment) {
 		});
 	});
 
-	/* password update by admin */
-	router.get('/users/change-password/admin', auth(2), (req, res) => {
+	/* change users password by admin only */
+	router.get('/users/change-password/admin', requireSignin, auth(2), (req, res) => {
 		res.render('accounts/change-password-admin');
 	});
 
-	router.post('/users/change-password/admin', auth(2), (req, res) => {
+	router.post('/users/change-password/admin', requireSignin, auth(2), (req, res) => {
 		logReqBody(environment, 'POST/users/change-password/admin req.body:', req.body);
 
 		return Promise.try(() => {

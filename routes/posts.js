@@ -19,8 +19,8 @@ const logReqFile = rfr('lib/log-req-file');
 const logError = rfr('lib/log-error');
 const nullIfEmptyString = rfr('lib/null-if-empty-string');
 const errors = rfr('lib/errors');
-
 const auth = rfr('middleware/auth');
+
 const storeRemoveTags = rfr('lib/store-remove-tags');
 const storeSlug = rfr('lib/store-slug');
 const storePost = rfr('lib/store-post');
@@ -83,14 +83,16 @@ module.exports = function(knex, environment) {
 				return Promise.try(() => {
 					return knex('posts').where({id: slug.postId}).first();
 				}).then((post) => {
-					let isLoggedIn = (req.currentUser != null);
-					let isAdmin = (req.currentUser.role >= 2);
-					let isOwnPost = (req.currentUser.id === post.userId);
-					let userCase = (!isLoggedIn || (isLoggedIn && !isAdmin && !isOwnPost));
+					// let isLoggedIn = (req.currentUser != null);
+					// let isAdmin = (req.currentUser.role >= 2);
+					// let isOwnPost = (req.currentUser.id === post.userId);
+					// let userCase = (!isLoggedIn || (isLoggedIn && !isAdmin && !isOwnPost));
+
+					let userCase = (req.currentUser == null || (req.currentUser != null && req.currentUser.role < 2 && req.currentUser.id !== post.userId));
 
 					if (post == null || (userCase && (post.deletedAt != null || !post.isVisible))) {
-						// FIXME!!! make it custom error 404 No special identifiable error message
-						throw new Error('The post associated to the current version of the slug is not visible');
+						/* Nonexistent posts should be indistinguishable from soft-deleted and non-visible ones to those who don't have access to them */
+						throw new errors.NotFoundError('Page not found');
 					} else {
 						req.post = post;
 						req.ownerId = post.userId;
