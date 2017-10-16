@@ -174,7 +174,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* overview all posts */
-	router.get('/overview', requireSignin, (req, res) => {
+	router.get('/overview', requireSignin, auth(2, true), (req, res) => {
 		return Promise.try(() => {
 			return knex('posts').where({userId: req.currentUser.id}).orderBy('postedAt', 'desc');
 		}).map((post) => {
@@ -235,28 +235,22 @@ module.exports = function(knex, environment) {
 		}).then(() => {
 			return knex.transaction(function(trx) {
 				return Promise.try(() => {
+					return updatePost(trx)(postId, {
+						title: req.body.title,
+						subtitle: nullIfEmptyString(req.body.subtitle),
+						body: req.body.body,
+						pic: (req.file != null ? req.file.filename : undefined),
+						isDraft: (req.body.publish == null),
+						updatedAt: knex.fn.now()
+					});
+				}).then(() => {
+					return storeRemoveTags(trx)(postId, splitFilterTags(req.body.tags));
+				}).then(() => {
 					if (req.body.title !== req.post.title) {
 						return storeSlug(trx)(postId, slug(req.body.title));
 					} else {
 						return req.params.slug;
 					}
-				}).then((slugName) => {
-					let tags = req.body.tags;
-
-					return Promise.try(() => {
-						return updatePost(trx)(postId, {
-							title: req.body.title,
-							subtitle: nullIfEmptyString(req.body.subtitle),
-							body: req.body.body,
-							pic: (req.file != null ? req.file.filename : undefined),
-							isDraft: (req.body.publish == null),
-							updatedAt: knex.fn.now()
-						});
-					}).then(() => {
-						return storeRemoveTags(trx)(postId, splitFilterTags(tags));
-					}).then(() => {
-						return slugName;
-					});
 				});
 			});
 		}).then((slugName) => {
