@@ -14,6 +14,7 @@ const logReqFile = rfr('lib/log-req-file');
 const logError = rfr('lib/log-error');
 const nullIfEmptyString = rfr('lib/null-if-empty-string');
 const errors = rfr('lib/errors');
+const auth = rfr('middleware/auth');
 
 module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
@@ -44,12 +45,17 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return imageQuery(id);
 		}).then((image) => {
-			if (image == null) {
-				throw new Error('The selected image does not exist');
-			} else if (image.userId !== req.currentUser.id) {
-				throw new errors.ForbiddenError('This is not your image!');
+			let isAdmin = (req.currentUser.role >= 2);
+			let isOwnImage = (req.currentUser.id === image.userId);
+			let userCase = !isAdmin && !isOwnImage;
+
+			if (image == null || (userCase && image.deletedAt != null)) {
+				throw new errors.NotFoundError('The selected image does not exist');
+			// } else if (image.userId !== req.currentUser.id) {
+			// 	throw new errors.ForbiddenError('This is not your image!');
 			} else {
 				req.image = image;
+				req.ownerId = image.userId;
 				/* resolve 'next' (as a string) to make express-promise-router call next() internally */
 				return 'next';
 			}
@@ -95,11 +101,11 @@ module.exports = function(knex, environment) {
 	});
 
 	/* edit */
-	router.get('/:id/edit', (req, res) => {
+	router.get('/:id/edit', auth(2, true), (req, res) => {
 		res.render('uploads/edit', {image: req.image});
 	});
 
-	router.post('/:id/edit', (req, res) => {
+	router.post('/:id/edit', auth(2, true), (req, res) => {
 		logReqBody(environment, 'POST/:id/edit req.body:', req.body);
 
 		return Promise.try(() => {
@@ -117,7 +123,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* delete */
-	router.post('/:id/delete', (req, res) => {
+	router.post('/:id/delete', auth(2, true), (req, res) => {
 		logReqBody(environment, 'POST/:id/delete req.body:', req.body);
 
 		return Promise.try(() => {
@@ -128,7 +134,7 @@ module.exports = function(knex, environment) {
 	});
 
 	/* display one image with its details */
-	router.get('/:id', (req, res) => {
+	router.get('/:id', auth(2, true), (req, res) => {
 		res.render('uploads/details', {image: req.image});
 	});
 
