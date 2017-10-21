@@ -51,8 +51,6 @@ module.exports = function(knex, environment) {
 
 			if (image == null || (userCase && image.deletedAt != null)) {
 				throw new errors.NotFoundError('The selected image does not exist');
-			// } else if (image.userId !== req.currentUser.id) {
-			// 	throw new errors.ForbiddenError('This is not your image!');
 			} else {
 				req.image = image;
 				req.ownerId = image.userId;

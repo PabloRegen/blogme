@@ -10,7 +10,7 @@ module.exports = function(requiredRole, ownerAllowed = false) {
 		} else if (ownerAllowed && req.currentUser.id === req.ownerId) {
 			next();
 		} else {
-			next(new errors.UnauthorizedError('You do not have the required permissions to access this page'));
+			next(new errors.ForbiddenError('You do not have the required permissions to access this page'));
 		}
 	};
 };
