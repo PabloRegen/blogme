@@ -146,7 +146,18 @@ module.exports = function(knex, environment) {
 			throw new Error('This page does not exist');
 		} else {
 			let images = function() {
-				let query = knex('images').where({userId: req.currentUser.id});
+				let isAdmin = (req.currentUser.role >= 2);
+				let userID;
+
+				if (req.query.user_id != null && !isAdmin) {
+					throw new errors.ForbiddenError('You do not have the required permissions to access this page');
+				} else if (req.query.user_id != null && isAdmin) {
+					userID = parseInt(req.query.user_id);
+				} else {
+					userID = req.currentUser.id;
+				}
+
+				let query = knex('images').where({userId: userID});
 
 				if (req.query.deleted !== '1') {
 					return query.whereNull('deletedAt');
