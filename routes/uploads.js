@@ -145,19 +145,39 @@ module.exports = function(knex, environment) {
 		if (page < 1) {
 			throw new Error('This page does not exist');
 		} else {
-			let images = function() {
+			let userID = function() {
 				let isAdmin = (req.currentUser.role >= 2);
-				let userID;
+				let username = req.query.username;
 
-				if (req.query.user_id != null && !isAdmin) {
+				if (username == null) {
+					console.log('1');
+					return req.currentUser.id;
+				} else if (!isAdmin) {
+					console.log('2');
 					throw new errors.ForbiddenError('You do not have the required permissions to access this page');
-				} else if (req.query.user_id != null && isAdmin) {
-					userID = parseInt(req.query.user_id);
+				} else if (username.trim() === '') {
+					console.log('3');
+					throw new Error('Please enter the username to submit');
 				} else {
-					userID = req.currentUser.id;
+					console.log('4');
+					return Promise.try(() => {
+						return knex('users').where({username: username.trim()}).first();
+					}).then((user) => {
+						if (user == null) {
+							console.log('4A');
+							// FIXME!!! render overview template with error instead
+							throw new Error('This username does not exist');
+						} else {
+							console.log('4B');
+							console.log('user.id: ', user.id);
+							return user.id;
+						}
+					});
 				}
+			};
 
-				let query = knex('images').where({userId: userID});
+			let images = function() {				
+				let query = knex('images').where({userId: userID()});
 
 				if (req.query.deleted !== '1') {
 					return query.whereNull('deletedAt');

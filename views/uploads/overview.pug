@@ -7,6 +7,12 @@ block content
 	h1 Image manager
 	h2 Overview
 
+	if currentUser.role > 1
+		form(action='/uploads/overview/1' method='get')
+			p Admins only: Enter username of user to overview images
+			input(type='text' name='username')
+			input(type='submit' value='Submit')
+
 	ul
 		each image in images
 			a(href=`/uploads/${image.id}`)
