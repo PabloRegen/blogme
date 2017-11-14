@@ -24,7 +24,7 @@ module.exports = function(knex, environment) {
 					if (slug != null) {
 						return slug;
 					} else {
-						throw new Error('The post slug is missing');
+						throw new Error(`The slug is missing for post id # ${post.id}`);
 					}
 				}),
 				Promise.try(() => {
@@ -33,7 +33,7 @@ module.exports = function(knex, environment) {
 					if (user != null) {
 						return user;
 					} else {
-						throw new Error('The post owner is missing');
+						throw new Error(`The owner is missing for post id # ${post.id}`);
 					}
 				})
 			]).spread((slug, owner) => {
