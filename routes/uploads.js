@@ -158,6 +158,7 @@ module.exports = function(knex, environment) {
 				} else if (username.trim() === '') {
 					console.log('3');
 					throw new Error('Please enter the username to submit');
+					// FIXME!!! res.render('uploads/overview', {errors: 'Please enter the username to submit'});
 				} else {
 					console.log('4');
 					return Promise.try(() => {

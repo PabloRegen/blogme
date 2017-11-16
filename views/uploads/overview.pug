@@ -11,6 +11,8 @@ block content
 		form(action='/uploads/overview/1' method='get')
 			p Admins only: Enter username of user to overview images
 			input(type='text' name='username')
+			// if errors != null
+				|<br/> #{errors}
 			input(type='submit' value='Submit')
 
 	ul
