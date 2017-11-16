@@ -143,7 +143,7 @@ module.exports = function(knex, environment) {
 		let imageNumber = (page - 1) * imagesPerPage;
 
 		if (page < 1) {
-			throw new Error('This page does not exist');
+			throw new errors.NotFoundError('This page does not exist');
 		} else {
 			let userID = function() {
 				let isAdmin = (req.currentUser.role >= 2);
@@ -193,7 +193,7 @@ module.exports = function(knex, environment) {
 				let numberOfPages = Math.ceil(parseInt(numberOfImages[0].count) / imagesPerPage);
 
 				if (page > numberOfPages && numberOfPages > 0) {
-					throw new Error('This page does not exist');
+					throw new errors.NotFoundError('This page does not exist');
 				} else {
 					res.render('uploads/overview', {
 						images: images,
