@@ -290,7 +290,7 @@ module.exports = function(knex, environment) {
 					userId: req.currentUser.id,
 					deletedAt: null,
 					isVisible: true
-				}).limit(3).orderBy('id', 'desc');
+				}).orderBy('id', 'desc').limit(3);
 			}).map((post) => {
 				return Promise.try(() => {
 					return knex('slugs').where({
@@ -301,7 +301,7 @@ module.exports = function(knex, environment) {
 					if (slug != null) {
 						return Object.assign({slug: slug.name}, post);
 					} else {
-						throw new Error('The slug is missing');
+						throw new Error(`The slug is missing for post id # ${post.id}`);
 					}
 				});
 			}),
