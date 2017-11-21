@@ -27,15 +27,7 @@ module.exports = function(knex, environment) {
 						throw new Error(`The slug is missing for post id # ${post.id}`);
 					}
 				}),
-				Promise.try(() => {
-					return knex('users').where({id: post.userId}).first();
-				}).then((user) => {
-					if (user != null) {
-						return user;
-					} else {
-						throw new Error(`The owner is missing for post id # ${post.id}`);
-					}
-				})
+				knex('users').where({id: post.userId}).first()
 			]).spread((slug, owner) => {
 				return Object.assign(
 					{}, 
