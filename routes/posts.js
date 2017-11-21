@@ -40,7 +40,11 @@ let likingOwnPost = {
 
 marked.setOptions({
 	highlight: function(code) {
-		return require('highlight.js').highlightAuto(code).value;
+		/* TODO: investigate if there's a better way to fix the background color not showing (marked doesn't explicitly support highlight.js)
+		Wrapped the original code in a div with the `hljs` class, which the highlight.js stylesheet uses to set the background color
+		ideally I'd be able to set the `hljs` class directly on the <pre> that `marked` produces, but `marked` may not have this option
+		Original code: return require('highlight.js').highlightAuto(code).value; */
+		return `<div class="hljs">${require('highlight.js').highlightAuto(code).value}</div>`;
 	}
 });
 
@@ -158,6 +162,17 @@ module.exports = function(knex, environment) {
 			});
 		}).then((slugName) => {
 			res.redirect(`/posts/${slugName}`);
+		}).catch(errors.AlreadyUsedTitleError, (err) => {
+			let errors = {
+				title: {
+					message: err.message
+				}
+			};
+
+			res.render('posts/create', {
+				errors: errors,
+				body: req.body
+			});
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
@@ -254,7 +269,19 @@ module.exports = function(knex, environment) {
 				});
 			});
 		}).then((slugName) => {
-			res.redirect(`/posts/${slugName}`);	
+			res.redirect(`/posts/${slugName}`);
+		}).catch(errors.AlreadyUsedTitleError, (err) => {
+			let errors = {
+				title: {
+					message: err.message
+				}
+			};
+
+			res.render('posts/create', {
+				slug: req.params.slug,
+				errors: errors,
+				body: req.body
+			});
 		}).catch(checkit.Error, (err) => {
 			logError(environment, 'checkitError', err);
 
