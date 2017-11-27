@@ -290,7 +290,7 @@ module.exports = function(knex, environment) {
 					userId: req.currentUser.id,
 					deletedAt: null,
 					isVisible: true
-				}).orderBy('id', 'desc').limit(3);
+				}).orderBy('postedAt', 'desc').limit(3);
 			}).map((post) => {
 				return Promise.try(() => {
 					return knex('slugs').where({
