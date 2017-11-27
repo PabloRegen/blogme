@@ -194,22 +194,25 @@ module.exports = function(knex, environment) {
 				password: ['required', 'minLength:8', 'maxLength:1024']
 			}).run(req.body);
 		}).then(() => {
-			return knex('users').where({
-				/* Even if username and email are unique it's safer to input both values to protect against typo errors */
-				username: req.body.username,
-				email: req.body.email
-			}).first();
+			return knex('users').where({username: req.body.username}).first();
 		}).then((user) => {
 			if (user == null) {
-				logError(environment, 'User Error', 'Invalid username or email');
+				logError(environment, 'Admin Error', 'Invalid username');
 
 				let errors = {
-					username: { message: 'Invalid username or email' },
-					email: { message: 'Invalid username or email' }
+					username: {message: 'Invalid username'}
 				};
 
-				// FIXME!!! The render currently displays the same error message in both fields
-				// Either display which one of the two is the error or display the error just once and not for each filed
+				res.render('accounts/change-password-admin', {errors: errors});
+
+			/* In spite of username and email being unique values, it's safer to input both to protect against typo errors */
+			} else if (user.email !== req.body.email) {
+				logError(environment, 'Admin Error', "Invalid selected user's email");
+
+				let errors = {
+					email: {message: "Invalid selected user's email"}
+				};
+
 				res.render('accounts/change-password-admin', {errors: errors});
 			} else {
 				return Promise.try(() => {
