@@ -329,7 +329,7 @@ module.exports = function(knex, environment) {
 		let postId = req.post.id;
 
 		return Promise.try(() => {
-			return knex('users').where({id: req.post.userId}).first();
+			return knex('users').where({id: req.ownerId}).first();
 		}).then((postedByUser) => {
 			return Promise.try(() => {
 				return getTags(postId);
