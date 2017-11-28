@@ -67,20 +67,20 @@ module.exports = function(knex, environment) {
 			return knex('slugs').where({name: slugName}).first();
 		}).then((slug) => {
 			if (slug == null) {
-				throw new Error('This slug does not exist');
-			} else if (slug.isCurrent == null) {
-				throw new Error('This slug exists but its isCurrent property does not');
+				/* Could be a user error or a bug (rare enough case, so I'm assuming the former here)
+				TODO: check bug case somewhere else where it can't be a user error (if such place exists) */
+				throw new errors.NotFoundError('No such post exists');
 			} else if (!slug.isCurrent) {
 				return Promise.try(() => {
 					return knex('slugs').where({
 						postId: slug.postId,
 						isCurrent: true
 					}).first();
-				}).then((slug) => {
-					if (slug == null) {
-						throw new Error('This is an old slug with no current version for the post');
+				}).then((currentSlug) => {
+					if (currentSlug == null) {
+						throw new Error(`Post id ${slug.postId} has no current slug version of old slug id ${slug.id} named: ${slug.name}`);
 					} else {
-						res.redirect(`/posts/${slug.name}`);
+						res.redirect(`/posts/${currentSlug.name}`);
 					}
 				});
 			} else {
