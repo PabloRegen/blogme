@@ -297,13 +297,11 @@ module.exports = function(knex, environment) {
 
 	/* like */
 	router.post('/:slug/like', requireSignin, (req, res) => {
-		let postId = req.post.id;
-
 		return Promise.try(() => {
 			return knex('likedposts').insert({
-				postId: postId,
+				postId: req.post.id,
 				userId: req.currentUser.id,
-				postOwnerId: req.post.userId
+				postOwnerId: req.ownerId
 			});
 		}).catch(databaseError.rethrow).catch(likingOwnPost, (err) => {
 		}).catch(duplicateLike, (err) => {
@@ -316,11 +314,9 @@ module.exports = function(knex, environment) {
 
 	/* unlike */
 	router.post('/:slug/unlike', requireSignin, (req, res) => {
-		let postId = req.post.id;
-
 		return Promise.try(() => {
 			return knex('likedposts').delete().where({
-				postId: postId,
+				postId: req.post.id,
 				userId: req.currentUser.id
 			});
 		}).then(() => {
