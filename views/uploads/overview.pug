@@ -9,7 +9,7 @@ block content
 
 	if currentUser.role > 1
 		form(action='/uploads/overview/1' method='get')
-			p Admins only: Enter username of user to overview images
+			p Enter username to overview user's images
 			input(type='text' name='username')
 			// if errors != null
 				|<br/> #{errors}
