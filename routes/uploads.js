@@ -182,32 +182,40 @@ module.exports = function(knex, environment) {
 				}
 			};
 
-			let images = function() {				
-				let query = knex('images').where({userId: userID()});
+			let images = function() {
+				return Promise.try(() => {
+					return userID();
+				}).then((userID) => {			
+					let query = knex('images').where({userId: userID});
 
-				if (req.query.deleted !== '1') {
-					return query.whereNull('deletedAt');
-				} else {
-					return query.whereNotNull('deletedAt');
-				}
+					if (req.query.deleted !== '1') {
+						return query.whereNull('deletedAt');
+					} else {
+						return query.whereNotNull('deletedAt');
+					}
+				});
 			};
 
-			return Promise.all([
-				images().offset(imageNumber).limit(imagesPerPage), 
-				images().count()
-			]).spread((images, numberOfImages) => {
-				let numberOfPages = Math.ceil(parseInt(numberOfImages[0].count) / imagesPerPage);
+			return Promise.try(() => {
+				return images();
+			}).then((imagesArray) => {
+				return Promise.all([
+					imagesArray.offset(imageNumber).limit(imagesPerPage), 
+					imagesArray.count()
+				]).spread((images, numberOfImages) => {
+					let numberOfPages = Math.ceil(parseInt(numberOfImages[0].count) / imagesPerPage);
 
-				if (page > numberOfPages && numberOfPages > 0) {
-					throw new errors.NotFoundError('This page does not exist');
-				} else {
-					res.render('uploads/overview', {
-						images: images,
-						page: page,
-						numberOfPages: numberOfPages,
-						deleted: req.query.deleted
-					});
-				}
+					if (page > numberOfPages && numberOfPages > 0) {
+						throw new errors.NotFoundError('This page does not exist');
+					} else {
+						res.render('uploads/overview', {
+							images: images,
+							page: page,
+							numberOfPages: numberOfPages,
+							deleted: req.query.deleted
+						});
+					}
+				});
 			});
 		}
 	});
