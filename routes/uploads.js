@@ -146,76 +146,60 @@ module.exports = function(knex, environment) {
 			throw new errors.NotFoundError('This page does not exist');
 		} else {
 			let userID = function() {
-				let isAdmin = (req.currentUser.role >= 2);
-				let username = req.query.username;
-
-				console.log('----- I am within `let userID = function() {` -----');
-				console.log('isAdmin: ', isAdmin);
-				console.log('username = req.query.username = ', username);
-				console.log('typeof username: ', typeof username);
-
-				if (username == null) {
-					console.log('1. username == null -> username was not provided on query');
-					return req.currentUser.id;
-				} else if (!isAdmin) {
-					console.log('2. A username was provided on query by a non admin');
-					throw new errors.ForbiddenError('You do not have the required permissions to access this page');
-				} else if (username.trim() === '') {
-					console.log('3. An empty username was provided on query by an admin');
-					throw new Error('Please enter the username to be submitted');
-					// FIXME!!! res.render('uploads/overview', {errors: 'Please enter the username to submit'});
-				} else {
-					console.log('4. A username was provided on query by an admin');
-					return Promise.try(() => {
-						return knex('users').where({username: username.trim()}).first();
-					}).then((user) => {
-						if (user == null) {
-							console.log('4A. The provided username does not exist');
-							// FIXME!!! render overview template with error instead
-							throw new Error('This username does not exist');
-						} else {
-							console.log('4B. OK. The provided username exists');
-							console.log('user.id: ', user.id);
-							return user.id;
-						}
-					});
-				}
-			};
-
-			let images = function() {
 				return Promise.try(() => {
-					return userID();
-				}).then((userID) => {			
-					let query = knex('images').where({userId: userID});
+					let isAdmin = (req.currentUser.role >= 2);
+					let username = req.query.username;
 
-					if (req.query.deleted !== '1') {
-						return query.whereNull('deletedAt');
+					if (username == null) {
+						return req.currentUser.id;
+					} else if (!isAdmin) {
+						throw new errors.ForbiddenError('You do not have the required permissions to access this page');
+					} else if (username.trim() === '') {
+						throw new Error('Please enter the username to be submitted');
+						// FIXME!!! res.render('uploads/overview', {errors: 'Please enter the username to submit'});
 					} else {
-						return query.whereNotNull('deletedAt');
-					}
-				});
-			};
-
-			return Promise.try(() => {
-				return images();
-			}).then((imagesArray) => {
-				return Promise.all([
-					imagesArray.offset(imageNumber).limit(imagesPerPage), 
-					imagesArray.count()
-				]).spread((images, numberOfImages) => {
-					let numberOfPages = Math.ceil(parseInt(numberOfImages[0].count) / imagesPerPage);
-
-					if (page > numberOfPages && numberOfPages > 0) {
-						throw new errors.NotFoundError('This page does not exist');
-					} else {
-						res.render('uploads/overview', {
-							images: images,
-							page: page,
-							numberOfPages: numberOfPages,
-							deleted: req.query.deleted
+						return Promise.try(() => {
+							return knex('users').where({username: username.trim()}).first();
+						}).then((user) => {
+							if (user == null) {
+								// FIXME!!! render overview template with error instead
+								throw new Error('This username does not exist');
+							} else {
+								return user.id;
+							}
 						});
 					}
 				});
+			};
+
+			let images = function() {
+				if (req.query.deleted !== '1') {
+					return knex('images').whereNull('deletedAt');
+				} else {
+					return knex('images').whereNotNull('deletedAt');
+				}
+			};
+
+			return Promise.try(() => {
+				return userID();
+			}).then((userID) => {
+				return Promise.all([
+					images().where({userId: userID}).offset(imageNumber).limit(imagesPerPage), 
+					images().where({userId: userID}).count()
+				]);
+			}).spread((images, numberOfImages) => {
+				let numberOfPages = Math.ceil(parseInt(numberOfImages[0].count) / imagesPerPage);
+
+				if (page > numberOfPages && numberOfPages > 0) {
+					throw new errors.NotFoundError('This page does not exist');
+				} else {
+					res.render('uploads/overview', {
+						images: images,
+						page: page,
+						numberOfPages: numberOfPages,
+						deleted: req.query.deleted
+					});
+				}
 			});
 		}
 	});
