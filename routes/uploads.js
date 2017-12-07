@@ -47,9 +47,9 @@ module.exports = function(knex, environment) {
 		}).then((image) => {
 			let isAdmin = (req.currentUser.role >= 2);
 			let isOwnImage = (req.currentUser.id === image.userId);
-			let userCase = !isAdmin && !isOwnImage;
+			let currentUserCase = !isAdmin && !isOwnImage;
 
-			if (image == null || (userCase && image.deletedAt != null)) {
+			if (image == null || (currentUserCase && image.deletedAt != null)) {
 				throw new errors.NotFoundError('The selected image does not exist');
 			} else {
 				req.image = image;

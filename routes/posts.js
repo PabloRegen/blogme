@@ -189,7 +189,8 @@ module.exports = function(knex, environment) {
 	});
 
 	/* overview all posts */
-	router.get('/overview', requireSignin, auth(2, true), (req, res) => {
+	// FIXME!!! auth does not work here -> router.get('/overview', requireSignin, auth(2, true), (req, res) => {
+	router.get('/overview', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			return knex('posts').where({userId: req.currentUser.id}).orderBy('postedAt', 'desc');
 		}).map((post) => {
