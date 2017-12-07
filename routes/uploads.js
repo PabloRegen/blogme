@@ -197,7 +197,8 @@ module.exports = function(knex, environment) {
 						images: images,
 						page: page,
 						numberOfPages: numberOfPages,
-						deleted: req.query.deleted
+						deleted: req.query.deleted,
+						username: req.query.username
 					});
 				}
 			});

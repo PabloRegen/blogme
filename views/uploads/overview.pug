@@ -27,13 +27,18 @@ block content
 		else
 			div You have not uploaded any images yet
 
-	if page > 1
-		a(href=`/uploads/overview/${page - 1}`) Prev - 
-
-	if page < numberOfPages
-		a(href=`/uploads/overview/${page + 1}`) Next
-
-	if numberOfPages > 0
-		|  Page #{page} / #{numberOfPages}
-
-	a(href='/uploads/upload') Upload images
+	if username == null
+		if page > 1
+			a(href=`/uploads/overview/${page - 1}`) Prev -
+		if page < numberOfPages
+			a(href=`/uploads/overview/${page + 1}`) Next
+		if numberOfPages > 0
+			|  Page #{page} / #{numberOfPages}
+		a(href='/uploads/upload') Upload images
+	else
+		if page > 1
+			a(href=`/uploads/overview/${page - 1}?username=${username}`) Prev -
+		if page < numberOfPages
+			a(href=`/uploads/overview/${page + 1}?username=${username}`) Next
+		if numberOfPages > 0
+			|  Page #{page} / #{numberOfPages}
