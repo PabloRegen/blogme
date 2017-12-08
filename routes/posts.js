@@ -67,7 +67,7 @@ module.exports = function(knex, environment) {
 			return knex('slugs').where({name: slugName}).first();
 		}).then((slug) => {
 			if (slug == null) {
-				/* Could be a user error or a bug (rare enough case, so I'm assuming the former here)
+				/* Could be a user error or a bug (rare enough case, so I'm assuming a user error here)
 				TODO: check bug case somewhere else where it can't be a user error (if such place exists) */
 				throw new errors.NotFoundError('No such post exists');
 			} else if (!slug.isCurrent) {

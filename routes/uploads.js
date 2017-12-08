@@ -45,11 +45,15 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			return imageQuery(id);
 		}).then((image) => {
+			if (image == null) {
+				throw new errors.NotFoundError('The selected image does not exist');
+			}
+
 			let isAdmin = (req.currentUser.role >= 2);
 			let isOwnImage = (req.currentUser.id === image.userId);
 			let currentUserCase = !isAdmin && !isOwnImage;
 
-			if (image == null || (currentUserCase && image.deletedAt != null)) {
+			if (currentUserCase && image.deletedAt != null) {
 				throw new errors.NotFoundError('The selected image does not exist');
 			} else {
 				req.image = image;
@@ -59,6 +63,25 @@ module.exports = function(knex, environment) {
 			}
 		});
 	});
+
+	// router.param('id', (req, res, next, id) => {
+	// 	return Promise.try(() => {
+	// 		return imageQuery(id);
+	// 	}).then((image) => {
+	// 		let isAdmin = (req.currentUser.role >= 2);
+	// 		let isOwnImage = (req.currentUser.id === image.userId);
+	// 		let currentUserCase = !isAdmin && !isOwnImage;
+
+	// 		if (image == null || (currentUserCase && image.deletedAt != null)) {
+	// 			throw new errors.NotFoundError('The selected image does not exist');
+	// 		} else {
+	// 			req.image = image;
+	// 			req.ownerId = image.userId;
+	// 			/* resolve 'next' (as a string) to make express-promise-router call next() internally */
+	// 			return 'next';
+	// 		}
+	// 	});
+	// });
 
 	/* upload */
 	router.get('/upload', (req, res) => {
