@@ -43,7 +43,7 @@ module.exports = function(knex, environment) {
 
 	router.param('id', (req, res, next, id) => {
 		return Promise.try(() => {
-			return imageQuery(id);
+			return imageQuery(parseInt(id));
 		}).then((image) => {
 			if (image == null) {
 				throw new errors.NotFoundError('The selected image does not exist');
@@ -161,71 +161,73 @@ module.exports = function(knex, environment) {
 
 	/* overview all images */
 	router.get('/overview/:page', (req, res) => {
-		let page = parseInt(req.params.page);
-		let imagesPerPage = 4;
-		let imageNumber = (page - 1) * imagesPerPage;
+		return Promise.try(() => {
+			let page = parseInt(req.params.page);
+			let imagesPerPage = 4;
+			let imageNumber = (page - 1) * imagesPerPage;
 
-		if (page < 1) {
-			throw new errors.NotFoundError('This page does not exist');
-		} else {
-			let userID = function() {
-				return Promise.try(() => {
-					let isAdmin = (req.currentUser.role >= 2);
-					let username = req.query.username;
+			if (page < 1) {
+				throw new errors.NotFoundError('This page does not exist');
+			} else {
+				let userID = function() {
+					return Promise.try(() => {
+						let isAdmin = (req.currentUser.role >= 2);
+						let username = req.query.username;
 
-					if (username == null) {
-						return req.currentUser.id;
-					} else if (!isAdmin) {
-						throw new errors.ForbiddenError('You do not have the required permissions to access this page');
-					} else if (username.trim() === '') {
-						throw new Error('Please enter the username to be submitted');
-						// FIXME!!! res.render('uploads/overview', {errors: 'Please enter the username to submit'});
+						if (username == null) {
+							return req.currentUser.id;
+						} else if (!isAdmin) {
+							throw new errors.ForbiddenError('You do not have the required permissions to access this page');
+						} else if (username.trim() === '') {
+							// FIXME!!! render overview template with error instead?
+							throw new Error('Please enter the username to be submitted');
+						} else {
+							return Promise.try(() => {
+								return knex('users').where({username: username.trim()}).first();
+							}).then((user) => {
+								if (user == null) {
+									// FIXME!!! render overview template with error instead?
+									throw new Error('This username does not exist');
+								} else {
+									return user.id;
+								}
+							});
+						}
+					});
+				};
+
+				let images = function() {
+					if (req.query.deleted !== '1') {
+						return knex('images').whereNull('deletedAt');
 					} else {
-						return Promise.try(() => {
-							return knex('users').where({username: username.trim()}).first();
-						}).then((user) => {
-							if (user == null) {
-								// FIXME!!! render overview template with error instead
-								throw new Error('This username does not exist');
-							} else {
-								return user.id;
-							}
+						return knex('images').whereNotNull('deletedAt');
+					}
+				};
+
+				return Promise.try(() => {
+					return userID();
+				}).then((userID) => {
+					return Promise.all([
+						images().where({userId: userID}).offset(imageNumber).limit(imagesPerPage), 
+						images().where({userId: userID}).count()
+					]);
+				}).spread((images, numberOfImages) => {
+					let numberOfPages = Math.ceil(parseInt(numberOfImages[0].count) / imagesPerPage);
+
+					if (page > numberOfPages && numberOfPages > 0) {
+						throw new errors.NotFoundError('This page does not exist');
+					} else {
+						res.render('uploads/overview', {
+							images: images,
+							page: page,
+							numberOfPages: numberOfPages,
+							deleted: req.query.deleted,
+							username: req.query.username
 						});
 					}
 				});
-			};
-
-			let images = function() {
-				if (req.query.deleted !== '1') {
-					return knex('images').whereNull('deletedAt');
-				} else {
-					return knex('images').whereNotNull('deletedAt');
-				}
-			};
-
-			return Promise.try(() => {
-				return userID();
-			}).then((userID) => {
-				return Promise.all([
-					images().where({userId: userID}).offset(imageNumber).limit(imagesPerPage), 
-					images().where({userId: userID}).count()
-				]);
-			}).spread((images, numberOfImages) => {
-				let numberOfPages = Math.ceil(parseInt(numberOfImages[0].count) / imagesPerPage);
-
-				if (page > numberOfPages && numberOfPages > 0) {
-					throw new errors.NotFoundError('This page does not exist');
-				} else {
-					res.render('uploads/overview', {
-						images: images,
-						page: page,
-						numberOfPages: numberOfPages,
-						deleted: req.query.deleted,
-						username: req.query.username
-					});
-				}
-			});
-		}
+			}
+		});
 	});
 
 	return router;
