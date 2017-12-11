@@ -165,6 +165,7 @@ module.exports = function(knex, environment) {
 			let page = parseInt(req.params.page);
 			let imagesPerPage = 4;
 			let imageNumber = (page - 1) * imagesPerPage;
+			let username = req.query.username;
 
 			if (page < 1) {
 				throw new errors.NotFoundError('This page does not exist');
@@ -172,7 +173,6 @@ module.exports = function(knex, environment) {
 				let userID = function() {
 					return Promise.try(() => {
 						let isAdmin = (req.currentUser.role >= 2);
-						let username = req.query.username;
 
 						if (username == null) {
 							return req.currentUser.id;
@@ -222,7 +222,7 @@ module.exports = function(knex, environment) {
 							page: page,
 							numberOfPages: numberOfPages,
 							deleted: req.query.deleted,
-							username: req.query.username
+							username: username == null ? '' : `?username=${username}`
 						});
 					}
 				});
