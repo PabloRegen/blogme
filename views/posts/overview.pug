@@ -24,9 +24,19 @@ block content
 			|  - not draft
 
 	h1 Posts overview
-	h2 Your posts
+
+	if currentUser.role > 1
+		form(action='/posts/overview' method='get')
+			p Enter username to overview user's posts
+			input(type='text' name='username')
+			input(type='submit' value='Submit')
+		if username !== ''
+			| These are #{username}'s posts
+		else
+			| These are your posts
+
 	ul
 		each post in posts
 			+postDetails(post) 
 		else
-			div You don't have any current posts
+			div You don't have any posts yet

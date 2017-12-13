@@ -189,30 +189,62 @@ module.exports = function(knex, environment) {
 	});
 
 	/* overview all posts */
-	// FIXME!!! auth does not work here -> router.get('/overview', requireSignin, auth(2, true), (req, res) => {
 	router.get('/overview', requireSignin, (req, res) => {
 		return Promise.try(() => {
-			return knex('posts').where({userId: req.currentUser.id}).orderBy('postedAt', 'desc');
-		}).map((post) => {
-			return Promise.all([
-				knex('likedposts').where({postId: post.id}).count(),
-				Promise.try(() => {
-					return knex('slugs').where({
-						postId: post.id,
-						isCurrent: true
-					}).first();
-				}).then((slug) => {
-					if (slug != null) {
-						return slug;
+			let username = req.query.username;
+
+			let userID = function() {
+				return Promise.try(() => {
+					if (username == null) {
+						return req.currentUser.id;
+					} else if (req.currentUser.role < 2) {
+						throw new errors.ForbiddenError('You do not have the required permissions to access this page');
+					} else if (username.trim() === '') {
+						// TODO!!! render overview template with error instead?
+						throw new Error('Please enter the username to be submitted');
 					} else {
-						throw new Error(`The slug is missing or there is no current slug for post id ${post.id}`);
+						return Promise.try(() => {
+							return knex('users').where({username: username.trim()}).first();
+						}).then((user) => {
+							if (user == null) {
+								// TODO!!! render overview template with error instead?
+								throw new Error('This username does not exist');
+							} else {
+								return user.id;
+							}
+						});
 					}
-				})
-			]).spread((likes, slug) => {
-				return Object.assign({likes: parseInt(likes[0].count)}, {slug: slug.name}, post);
+				});
+			};
+
+			return Promise.try(() => {
+				return userID();
+			}).then((userID) => {
+				return knex('posts').where({userId: userID}).orderBy('postedAt', 'desc');
+			}).map((post) => {
+				return Promise.all([
+					knex('likedposts').where({postId: post.id}).count(),
+					Promise.try(() => {
+						return knex('slugs').where({
+							postId: post.id,
+							isCurrent: true
+						}).first();
+					}).then((slug) => {
+						if (slug != null) {
+							return slug;
+						} else {
+							throw new Error(`The slug is missing or there is no current slug for post id ${post.id}`);
+						}
+					})
+				]).spread((likes, slug) => {
+					return Object.assign({likes: parseInt(likes[0].count)}, {slug: slug.name}, post);
+				});
+			}).then((postsWithLikesAndSlugs) => {
+				res.render('posts/overview', {
+					posts: postsWithLikesAndSlugs,
+					username: username != null ? username : ''
+				});
 			});
-		}).then((postsWithLikesAndSlugs) => {
-			res.render('posts/overview', {posts: postsWithLikesAndSlugs});
 		});
 	});
 
