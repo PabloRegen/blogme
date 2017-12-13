@@ -173,21 +173,19 @@ module.exports = function(knex, environment) {
 			} else {
 				let userID = function() {
 					return Promise.try(() => {
-						let isAdmin = (req.currentUser.role >= 2);
-
 						if (username == null) {
 							return req.currentUser.id;
-						} else if (!isAdmin) {
+						} else if (req.currentUser.role < 2) {
 							throw new errors.ForbiddenError('You do not have the required permissions to access this page');
 						} else if (username.trim() === '') {
-							// FIXME!!! render overview template with error instead?
+							// TODO!!! render overview template with error instead?
 							throw new Error('Please enter the username to be submitted');
 						} else {
 							return Promise.try(() => {
 								return knex('users').where({username: username.trim()}).first();
 							}).then((user) => {
 								if (user == null) {
-									// FIXME!!! render overview template with error instead?
+									// TODO!!! render overview template with error instead?
 									throw new Error('This username does not exist');
 								} else {
 									return user.id;
