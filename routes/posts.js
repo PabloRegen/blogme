@@ -205,7 +205,7 @@ module.exports = function(knex, environment) {
 					if (slug != null) {
 						return slug;
 					} else {
-						throw new Error('The slug is missing');
+						throw new Error(`The slug is missing or there is no current slug for post id ${post.id}`);
 					}
 				})
 			]).spread((likes, slug) => {

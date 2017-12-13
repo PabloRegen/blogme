@@ -6,40 +6,27 @@ block title
 block content
 
 	mixin postDetails(post)
-		div: a(href=`/posts/${post.slug}`)= post.title 
+		div: a(href=`/posts/${post.slug}`)= post.title
 		div #{post.subtitle}
 		if post.deletedAt != null
-			div deleted on #{post.deletedAt}
-		div posted on #{post.postedAt}
+			div deleted #{post.deletedAt}
+		div posted #{post.postedAt}
 		if post.updatedAt != null
-			div updated on #{post.updatedAt}
-		else
-			div never updated
-		div #{post.likes} likes
+			div updated #{post.updatedAt}
+		| #{post.likes} likes
 		if post.isVisible
-			div visible
+			|  - visible
 		else
-			div not visible
+			|  - not visible
 		if post.isDraft
-			div draft
+			|  - draft
 		else
-			div not draft
-		// FIXME!!! Delete <br/>
-		<br/>
+			|  - not draft
 
 	h1 Posts overview
-	h2 Your current posts
+	h2 Your posts
 	ul
 		each post in posts
-			if post.deletedAt == null
-				+postDetails(post) 
+			+postDetails(post) 
 		else
 			div You don't have any current posts
-
-	h2 Your deleted posts
-	ul
-		each post in posts
-			if post.deletedAt != null
-				+postDetails(post)
-		else
-			div You don't have any deleted posts
