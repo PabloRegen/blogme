@@ -166,6 +166,7 @@ module.exports = function(knex, environment) {
 			let imagesPerPage = 4;
 			let imageNumber = (page - 1) * imagesPerPage;
 			let username = req.query.username;
+			let deleted = req.query.deleted;
 
 			if (page < 1) {
 				throw new errors.NotFoundError('This page does not exist');
@@ -197,7 +198,7 @@ module.exports = function(knex, environment) {
 				};
 
 				let images = function() {
-					if (req.query.deleted !== '1') {
+					if (deleted !== '1') {
 						return knex('images').whereNull('deletedAt');
 					} else {
 						return knex('images').whereNotNull('deletedAt');
@@ -221,8 +222,9 @@ module.exports = function(knex, environment) {
 							images: images,
 							page: page,
 							numberOfPages: numberOfPages,
-							deleted: req.query.deleted,
-							username: username == null ? '' : `?username=${username}`
+							deleted: deleted !== '1' ? '' : '1',
+							username: username == null ? '' : `username=${username}`,
+							usernameForAdmin: username == null ? '' : `${username}`
 						});
 					}
 				});

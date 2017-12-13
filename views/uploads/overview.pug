@@ -11,13 +11,25 @@ block content
 		form(action='/uploads/overview/1' method='get')
 			p Enter username to overview user's images
 			input(type='text' name='username')
+			input(type='hidden' name='deleted' value=`${deleted}`)
 			input(type='submit' value='Submit')
+		if username !== ''
+			form(action='/uploads/overview/1' method='get')
+				| These are #{usernameForAdmin}'s #{deleted !== '1' ? 'current' : 'deleted'} images
+				input(type='hidden' name='username' value=`${usernameForAdmin}`)
+				input(type='hidden' name='deleted' value=`${deleted !== '1' ? '1' : ''}`)
+				input(type='submit' value=`Check ${deleted !== '1' ? 'deleted' : 'current'}`)
+	else
+		form(action='/uploads/overview/1' method='get')
+			| These are your #{deleted !== '1' ? 'current' : 'deleted'} images
+			input(type='hidden' name='deleted' value=`${deleted !== '1' ? '1' : ''}`)
+			input(type='submit' value=`See your ${deleted !== '1' ? 'deleted' : 'current'} ones`)
 
 	ul
 		each image in images
 			a(href=`/uploads/${image.id}`)
 				img(src=`/uploads/${image.path}` width='350')
-				div Details
+				| Details
 			a(href=`/uploads/${image.id}/edit`) Edit
 			if deleted !== '1'
 				form(action=`/uploads/${image.id}/delete` method='post')
@@ -25,11 +37,11 @@ block content
 		else
 			div You have not uploaded any images yet
 
-		if page > 1
-			a(href=`/uploads/overview/${page - 1}${username}`) Prev -
-		if page < numberOfPages
-			a(href=`/uploads/overview/${page + 1}${username}`) Next
-		if numberOfPages > 0
-			|  Page #{page} / #{numberOfPages}
-		if username === ''
-			a(href='/uploads/upload') Upload images
+	if page > 1
+		a(href=`/uploads/overview/${page - 1}?${username}&deleted=${deleted}`) Prev -
+	if page < numberOfPages
+		a(href=`/uploads/overview/${page + 1}?${username}&deleted=${deleted}`) Next
+	if numberOfPages > 0
+		|  Page #{page} / #{numberOfPages}
+	if username === ''
+		a(href='/uploads/upload') Upload images
