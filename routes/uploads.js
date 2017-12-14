@@ -16,6 +16,8 @@ const nullIfEmptyString = rfr('lib/null-if-empty-string');
 const errors = rfr('lib/errors');
 const auth = rfr('middleware/auth');
 
+const userID = rfr('lib/userID');
+
 module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
 
@@ -35,7 +37,6 @@ module.exports = function(knex, environment) {
 		limits: limits
 	}).array('images', 20));
 	// req.files is array of `images`. Optionally error out if more than maxCount files are uploaded
-
 
 	let imageQuery = function(id) {
 		return knex('images').where({id: id}).first();
@@ -171,30 +172,6 @@ module.exports = function(knex, environment) {
 			if (page < 1) {
 				throw new errors.NotFoundError('This page does not exist');
 			} else {
-				let userID = function() {
-					return Promise.try(() => {
-						if (username == null) {
-							return req.currentUser.id;
-						} else if (req.currentUser.role < 2) {
-							throw new errors.ForbiddenError('You do not have the required permissions to access this page');
-						} else if (username.trim() === '') {
-							// TODO!!! render overview template with error instead?
-							throw new Error('Please enter the username to be submitted');
-						} else {
-							return Promise.try(() => {
-								return knex('users').where({username: username.trim()}).first();
-							}).then((user) => {
-								if (user == null) {
-									// TODO!!! render overview template with error instead?
-									throw new Error('This username does not exist');
-								} else {
-									return user.id;
-								}
-							});
-						}
-					});
-				};
-
 				let images = function() {
 					if (deleted !== '1') {
 						return knex('images').whereNull('deletedAt');
@@ -204,7 +181,7 @@ module.exports = function(knex, environment) {
 				};
 
 				return Promise.try(() => {
-					return userID();
+					return userID(knex)(username, req.currentUser);
 				}).then((userID) => {
 					return Promise.all([
 						images().where({userId: userID}).offset(imageNumber).limit(imagesPerPage), 

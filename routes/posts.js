@@ -25,6 +25,7 @@ const storeRemoveTags = rfr('lib/store-remove-tags');
 const storeSlug = rfr('lib/store-slug');
 const storePost = rfr('lib/store-post');
 const updatePost = rfr('lib/update-post');
+const userID = rfr('lib/userID');
 
 let duplicateLike = {
 	name: 'UniqueConstraintViolationError',
@@ -193,32 +194,8 @@ module.exports = function(knex, environment) {
 		return Promise.try(() => {
 			let username = req.query.username;
 
-			let userID = function() {
-				return Promise.try(() => {
-					if (username == null) {
-						return req.currentUser.id;
-					} else if (req.currentUser.role < 2) {
-						throw new errors.ForbiddenError('You do not have the required permissions to access this page');
-					} else if (username.trim() === '') {
-						// TODO!!! render overview template with error instead?
-						throw new Error('Please enter the username to be submitted');
-					} else {
-						return Promise.try(() => {
-							return knex('users').where({username: username.trim()}).first();
-						}).then((user) => {
-							if (user == null) {
-								// TODO!!! render overview template with error instead?
-								throw new Error('This username does not exist');
-							} else {
-								return user.id;
-							}
-						});
-					}
-				});
-			};
-
 			return Promise.try(() => {
-				return userID();
+				return userID(knex)(username, req.currentUser);
 			}).then((userID) => {
 				return knex('posts').where({userId: userID}).orderBy('postedAt', 'desc');
 			}).map((post) => {
