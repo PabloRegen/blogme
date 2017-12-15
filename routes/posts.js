@@ -79,7 +79,7 @@ module.exports = function(knex, environment) {
 					}).first();
 				}).then((currentSlug) => {
 					if (currentSlug == null) {
-						throw new Error(`Post id ${slug.postId} has no current slug version of old slug id ${slug.id} named: ${slug.name}`);
+						throw new Error(`Post id ${slug.postId} has no current slug version of old slug id ${slug.id} named ${slug.name}`);
 					} else {
 						res.redirect(`/posts/${currentSlug.name}`);
 					}
@@ -88,22 +88,22 @@ module.exports = function(knex, environment) {
 				return Promise.try(() => {
 					return knex('posts').where({id: slug.postId}).first();
 				}).then((post) => {
-					// FIXME!!! check how to simplify userCase definition by splitting it
-					// The first set throws an error if req.currentUser == null because currentUser is not defined
+					if (post == null) {
+						throw new errors.NotFoundError('Page not found');
+					}
 
-					// let isLoggedIn = (req.currentUser != null);
-					// let isAdmin = (req.currentUser.role >= 2);
-					// let isOwnPost = (req.currentUser.id === post.userId);
-					// let userCase = (!isLoggedIn || (isLoggedIn && !isAdmin && !isOwnPost));
+					let isLoggedIn = (req.currentUser != null);
+					/* TODO: confirm if and why both commented out userCase's are identical. They both seem to work
+					isAdmin and IsOwnPost need isLoggedIn within their definition otherwise they throw errors when currentUser is not defined
+					let isAdmin = isLoggedIn && (req.currentUser.role >= 2);
+					let isOwnPost = isLoggedIn && (req.currentUser.id === post.userId);
+					let userCase = !isLoggedIn || (!isAdmin && !isOwnPost);
+					let userCase = !isAdmin && !isOwnPost;
+					*/
+					let userCase = !isLoggedIn || (req.currentUser.role < 2 && req.currentUser.id !== post.userId);
+					let postIsDeletedOrNotVisible = (post.deletedAt != null) || !post.isVisible
 
-					// let isLoggedIn = (req.currentUser != null);
-					// let isAdmin = isLoggedIn && (req.currentUser.role >= 2);
-					// let isOwnPost = isLoggedIn && (req.currentUser.id === post.userId);
-					// let userCase = (!isLoggedIn || (!isAdmin && !isOwnPost));
-
-					let userCase = (req.currentUser == null || (req.currentUser != null && req.currentUser.role < 2 && req.currentUser.id !== post.userId));
-
-					if (post == null || (userCase && (post.deletedAt != null || !post.isVisible))) {
+					if (userCase && postIsDeletedOrNotVisible) {
 						/* Nonexistent posts should be indistinguishable from soft-deleted and non-visible ones to those who don't have access to them */
 						throw new errors.NotFoundError('Page not found');
 					} else {
