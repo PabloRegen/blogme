@@ -15,15 +15,20 @@ block content
 			input(type='submit' value='Submit')
 		if username !== ''
 			form(action='/uploads/overview/1' method='get')
-				| These are #{usernameForAdmin}'s #{deleted !== '1' ? 'current' : 'deleted'} images
+				| Displaying #{usernameForAdmin}'s #{deleted !== '1' ? 'current' : 'deleted'} images
 				input(type='hidden' name='username' value=`${usernameForAdmin}`)
 				input(type='hidden' name='deleted' value=`${deleted !== '1' ? '1' : ''}`)
-				input(type='submit' value=`Check ${deleted !== '1' ? 'deleted' : 'current'}`)
+				input(type='submit' value=`Display ${deleted !== '1' ? 'deleted' : 'current'}`)
+		else
+			form(action='/uploads/overview/1' method='get')
+				| Displaying your #{deleted !== '1' ? 'current' : 'deleted'} images
+				input(type='hidden' name='deleted' value=`${deleted !== '1' ? '1' : ''}`)
+				input(type='submit' value=`Display ${deleted !== '1' ? 'deleted' : 'current'}`)
 	else
 		form(action='/uploads/overview/1' method='get')
-			| These are your #{deleted !== '1' ? 'current' : 'deleted'} images
+			| Displaying #{deleted !== '1' ? 'current' : 'deleted'} images
 			input(type='hidden' name='deleted' value=`${deleted !== '1' ? '1' : ''}`)
-			input(type='submit' value=`See your ${deleted !== '1' ? 'deleted' : 'current'} ones`)
+			input(type='submit' value=`Display ${deleted !== '1' ? 'deleted' : 'current'}`)
 
 	ul
 		each image in images

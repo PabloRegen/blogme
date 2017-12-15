@@ -31,9 +31,9 @@ block content
 			input(type='text' name='username')
 			input(type='submit' value='Submit')
 		if username !== ''
-			| These are #{username}'s posts
+			| Displaying #{username}'s posts
 		else
-			| These are your posts
+			| Displaying your posts
 
 	ul
 		each post in posts
