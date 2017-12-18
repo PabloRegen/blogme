@@ -287,7 +287,7 @@ module.exports = function(knex, environment) {
 				}
 			};
 
-			res.render('posts/create', {
+			res.render('posts/edit', {
 				slug: req.params.slug,
 				errors: errors,
 				body: req.body
