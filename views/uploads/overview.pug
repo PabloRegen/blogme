@@ -11,12 +11,12 @@ block content
 		form(action='/uploads/overview/1' method='get')
 			p Enter username to overview user's images
 			input(type='text' name='username')
-			input(type='hidden' name='deleted' value=`${deleted}`)
+			input(type='hidden' name='deleted' value=deleted)
 			input(type='submit' value='Submit')
 		if username !== ''
 			form(action='/uploads/overview/1' method='get')
-				| Displaying #{usernameForAdmin}'s #{deleted !== '1' ? 'current' : 'deleted'} images
-				input(type='hidden' name='username' value=`${usernameForAdmin}`)
+				| Displaying #{username}'s #{deleted !== '1' ? 'current' : 'deleted'} images
+				input(type='hidden' name='username' value=username)
 				input(type='hidden' name='deleted' value=`${deleted !== '1' ? '1' : ''}`)
 				input(type='submit' value=`Display ${deleted !== '1' ? 'deleted' : 'current'}`)
 		else
@@ -43,9 +43,9 @@ block content
 			div You have not uploaded any images yet
 
 	if page > 1
-		a(href=`/uploads/overview/${page - 1}?${username}&deleted=${deleted}`) Prev -
+		a(href=`/uploads/overview/${page - 1}?${usernameQuery}&deleted=${deleted}`) Prev -
 	if page < numberOfPages
-		a(href=`/uploads/overview/${page + 1}?${username}&deleted=${deleted}`) Next
+		a(href=`/uploads/overview/${page + 1}?${usernameQuery}&deleted=${deleted}`) Next
 	if numberOfPages > 0
 		|  Page #{page} / #{numberOfPages}
 	if username === ''

@@ -179,8 +179,8 @@ module.exports = function(knex, environment) {
 							page: page,
 							numberOfPages: numberOfPages,
 							deleted: deleted !== '1' ? '' : '1',
-							username: username == null ? '' : `username=${username}`,
-							usernameForAdmin: username == null ? '' : `${username}`
+							username: username != null ? username : '',
+							usernameQuery: username != null ? `username=${username}` : ''
 						});
 					}
 				});
