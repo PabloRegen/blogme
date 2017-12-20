@@ -7,6 +7,8 @@ const multer = require('multer');
 const uuidV4 = require('uuid/v4');
 const path = require('path');
 const rfr = require('rfr');
+const querystring = require('querystring');
+const removeUndefined = require('remove-undefined');
 
 const requireSignin = rfr('middleware/require-signin');
 const logReqBody = rfr('lib/log-req-body');
@@ -180,7 +182,10 @@ module.exports = function(knex, environment) {
 							numberOfPages: numberOfPages,
 							deleted: deleted !== '1' ? '' : '1',
 							username: username != null ? username : '',
-							usernameQuery: username != null ? `username=${username}` : ''
+							query: querystring.stringify(removeUndefined({
+								username: username,
+								deleted: deleted
+							}))
 						});
 					}
 				});

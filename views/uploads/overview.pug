@@ -43,9 +43,9 @@ block content
 			div You have not uploaded any images yet
 
 	if page > 1
-		a(href=`/uploads/overview/${page - 1}?${usernameQuery}&deleted=${deleted}`) Prev -
+		a(href=`/uploads/overview/${page - 1}?${query}`) Prev -
 	if page < numberOfPages
-		a(href=`/uploads/overview/${page + 1}?${usernameQuery}&deleted=${deleted}`) Next
+		a(href=`/uploads/overview/${page + 1}?${query}`) Next
 	if numberOfPages > 0
 		|  Page #{page} / #{numberOfPages}
 	if username === ''
