@@ -180,11 +180,15 @@ module.exports = function(knex, environment) {
 							images: images,
 							page: page,
 							numberOfPages: numberOfPages,
-							deleted: deleted !== '1' ? '' : '1',
-							username: username != null ? username : '',
-							query: querystring.stringify(removeUndefined({
+							deleted: deleted,
+							username: username,
+							pageQuery: querystring.stringify(removeUndefined({
 								username: username,
 								deleted: deleted
+							})),
+							toggleQuery: querystring.stringify(removeUndefined({
+								username: username,
+								deleted: deleted === '1' ? '' : '1'
 							}))
 						});
 					}
