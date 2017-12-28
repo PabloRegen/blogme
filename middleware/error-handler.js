@@ -2,7 +2,7 @@
 
 const http = require('http');
 
-module.exports = function(environment) {
+module.exports = function(environment, errorReporter) {
 	return function(err, req, res, next) {
 		if (environment === 'development') {
 			console.log('error-handler.js');
@@ -33,6 +33,11 @@ module.exports = function(environment) {
 			} else {
 				if (errorCode >= 400 && errorCode < 500) {
 					res.render('error', {errorTitle: err.message});
+				} else if (errorCode === 500) {
+					errorReporter.report(err, {
+						req: req,
+						res: res
+					});
 				} else {
 					/* send short description of standard HTTP response status code to avoid exposing internal data */
 					res.render('error', {errorTitle: http.STATUS_CODES[errorCode]});
