@@ -6,18 +6,21 @@ block title
 block content
 	h1 Edit your post
 	form(action=`/posts/${slug}/edit` method='post' enctype='multipart/form-data')
+
 		p(class={invalid: errors.title != null}) Title <br/>
 			input(type='text' name='title' value=post != null ? post.title : body.title)
 			if errors.title != null
 				|<br/> #{errors.title.message}
+
 		p Subtitle <br/>
 			textarea(name='subtitle')= post != null ? post.subtitle : body.subtitle
-		p(class={invalid: errors.body != null}) Body <br/>
+
+		p Body <br/>
 			textarea(name='body' placeholder='Your article goes here...')= post != null ? post.body : body.body
-			if errors.body != null
-				|<br/> #{errors.body.message}
+
 		p Tags <br/>
 			input(type='text' name='tags' value=tags != null ? tags : body.tags)
+				
 		p Picture <br/>
 			input(type='file' name='postPic')
 		p
