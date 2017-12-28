@@ -8,6 +8,8 @@ const favicon = require('serve-favicon');
 const sanitizer = require('sanitizer');
 const expressSession = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(expressSession);
+const moment = require('moment');
+const reportErrors = require('report-errors');
 
 const requireSignin = rfr('middleware/require-signin');
 const errors = rfr('lib/errors');
@@ -27,6 +29,8 @@ if (process.env.NODE_ENV != null) {
 	environment = config.environment;
 }
 
+let errorReporter = reportErrors(path.join(__dirname, 'errors'));
+
 let knex = require('knex')(rfr('knexfile'));
 
 let app = express();
@@ -34,6 +38,7 @@ let app = express();
 /* Set values as application-wide locals variables so they are available to the templates */
 app.locals.siteName = 'BLOGME';
 app.locals.sanitizer = sanitizer;
+app.locals.moment = moment;
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -82,7 +87,7 @@ app.use((req, res, next) => {
 	next(new errors.NotFoundError('Page not found'));
 });
 
-app.use(errorHandler(environment));
+app.use(errorHandler(environment, errorReporter));
 
 app.listen(config.listen.port, () => {
 	console.log(`Server listening on port ${config.listen.port}...`);
