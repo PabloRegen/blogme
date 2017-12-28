@@ -22,10 +22,10 @@ block content
 
 	ul
 		each post in posts
-			div: a(href=`/posts/${post.slug}`)= post.title 
+			div: a(href=`/posts/${post.slug}`)= post.title
 			div #{post.subtitle}
-			div #{post.postedAt}
-			div #{post.owner}
+			div #{moment(post.postedAt).format('ll')}
+			div by #{post.owner}
 			// FIXME!!! Delete <br/>
 			<br/>
 

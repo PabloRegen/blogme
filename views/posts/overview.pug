@@ -7,17 +7,24 @@ block content
 
 	mixin postDetails(post)
 		div: a(href=`/posts/${post.slug}`)= post.title
+		
 		div #{post.subtitle}
+
 		if post.deletedAt != null
-			div deleted #{post.deletedAt}
-		div posted #{post.postedAt}
+			div deleted #{moment(post.deletedAt).format('ll')}
+
+		div posted #{moment(post.postedAt).format('ll')}
+
 		if post.updatedAt != null
-			div updated #{post.updatedAt}
+			div updated #{moment(post.updatedAt).format('ll')}
+
 		| #{post.likes} likes
+
 		if post.isVisible
 			|  - visible
 		else
 			|  - not visible
+
 		if post.isDraft
 			|  - draft
 		else
@@ -30,7 +37,7 @@ block content
 			p Enter username to overview user's posts
 			input(type='text' name='username')
 			input(type='submit' value='Submit')
-		if username !== ''
+		if username != null
 			| Displaying #{username}'s posts
 		else
 			| Displaying your posts
