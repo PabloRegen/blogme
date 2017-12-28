@@ -18,7 +18,7 @@ const nullIfEmptyString = rfr('lib/null-if-empty-string');
 const errors = rfr('lib/errors');
 const auth = rfr('middleware/auth');
 
-const userID = rfr('lib/userID');
+const userID = rfr('lib/user-id');
 
 module.exports = function(knex, environment) {
 	let router = expressPromiseRouter();
