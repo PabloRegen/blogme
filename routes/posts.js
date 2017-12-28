@@ -25,7 +25,7 @@ const storeRemoveTags = rfr('lib/store-remove-tags');
 const storeSlug = rfr('lib/store-slug');
 const storePost = rfr('lib/store-post');
 const updatePost = rfr('lib/update-post');
-const userID = rfr('lib/userID');
+const userID = rfr('lib/user-id');
 
 let duplicateLike = {
 	name: 'UniqueConstraintViolationError',
@@ -157,7 +157,13 @@ module.exports = function(knex, environment) {
 							return storeRemoveTags(trx)(postId, splitFilterTags(tags));
 						}
 					}).then(() => {
-						return storeSlug(trx)(postId, slug(req.body.title));
+						let generatedSlug = slug(req.body.title);
+
+						if (generatedSlug !== '') {
+							return storeSlug(trx)(postId, generatedSlug);
+						} else {
+							return storeSlug(trx)(postId, 'article');
+						}
 					});
 				});
 			});
@@ -219,7 +225,7 @@ module.exports = function(knex, environment) {
 			}).then((postsWithLikesAndSlugs) => {
 				res.render('posts/overview', {
 					posts: postsWithLikesAndSlugs,
-					username: username != null ? username : ''
+					username: username
 				});
 			});
 		});
