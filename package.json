@@ -28,6 +28,7 @@
     "path": "^0.12.7",
     "pg": "^6.1.2",
     "pug": "^2.0.0-beta11",
+    "remove-undefined": "^0.1.0",
     "report-errors": "^1.0.0",
     "rfr": "^1.2.3",
     "sanitizer": "^0.1.3",
