@@ -2,5 +2,7 @@
 config.json
 npm-debug.log*
 node_modules
-/uploads
-errors/*.json
+/uploads/*
+!/uploads/dummy
+/errors/*.json
+!/errors/dummy
