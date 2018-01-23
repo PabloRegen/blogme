@@ -1,0 +1,17 @@
+{
+	"database": {
+		"hostname": "localhost",
+		"username": "blogme",
+		"password": "password",
+		"database": "blogme"
+	},
+	"sessions": {
+		"secret": "secret",
+		"cookieExpiry": 86400000
+	},
+	"listen": {
+		"host": "127.0.0.1",
+		"port": 8000
+	},
+	"environment": "production"
+}
