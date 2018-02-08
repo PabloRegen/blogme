@@ -12,8 +12,11 @@ module.exports = function(environment, errorReporter) {
 		if (res.headersSent) {
 			if (environment === 'development') console.log('res.headersSent === true');
 			/* the headers have already been sent to the client so we can't start writing a new response
-			therefore delegate error to Express' default error handling mechanism which kills the connection */
-    		return next(err);
+			therefore pass the error to errorReporter which crashes the process once it has encountered and reported an error */
+    		errorReporter.report(err, {
+				req: req,
+				res: res
+			});
   		} else {
   			let errorCode;
 
