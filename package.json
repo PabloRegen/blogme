@@ -13,6 +13,7 @@
   "dependencies": {
     "bluebird": "^3.4.7",
     "body-parser": "^1.16.1",
+    "chalk": "^2.3.0",
     "checkit": "^0.7.0",
     "connect-session-knex": "^1.3.4",
     "create-error": "^0.3.1",
@@ -27,6 +28,7 @@
     "multer": "^1.3.0",
     "path": "^0.12.7",
     "pg": "^6.1.2",
+    "prompt-promise": "^1.0.3",
     "pug": "^2.0.0-beta11",
     "remove-undefined": "^0.1.0",
     "report-errors": "^1.0.0",
