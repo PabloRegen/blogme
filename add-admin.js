@@ -19,9 +19,9 @@ let duplicateEmailAddress = {
 	column: 'email'
 };
 
-let knex = require('knex')(rfr('knexfile')); 	// Is `let db =` the standard instead of `let knex =`?
+let knex = require('knex')(rfr('knexfile'));
 
-return Promise.try(() => { 						// 1st time I see a return outside of a function? Why is it there? What if it's not there?
+Promise.try(() => {
 	let username = process.argv[2];
 
 	if (username == null) {
@@ -62,31 +62,7 @@ return Promise.try(() => { 						// 1st time I see a return outside of a functio
 }).catch((err) => {
 	console.error(chalk.red.bold('An error occurred!\n===================='));
 	console.error(err);
-// .finally Docs: Pass a handler that will be called regardless of this promise's fate. Returns a new promise chained from this promise
-// .finally: means forces the callback to be called always?
 }).finally(() => {
-	knex.destroy(); // explicitly teardown the connection pool. Is destroying the connection === ending the app, or the app ends because the connection is destroyed?
+	knex.destroy();
+	promptPromise.done();
 });
-
-
-/* 
-// knexfile.js
-'use strict';
-
-const config = require('./config.json');
-
-module.exports = {
-	client: 'pg',								// client: 'postgresql' on mine. Doesn't matter?
-	connection: {
-		hostname: config.database.hostname,
-		database: config.database.database,
-		charset: 'utf8',						// mising on mine. Needed?
-		username: config.database.username,
-		password: config.database.password
-	},
-	pool: {
-		min: 2,
-		max: 10
-	}
-}
-*/
