@@ -5,9 +5,9 @@ let config = require('./config.json');
 module.exports = {
     client: 'postgresql',
     connection: {
-        host:     config.database.hostname,
+        hostname: config.database.hostname,
         database: config.database.database,
-        user:     config.database.username,
+        username: config.database.username,
         password: config.database.password
     },
     pool: {
