@@ -7,30 +7,31 @@ html
 		link(href='/css/code.css' rel='stylesheet')
 		link(href='/fonts/fonts.css' rel='stylesheet')
 	body
-		div#page
-			header.layout-header
-				div.siteName: a(href='/')= siteName
+		div#main-wrapper
+			header#main-head
+				div#siteName: a(href='/')= siteName
 
-				if currentUser != null
-					nav
+				if currentUser == null
+					nav#main-nav
+						ul
+							li: a(href='/accounts/signup') Sign up
+							li: a(href='/accounts/signin') Sign in
+
+				else
+					nav#main-nav
 						ul
 							li Hi #{currentUser.username}!
 							li: a(href='/accounts/dashboard') Dashboard
 							li: a(href='/accounts/profile') Profile
 							li: form(action='/accounts/signout' method='post')
 								input(type='submit' value='Sign out')
-				else
-					nav
-						ul
-							li: a(href='/accounts/signup') Sign up
-							li: a(href='/accounts/signin') Sign in
 
 				div.clear
 
-			div#content
+			div#main-content
 				block content
 					p #[strong Note:] This page doesn't have any content yet
 
-			footer
+			footer#main-footer
 				block footer
 					p #[strong Note:] This page doesn't have a footer yet

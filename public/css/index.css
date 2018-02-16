@@ -1,93 +1,216 @@
 body {
-    background-color: rgb(255, 255, 255);
-    color: rgb(51, 51, 51);
+    background-color: rgb(255,255,255);
+    color: rgb(51,51,51);
     font-family: 'Roboto', sans-serif;
-    font-weight: 300;
+    font-weight: 400;
     margin: 0px;
     padding: 0px;
 }
 
-#page {}
-
-header.layout-header {
-    margin: 0px;
-    padding: 15px 150px;
+#main-head {
+    /* margin: 0px; */
+    padding: 20px 245px;
     border-bottom: 1px solid #e6eaea;
     /* position: fixed; */
 }
 
-header.layout-header .siteName {
+#main-head #siteName {
     float: left;
     font-size: 1.375rem;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
+    font-weight: 700;
 }
 
-header.layout-header nav {
+#main-head #main-nav {
 	float: right;
-	letter-spacing: 1px;
 	font-size: 0.85rem;
+	letter-spacing: 1px;	
 	/* box-sizing: border-box; */
 }
 
-header.layout-header ul {
+#main-head ul {
     margin: 0px;
-    padding: 0px;
+    /* padding: 0px; */
 }
 
-header.layout-header li {
+#main-head li {
 	display: inline-block;
 	margin-left: 25px;
 	padding-top: 5px;
 	/* list-style: none; */
 }
 
-header.layout-header a {
+#main-head a {
     text-decoration: none;
-    color: rgb(0, 150, 136);
+    color: rgb(0,150,136);
     padding: 10px;
 }
 
-header.layout-header li a:hover {
+#main-head li a:hover {
 	background-color: grey;
 	color: white;
 }
 
 .clear {clear: both;}
 
-#content {
+#main-content {
     max-width: 750px;
     margin: 30px auto;
     text-align: left;
     /* box-sizing: border-box; */
 }
 
-#content article .postTitle {
- 	font-size: 36px;
- 	letter-spacing: -0.5px;
- 	line-height: 1.15;
+#main-content article .userInfo {
+	font-size: 14px;
+	line-height: 1.5;
 }
-#content article .postSubtitle {
-	color: grey;
-	font-size: 21px;
-	font-style: italic;
-	font-weight: 400;
-	line-height: 1.58;
+
+#main-content article .userPic {
+	width: 60px;
+	margin: 0 10px 30px 0;
+	border-radius: 50%;
+	float: left;
 }
-#content article .postCoverImage {
-	display: block;
-	margin-left: -345px ;
-}
-#content article .postBody {
-	line-height: 36px;
-	font-size: 17px;
+
+#main-content article .userBio {
 	color: rgb(117, 123, 133);
 }
 
-footer p{
+#main-content article .postTitle {
+ 	font-size: 36px;
+ 	letter-spacing: -0.2px;
+ 	line-height: 1.3;
+ 	margin-top: 0px;
+ 	margin-bottom: 5px;
+}
+
+#main-content article .postSubtitle {
+	font-size: 24px;
+	font-weight: 400;
+	line-height: 1.3;
+	margin-top: 0px;
+ 	margin-bottom: 20px;
+ 	color: rgb(117, 123, 133);
+}
+
+#main-content article .postCoverImage {
+	display: block;
+    margin: auto;
     max-width: 750px;
-    margin: 30px auto;
+}
+
+#main-content article .postBody {
+	font-size: 17px;
+	line-height: 1.6;
+	color: rgb(117, 123, 133);
+	margin-bottom: 50px;
+}
+
+.editDeletePost {
+	margin-bottom: 30px;
+}
+
+#main-content article .editPost {
+	float: left;
+	text-decoration: none;
+	padding: 5px 10px;
+	margin-right: 8px;
+	border-radius: 3px;
+	color: rgb(255,255,255);
+	background-color: rgb(0,150,136);
+	font-size: 14px
+}
+
+#main-content article .editPost:hover {
+	background-color: rgb(51,51,51);
+}
+
+input#submitDeletePost {
+	border: none;
+	padding: 5px 10px;
+	margin-right: 8px;
+	border-radius: 3px;
+	color: rgb(255,255,255);
+	background-color: rgb(0,150,136);
+	font-size: 14px
+}
+
+input#submitDeletePost:hover {
+	background-color: rgb(252,13,27);
+}
+
+#main-content article .likePost {
+	padding: 0px 300px;
+	margin-bottom: 30px;
+}
+
+input#submitLikePost {
+	border: none;
+	padding: 5px 10px;
+	margin-right: 8px;
+	border-radius: 3px;
+	color: rgb(255,255,255);
+	background-color: rgb(0,150,136);
+	font-size: 14px
+}
+
+input#submitLikePost:hover {
+	background-color: rgb(51,51,51);
+}
+
+input#submitFollow {
+	border: none;
+	border-radius: 3px;
+	color: rgb(255,255,255);
+	background-color: rgb(0,150,136);
+	font-size: 14px
+}
+
+input#submitFollow:hover {
+	background-color: rgb(51,51,51);
+}
+
+#main-content article .tags {
+	padding-left: 0px;
+}
+
+#main-content article .tags li {
+	display: inline-block;
+	padding: 5px 10px;
+	margin-right: 8px;
+	border-radius: 3px;
+	color: rgb(80,80,80);
+	background-color: rgb(242,242,242);
+	font-size: 14px
+	border-bottom: 1px solid #e6eaea;
+}
+
+#main-content article .tags li:hover {
+	background-color: rgb(220,220,220);
+}
+
+.end {
+	margin-bottom: 20px;
+	border-bottom: 1px solid #e6eaea;	
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: rgb(51,51,51);	
+}
+
+#main-footer {
+	box-sizing: border-box;
+    max-width: 750px;
+    padding: 30px auto;
     text-align: left;
-    box-sizing: border-box;
+
+}
+
+#main-footer .footer {
+	width: 1440px;
+	padding: 60px 50px;
+	color: rgb(117,123,133);
+    background-color: rgb(44,48,51);
 }
 
 .homeTitle {
@@ -96,4 +219,4 @@ footer p{
     letter-spacing: 1px;
 }
 
-.invalid {background-color: rgb(254, 206, 206);}
+.invalid {background-color: rgb(254,206,206);}
