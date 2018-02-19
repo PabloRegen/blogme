@@ -7,18 +7,18 @@ html
 		link(href='/css/code.css' rel='stylesheet')
 		link(href='/fonts/fonts.css' rel='stylesheet')
 	body
-		div#main-wrapper
-			header#main-head
-				div#siteName: a(href='/')= siteName
+		div.main-wrapper
+			header.main-header
+				div.siteName: a(href='/')= siteName
 
 				if currentUser == null
-					nav#main-nav
+					nav.main-nav
 						ul
 							li: a(href='/accounts/signup') Sign up
 							li: a(href='/accounts/signin') Sign in
 
 				else
-					nav#main-nav
+					nav.main-nav
 						ul
 							li Hi #{currentUser.username}!
 							li: a(href='/accounts/dashboard') Dashboard
@@ -28,10 +28,8 @@ html
 
 				div.clear
 
-			div#main-content
+			div.main-content
 				block content
 					p #[strong Note:] This page doesn't have any content yet
 
-			footer#main-footer
-				block footer
-					p #[strong Note:] This page doesn't have a footer yet
+			footer.main-footer Copyright © Blogme • 2018 • All rights reserved

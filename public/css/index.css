@@ -1,82 +1,108 @@
+/* CSS reset margin & padding */
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
 body {
     background-color: rgb(255,255,255);
     color: rgb(51,51,51);
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
-    margin: 0px;
-    padding: 0px;
 }
 
-#main-head {
-    /* margin: 0px; */
-    padding: 20px 245px;
-    border-bottom: 1px solid #e6eaea;
-    /* position: fixed; */
+h1, h2, h3, h4, h5, h6 {
+	margin: 20px 0px;
+    color: rgb(51,51,51);
 }
 
-#main-head #siteName {
-    float: left;
-    font-size: 1.375rem;
-    letter-spacing: 2px;
-    font-weight: 700;
+ul, ol, blockquote {
+	margin: 17px 0px;
+	padding-left: 40px;
 }
 
-#main-head #main-nav {
-	float: right;
-	font-size: 0.85rem;
-	letter-spacing: 1px;	
-	/* box-sizing: border-box; */
+p {
+	margin: 17px 0px;
 }
 
-#main-head ul {
-    margin: 0px;
-    /* padding: 0px; */
+p code {
+	margin: 0 2px;
+	padding: 3px 4px;
+	background-color: rgb(242,242,242);
 }
 
-#main-head li {
-	display: inline-block;
-	margin-left: 25px;
-	padding-top: 5px;
-	/* list-style: none; */
+.invalid {
+	background-color: rgb(254,206,206);
 }
 
-#main-head a {
-    text-decoration: none;
-    color: rgb(0,150,136);
-    padding: 10px;
-}
-
-#main-head li a:hover {
-	background-color: grey;
-	color: white;
-}
-
-.clear {clear: both;}
-
-#main-content .readingWidth {
+.readingWidth {
     max-width: 750px;
     margin: 30px auto;
     text-align: left;
     /* box-sizing: border-box; */
 }
 
-#main-content article .userInfo {
+.main-header {
+    padding: 20px 245px;
+    border-bottom: 1px solid #e6eaea;
+}
+
+.siteName {
+    float: left;
+    font-size: 1.375rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+.main-nav {
+	float: right;
+	font-size: 0.85rem;
+	letter-spacing: 1px;	
+	/* box-sizing: border-box; */
+}
+
+.main-header ul {
+    margin: 0px;
+    /* padding: 0px; */
+}
+
+.main-header li {
+	display: inline-block;
+	margin-left: 25px;
+	padding-top: 5px;
+	/* list-style: none; */
+}
+
+.main-header a {
+    text-decoration: none;
+    color: rgb(0,150,136);
+    padding: 10px;
+}
+
+.main-header li a:hover {
+	background-color: grey;
+	color: white;
+}
+
+.clear {clear: both;}
+
+.main-content article .userInfo {
 	font-size: 14px;
 	line-height: 1.5;
 }
 
-#main-content article .userPic {
+.main-content article .userPic {
 	width: 60px;
 	margin: 0 10px 30px 0;
 	border-radius: 50%;
 	float: left;
 }
 
-#main-content article .userBio {
+.main-content article .userBio {
 	color: rgb(117, 123, 133);
 }
 
-#main-content article .postTitle {
+.main-content article .postTitle {
  	font-size: 36px;
  	letter-spacing: -0.2px;
  	line-height: 1.3;
@@ -84,7 +110,7 @@ body {
  	margin-bottom: 5px;
 }
 
-#main-content article .postSubtitle {
+.main-content article .postSubtitle {
 	font-size: 24px;
 	font-weight: 400;
 	line-height: 1.3;
@@ -93,13 +119,13 @@ body {
  	color: rgb(117, 123, 133);
 }
 
-#main-content article .postCoverImage {
+.main-content article .postCoverImage {
 	display: block;
     margin: auto;
     max-width: 100vw;
 }
 
-#main-content article .postBody {
+.main-content article .postBody {
 	font-size: 17px;
 	line-height: 1.6;
 	color: rgb(117, 123, 133);
@@ -110,7 +136,7 @@ body {
 	margin-bottom: 30px;
 }
 
-#main-content article .editPost {
+.main-content article .editPost {
 	float: left;
 	text-decoration: none;
 	padding: 5px 10px;
@@ -121,7 +147,7 @@ body {
 	font-size: 14px
 }
 
-#main-content article .editPost:hover {
+.main-content article .editPost:hover {
 	background-color: rgb(51,51,51);
 }
 
@@ -139,7 +165,7 @@ input#submitDeletePost:hover {
 	background-color: rgb(252,13,27);
 }
 
-#main-content article .likePost {
+.main-content article .likePost {
 	padding: 0px 300px;
 	margin-bottom: 30px;
 }
@@ -170,11 +196,11 @@ input#submitFollow:hover {
 	background-color: rgb(51,51,51);
 }
 
-#main-content article .tags {
+.main-content article .tags ul {
 	padding-left: 0px;
 }
 
-#main-content article .tags li {
+.main-content article .tags li {
 	display: inline-block;
 	padding: 5px 10px;
 	margin-right: 8px;
@@ -185,7 +211,7 @@ input#submitFollow:hover {
 	border-bottom: 1px solid #e6eaea;
 }
 
-#main-content article .tags li:hover {
+.main-content article .tags li:hover {
 	background-color: rgb(220,220,220);
 }
 
@@ -194,21 +220,9 @@ input#submitFollow:hover {
 	border-bottom: 1px solid #e6eaea;	
 }
 
-h1, h2, h3, h4, h5, h6 {
-    color: rgb(51,51,51);	
-}
-
-#main-footer {
-	box-sizing: border-box;
-    max-width: 750px;
-    padding: 30px auto;
-    text-align: left;
-
-}
-
-#main-footer .footer {
-	width: 1440px;
-	padding: 60px 50px;
+.main-footer {
+    padding: 60px;
+    text-align: center;
 	color: rgb(117,123,133);
     background-color: rgb(44,48,51);
 }
@@ -218,5 +232,3 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1.375rem;
     letter-spacing: 1px;
 }
-
-.invalid {background-color: rgb(254,206,206);}
