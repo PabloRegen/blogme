@@ -6,7 +6,7 @@ block title
 block content
 	article
 		div.readingWidth
-			div.userInfo
+			div.userInfoTop
 				if postedByUser.pic != null
 					img.userPic(src=`/uploads/${postedByUser.pic}`)
 				else
@@ -18,7 +18,7 @@ block content
 				if postedByUser.bio != null
 					div.userBio #{postedByUser.bio}
 
-				div #{moment(post.postedAt).format('ll')}
+				div.postedAt #{moment(post.postedAt).format('ll')}
 
 				div.clear
 
@@ -42,11 +42,11 @@ block content
 				if alreadyLikedPost
 					// user logged-in and already liked post
 					form(action=`/posts/${slug}/unlike` method='post')
-						input(type='submit' value='Unlike' id='submitLikePost')
+						input(type='submit' value='Unlike')
 				else	
 					// user not logged-in or not liked post yet
 					form(action=`/posts/${slug}/like` method='post')
-						input(type='submit' value='Like' id='submitLikePost' disabled=(!canLike))
+						input(type='submit' value='Like' disabled=(!canLike))
 				| #{likes}
 
 			div.tags
@@ -57,7 +57,7 @@ block content
 
 			div.end
 
-			div.userInfo
+			div.userInfoBottom
 				if postedByUser.pic != null
 					img.userPic(src=`/uploads/${postedByUser.pic}`)
 				else
@@ -72,11 +72,11 @@ block content
 				if alreadyFollowing
 					// user logged-in and already following post's author
 					form(action=`/accounts/${post.userId}/unfollow?redirectToPost=${slug}` method='post')
-						input(type='submit' value='Unfollow' id='submitFollow')
+						input(type='submit' value='Unfollow')
 				else
 					// user not logged-in or not following post's author yet
 					form(action=`/accounts/${post.userId}/follow?redirectToPost=${slug}` method='post')
-						input(type='submit' value='Follow me' id='submitFollow' disabled=(!canFollow))
+						input(type='submit' value='Follow me' disabled=(!canFollow))
 
 				| #{follows}
 
