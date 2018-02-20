@@ -9,24 +9,21 @@ html
 	body
 		div.main-wrapper
 			header.main-header
-				div.siteName: a(href='/')= siteName
+				div.siteName
+					a(href='/')= siteName
 
 				if currentUser == null
 					nav.main-nav
-						ul
-							li: a(href='/accounts/signup') Sign up
-							li: a(href='/accounts/signin') Sign in
+						a(href='/accounts/signup') Sign up
+						a(href='/accounts/signin') Sign in
 
 				else
 					nav.main-nav
-						ul
-							li Hi #{currentUser.username}!
-							li: a(href='/accounts/dashboard') Dashboard
-							li: a(href='/accounts/profile') Profile
-							li: form(action='/accounts/signout' method='post')
-								input(type='submit' value='Sign out')
-
-				div.clear
+						| Hi #{currentUser.username}!
+						a(href='/accounts/dashboard') Dashboard
+						a(href='/accounts/profile') Profile
+						form(action='/accounts/signout' method='post')
+							input(type='submit' value='Sign out')
 
 			div.main-content
 				block content

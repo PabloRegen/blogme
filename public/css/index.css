@@ -31,6 +31,10 @@ p code {
 	background-color: rgb(242,242,242);
 }
 
+.clear {
+	clear: both;
+}
+
 .invalid {
 	background-color: rgb(254,206,206);
 }
@@ -43,48 +47,55 @@ p code {
 }
 
 .main-header {
-    padding: 20px 245px;
+	display: flex;
+    padding: 18px 245px;
     border-bottom: 1px solid #e6eaea;
 }
 
-.siteName {
-    float: left;
+.main-header .siteName {
+	padding-top: 6px;
+}
+
+.main-header .siteName a {
+	text-decoration: none;
+	color: rgb(0,150,136);
     font-size: 1.375rem;
-    letter-spacing: 2px;
     font-weight: 700;
+	letter-spacing: 2px;
 }
 
-.main-nav {
-	float: right;
-	font-size: 0.85rem;
-	letter-spacing: 1px;	
-	/* box-sizing: border-box; */
+.main-header .main-nav {
+    margin-left: auto;
+    font-size: 0.85rem;
+	letter-spacing: 1px;
+	color: rgb(250, 121, 35);
 }
 
-.main-header ul {
-    margin: 0px;
-    /* padding: 0px; */
-}
-
-.main-header li {
-	display: inline-block;
+.main-header .main-nav a {
 	margin-left: 25px;
-	padding-top: 5px;
-	/* list-style: none; */
-}
-
-.main-header a {
+	padding: 10px;
     text-decoration: none;
     color: rgb(0,150,136);
-    padding: 10px;
 }
 
-.main-header li a:hover {
+.main-header .main-nav form {
+	display: inline;
+}
+
+.main-header .main-nav form input {
+	margin-left: 25px;
+	padding: 9px 10px;
+	border-radius: 3px;
+	color: rgb(0,150,136);
+	font-size: 0.85rem;
+}
+
+.main-header .main-nav a:hover,
+.main-header .main-nav form input:hover {
 	background-color: grey;
 	color: white;
+	border-radius: 3px;
 }
-
-.clear {clear: both;}
 
 .main-content article .userInfo {
 	font-size: 14px;
