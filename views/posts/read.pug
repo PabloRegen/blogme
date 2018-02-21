@@ -55,7 +55,9 @@ block content
 				if tags !== []
 					i.icon-tag
 					| Tags:
-					ul
+					each tag in tags
+						span #{tag}
+					// ul
 						each tag in tags
 							li= tag
 

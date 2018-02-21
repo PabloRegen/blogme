@@ -201,31 +201,27 @@ input#submitDeletePost:hover {
 }
 
 .main-content article .tags {
+	display: flex;
+	align-items: baseline;
 	padding-bottom: 10px;
 	margin-bottom: 30px;
 	border-bottom: 1px solid #e6eaea;
 }
 
 .main-content article .tags i {
-	margin-right: 10px;
-}
-
-.main-content article .tags ul {
-	display: inline;
-}
-
-.main-content article .tags li {
-	display: inline-block;
-	padding: 5px 10px;
 	margin-right: 8px;
+}
+
+.main-content article .tags span {
+	padding: 5px 10px;
+	margin-left: 8px;
 	border-radius: 3px;
 	color: rgb(80,80,80);
 	background-color: rgb(242,242,242);
-	font-size: 14px
-	border-bottom: 1px solid #e6eaea;
+	font-size: 14px;
 }
 
-.main-content article .tags li:hover {
+.main-content article .tags span:hover {
 	background-color: rgb(220,220,220);
 }
 
