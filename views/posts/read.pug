@@ -42,20 +42,22 @@ block content
 				if alreadyLikedPost
 					// user logged-in and already liked post
 					form(action=`/posts/${slug}/unlike` method='post')
-						input(type='submit' value='Unlike')
+						button(type='submit')
+							i.icon-heart
 				else	
 					// user not logged-in or not liked post yet
 					form(action=`/posts/${slug}/like` method='post')
-						input(type='submit' value='Like' disabled=(!canLike))
+						button(type='submit' disabled=(!canLike))
+							i.icon-heart
 				| #{likes}
 
 			div.tags
 				if tags !== []
+					i.icon-tag
+					| Tags:
 					ul
 						each tag in tags
-							li= tag				
-
-			div.end
+							li= tag
 
 			div.userInfoBottom
 				if postedByUser.pic != null
@@ -76,7 +78,7 @@ block content
 				else
 					// user not logged-in or not following post's author yet
 					form(action=`/accounts/${post.userId}/follow?redirectToPost=${slug}` method='post')
-						input(type='submit' value='Follow me' disabled=(!canFollow))
+						input(type='submit' value='Follow' disabled=(!canFollow))
 
 				| #{follows}
 
