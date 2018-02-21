@@ -1,28 +1,27 @@
 /* CSS reset margin & padding */
 * {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background-color: rgb(255,255,255);
     color: rgb(51,51,51);
+	background-color: white;
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
 }
 
 h1, h2, h3, h4, h5, h6 {
-	margin: 20px 0px;
     color: rgb(51,51,51);
 }
 
 ul, ol, blockquote {
-	margin: 17px 0px;
+	margin-bottom: 17px;
 	padding-left: 40px;
 }
 
 p {
-	margin: 17px 0px;
+	margin-bottom: 17px;
 }
 
 p code {
@@ -40,14 +39,17 @@ p code {
 }
 
 .readingWidth {
+	box-sizing: border-box;
     max-width: 750px;
-    margin: 30px auto;
+    margin: 0 auto;
     text-align: left;
-    /* box-sizing: border-box; */
 }
+
+
 
 .main-header {
 	display: flex;
+	margin-bottom: 30px;
     padding: 18px 245px;
     border-bottom: 1px solid #e6eaea;
 }
@@ -92,112 +94,128 @@ p code {
 
 .main-header .main-nav a:hover,
 .main-header .main-nav form input:hover {
-	background-color: grey;
 	color: white;
+	background-color: grey;
 	border-radius: 3px;
 }
 
-.main-content article .userInfoTop {
+
+
+.main-content .userInfo {
 	font-size: 14px;
 	line-height: 1.5;
 }
 
-.main-content article .userPic {
+.main-content .userInfo .userPic {
+	float: left;
 	width: 60px;
 	margin: 0 10px 30px 0;
 	border-radius: 50%;
-	float: left;
 }
 
-.main-content article .userBio {
-	color: rgb(117, 123, 133);
+.main-content .userInfo .userBio {
+	color: rgb(117,123,133);
 }
 
-.main-content article .postedAt {
+.main-content .userInfo .postedAt {
 	color: rgb(0,150,136);
 }
 
-.main-content article .postTitle {
- 	font-size: 36px;
- 	letter-spacing: -0.2px;
- 	line-height: 1.3;
- 	margin-top: 0px;
- 	margin-bottom: 5px;
-}
-
-.main-content article .postSubtitle {
-	font-size: 24px;
-	font-weight: 400;
-	line-height: 1.3;
-	margin-top: 0px;
- 	margin-bottom: 20px;
- 	color: rgb(117, 123, 133);
-}
-
-.main-content article .postCoverImage {
-	display: block;
-    margin: auto;
-    max-width: 100vw;
-}
-
-.main-content article .postBody {
-	font-size: 17px;
-	line-height: 1.6;
-	color: rgb(117, 123, 133);
-	margin-bottom: 30px;
-}
-
-.editDeletePost {
-	margin-bottom: 30px;
-}
-
-.main-content article .editPost {
-	float: left;
-	text-decoration: none;
-	padding: 5px 10px;
-	margin-right: 8px;
-	border-radius: 3px;
-	color: rgb(255,255,255);
-	background-color: rgb(0,150,136);
-	font-size: 14px
-}
-
-.main-content article .editPost:hover {
-	background-color: rgb(51,51,51);
-}
-
-input#submitDeletePost {
-	border: none;
-	padding: 5px 10px;
-	margin-right: 8px;
-	border-radius: 3px;
-	color: rgb(255,255,255);
-	background-color: rgb(252,13,27);
-	font-size: 14px
-}
-
-input#submitDeletePost:hover {
-	background-color: rgb(252,13,27);
-}
-
-.main-content article .likePost {
-	margin: 0 0 30px 300px;
-}
-
-.main-content article .likePost form {
+.main-content .userInfo form {
 	display: inline;
 }
 
-.main-content article .likePost form button {
-	border: none;
-	margin-right: 5px;
+.main-content .userInfo form input {
+	margin-right: 7px;
+	padding: 2px 3px;
+	border-radius: 3px;
 	color: rgb(0,150,136);
-	font-size: 17px;
-	font-weight: bold;
+	font-size: 14px
 }
 
-.main-content article .likePost form button:hover {
-	color: rgb(51,51,51);
+.main-content .userInfo form input:hover {
+	color: white;
+	background-color: grey;
+}
+
+.main-content .postTitle {
+ 	font-size: 32px;
+ 	letter-spacing: 0.2px;
+ 	line-height: 1.3;
+ 	margin: 0 0 5px 0;
+}
+
+.main-content .postSubtitle {
+	font-size: 24px;
+	letter-spacing: 0.2px;
+	font-weight: 400;
+	line-height: 1.3;
+ 	margin-bottom: 20px;
+ 	color: rgb(117,123,133);
+}
+
+.main-content .postCoverImage {
+	display: block;
+	margin: 0 auto 30px auto;
+    max-width: 100vw;
+}
+
+.main-content .postBody {
+	font-size: 17px;
+	line-height: 1.6;
+	color: rgb(117,123,133);
+	margin-bottom: 30px;
+}
+
+.main-content .editDeletePost {
+	display: flex;
+	margin-bottom: 30px;
+}
+
+.main-content .editDeletePost .editPost,
+.main-content .editDeletePost .deletePost input {
+	text-decoration: none;
+	padding: 5px 10px;
+	margin-right: 8px;
+	border: 1px solid;
+	border-radius: 3px;
+	font-size: 14px;
+}
+
+.main-content .editDeletePost .editPost {
+	color: rgb(0,150,136);
+}
+
+.main-content .editDeletePost .editPost:hover {
+	color: white;
+	background-color: grey;
+}
+
+.main-content .editDeletePost .deletePost input {
+	color: rgb(252,13,27);
+}
+
+.main-content .editDeletePost .deletePost input:hover {
+	color: white;
+	background-color: rgb(252,13,27);
+}
+
+.main-content .likePost {
+	margin: 0 0 20px 300px;
+}
+
+.main-content .likePost form {
+	display: inline;
+	margin-right: 5px;
+}
+
+.main-content .likePost form button {
+	border: none;
+	font-size: 17px;
+}
+
+.main-content .likePost form button:hover {
+	color: rgb(0,150,136);
 }
 
 .main-content article .tags {
@@ -225,30 +243,10 @@ input#submitDeletePost:hover {
 	background-color: rgb(220,220,220);
 }
 
-.main-content article .userInfoBottom {
-	font-size: 14px;
-	line-height: 1.5;
-}
 
-.main-content article .userInfoBottom form {
-	display: inline;
-}
-
-.main-content article .userInfoBottom form input {
-	margin-right: 7px;
-	padding: 2px 3px;
-	border-radius: 3px;
-	color: rgb(0,150,136);
-	font-size: 14px
-}
-
-.main-content article .userInfoBottom form input:hover {
-	color: rgb(255,255,255);
-	background-color: grey;
-}
 
 .main-footer {
-    padding: 60px;
+    padding: 60px 0;
     text-align: center;
 	color: rgb(117,123,133);
     background-color: rgb(44,48,51);

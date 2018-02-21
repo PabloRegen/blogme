@@ -6,7 +6,7 @@ block title
 block content
 	article
 		div.readingWidth
-			div.userInfoTop
+			div.userInfo
 				if postedByUser.pic != null
 					img.userPic(src=`/uploads/${postedByUser.pic}`)
 				else
@@ -35,8 +35,7 @@ block content
 				div.editDeletePost
 					a.editPost(href=`/posts/${slug}/edit`) Edit post
 					form.deletePost(action=`/posts/${slug}/delete` method='post')
-						input(type='submit' value='Delete post' id='submitDeletePost')
-					div.clear
+						input(type='submit' value='Delete post')
 
 			div.likePost
 				if alreadyLikedPost
@@ -48,7 +47,7 @@ block content
 					// user not logged-in or not liked post yet
 					form(action=`/posts/${slug}/like` method='post')
 						button(type='submit' disabled=(!canLike))
-							i.icon-heart
+							i.icon-heart 
 				| #{likes}
 
 			div.tags
@@ -57,11 +56,8 @@ block content
 					| Tags:
 					each tag in tags
 						span #{tag}
-					// ul
-						each tag in tags
-							li= tag
 
-			div.userInfoBottom
+			div.userInfo
 				if postedByUser.pic != null
 					img.userPic(src=`/uploads/${postedByUser.pic}`)
 				else
