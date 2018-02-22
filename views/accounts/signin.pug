@@ -1,28 +1,22 @@
 extends ../layouts/layout
 
 block title
-	|signin
+	|login
 
 block content
 	mixin field(title)
-		p(class={invalid: errors[attributes.name] != null}) #{title} <br/>
+		p.title #{title}
 			input&attributes(attributes)
 			if errors[attributes.name] != null
-				|<br/> #{errors[attributes.name].message}
+				p.invalid #{errors[attributes.name].message}
 
-	h1 Sign in
-	form(action='/accounts/signin' method='post')
+	div.signin
+		form(action='/accounts/signin' method='post')
+			legend Login
+			+field('Username or Email')(type='text' name='usernameOrEmail' value=body.usernameOrEmail)
+			+field('Password')(type='password' name='password' value=body.password)
+			input(type='submit' value='Login')
+			p Forgot password?
 
-		+field('Username or Email')(type='text' name='usernameOrEmail' value=body.usernameOrEmail)
-		+field('Password')(type='password' name='password' value=body.password)
-
-		p
-			input(type='checkbox' name='stay_signed' checked)
-			|Remember me
-			|- Forgot password? (link)
-		p
-			input(type='submit' value='Sign in')
-		p Don't have an account?
-			|
-			|
-			a(href='/accounts/signup') Sign up »
+		p.signUp New to Blogme?
+			a(href='/accounts/signup')  Sign up
