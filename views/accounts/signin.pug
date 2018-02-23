@@ -10,7 +10,7 @@ block content
 			if errors[attributes.name] != null
 				p.invalid #{errors[attributes.name].message}
 
-	div.signin
+	div.sign
 		form(action='/accounts/signin' method='post')
 			legend Login
 			+field('Username or Email')(type='text' name='usernameOrEmail' value=body.usernameOrEmail)
