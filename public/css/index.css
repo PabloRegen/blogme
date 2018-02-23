@@ -15,6 +15,11 @@ h1, h2, h3, h4, h5, h6 {
     color: rgb(51,51,51);
 }
 
+blockquote {
+	border-left: 4px solid rgb(237,237,237);
+	font-style: italic;
+}
+
 ul, ol, blockquote {
 	margin-bottom: 17px;
 	padding-left: 40px;
@@ -45,16 +50,27 @@ p code {
     text-align: left;
 }
 
+.main-wrapper {
+	display: flex;
+	flex-flow: column nowrap;
+	/* ensure content area is as tall as the browser window */
+	height: 100vh;
+}
+
 
 
 .main-header {
 	display: flex;
+	flex-flow: row nowrap;
+	/* Prevent vertical grow so only main content pushes footer to the bottom */
+	flex: 0 0 auto;
 	margin-bottom: 30px;
     padding: 18px 245px;
     border-bottom: 1px solid #e6eaea;
 }
 
 .main-header .siteName {
+	flex: 1 0 auto;
 	padding-top: 6px;
 }
 
@@ -67,7 +83,7 @@ p code {
 }
 
 .main-header .main-nav {
-    margin-left: auto;
+	flex: 0 0 auto;
     font-size: 0.85rem;
 	letter-spacing: 1px;
 	color: rgb(250, 121, 35);
@@ -100,6 +116,11 @@ p code {
 }
 
 
+
+.main-content {
+	/* Allow vertical grow so main content pushes footer to the bottom */
+	flex: 1 0 auto;
+}
 
 .main-content article .userInfo {
 	font-size: 14px;
@@ -247,7 +268,7 @@ p code {
 
 .main-content .signin form {
 	display: flex;
-	flex-direction: column;
+	flex-flow: column nowrap;
 	box-sizing: border-box;
 	max-width: 500px;
 	margin: 0 auto 30px auto;
@@ -273,6 +294,9 @@ p code {
 	width: 100%;
 	height: 40px;
 	padding: 10px;
+	font-family: 'Roboto', sans-serif;
+	font-size: 16px;
+	color: grey;
 }
 
 .main-content .signin form p.invalid {
@@ -292,7 +316,7 @@ p code {
 	margin: 20px 0;
 	padding: 10px;
 	font-family: 'Roboto', sans-serif;
-	font-size: 14px;
+	font-size: 16px;
     font-weight: 400;
 }
 
@@ -317,10 +341,12 @@ p code {
 
 
 .main-footer {
-    padding: 60px 0;
-    text-align: center;
+	/* Prevent vertical grow otherwise it takes available space from content */
+	flex: 0 0 auto;
+    padding: 60px 60px;
+    text-align: left;
 	color: rgb(117,123,133);
-    background-color: rgb(44,48,51);
+    background: rgb(44,48,51);
 }
 
 .homeTitle {
