@@ -12,6 +12,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
+	margin-bottom: 17px;
     color: rgb(51,51,51);
 }
 
@@ -35,11 +36,24 @@ p code {
 	background-color: rgb(242,242,242);
 }
 
+li {
+	line-height: 1.6;
+}
+
+i {
+	margin-right: 8px;
+}
+
 .clear {
 	clear: both;
 }
 
 .invalid {
+	align-self: center;
+	margin-bottom: 0;
+	padding: 3px 5px;
+	border: 1px solid grey;
+	border-radius: 3px;
 	background-color: rgb(255,253,56);
 }
 
@@ -48,6 +62,37 @@ p code {
     max-width: 750px;
     margin: 0 auto;
     text-align: left;
+}
+
+.userInfo {
+	font-size: 14px;
+	line-height: 1.5;
+}
+.userInfo .userPic {
+	float: left;
+	width: 60px;
+	margin: 0 10px 30px 0;
+	border-radius: 50%;
+}
+.userInfo .userBio {
+	color: rgb(117,123,133);
+}
+.userInfo .postedAt {
+	color: rgb(0,150,136);
+}
+.userInfo form {
+	display: inline;
+}
+.userInfo form input {
+	margin-right: 7px;
+	padding: 2px 3px;
+	border-radius: 3px;
+	color: rgb(0,150,136);
+	font-size: 14px
+}
+.userInfo form input:hover {
+	color: white;
+	background-color: grey;
 }
 
 .main-wrapper {
@@ -64,16 +109,13 @@ p code {
 	flex-flow: row nowrap;
 	/* Prevent vertical grow so only main content pushes footer to the bottom */
 	flex: 0 0 auto;
-	margin-bottom: 30px;
     padding: 18px 245px;
     border-bottom: 1px solid #e6eaea;
 }
-
 .main-header .siteName {
 	flex: 1 0 auto;
 	padding-top: 6px;
 }
-
 .main-header .siteName a {
 	text-decoration: none;
 	color: rgb(0,150,136);
@@ -81,25 +123,21 @@ p code {
     font-weight: 700;
 	letter-spacing: 2px;
 }
-
 .main-header .main-nav {
 	flex: 0 0 auto;
     font-size: 0.85rem;
 	letter-spacing: 1px;
 	color: rgb(250, 121, 35);
 }
-
 .main-header .main-nav a {
 	margin-left: 25px;
 	padding: 10px;
     text-decoration: none;
     color: rgb(0,150,136);
 }
-
 .main-header .main-nav form {
 	display: inline;
 }
-
 .main-header .main-nav form input {
 	margin-left: 25px;
 	padding: 9px 10px;
@@ -107,7 +145,6 @@ p code {
 	color: rgb(0,150,136);
 	font-size: 0.85rem;
 }
-
 .main-header .main-nav a:hover,
 .main-header .main-nav form input:hover {
 	color: white;
@@ -121,51 +158,12 @@ p code {
 	/* Allow vertical grow so main content pushes footer to the bottom */
 	flex: 1 0 auto;
 }
-
-.main-content article .userInfo {
-	font-size: 14px;
-	line-height: 1.5;
-}
-
-.main-content article .userInfo .userPic {
-	float: left;
-	width: 60px;
-	margin: 0 10px 30px 0;
-	border-radius: 50%;
-}
-
-.main-content article .userInfo .userBio {
-	color: rgb(117,123,133);
-}
-
-.main-content article .userInfo .postedAt {
-	color: rgb(0,150,136);
-}
-
-.main-content article .userInfo form {
-	display: inline;
-}
-
-.main-content article .userInfo form input {
-	margin-right: 7px;
-	padding: 2px 3px;
-	border-radius: 3px;
-	color: rgb(0,150,136);
-	font-size: 14px
-}
-
-.main-content article .userInfo form input:hover {
-	color: white;
-	background-color: grey;
-}
-
 .main-content article .postTitle {
  	font-size: 32px;
  	letter-spacing: 0.2px;
  	line-height: 1.3;
  	margin: 0 0 5px 0;
 }
-
 .main-content article .postSubtitle {
 	font-size: 24px;
 	letter-spacing: 0.2px;
@@ -174,25 +172,21 @@ p code {
  	margin-bottom: 20px;
  	color: rgb(117,123,133);
 }
-
 .main-content article .postCoverImage {
 	display: block;
 	margin: 0 auto 30px auto;
     max-width: 100vw;
 }
-
 .main-content article .postBody {
 	font-size: 17px;
 	line-height: 1.6;
 	color: rgb(117,123,133);
 	margin-bottom: 30px;
 }
-
 .main-content article .editDeletePost {
 	display: flex;
 	margin-bottom: 30px;
 }
-
 .main-content article .editDeletePost .editPost,
 .main-content article .editDeletePost .deletePost input {
 	text-decoration: none;
@@ -202,43 +196,34 @@ p code {
 	border-radius: 3px;
 	font-size: 14px;
 }
-
 .main-content article .editDeletePost .editPost {
 	color: rgb(0,150,136);
 }
-
 .main-content article .editDeletePost .editPost:hover {
 	color: white;
 	background-color: grey;
 }
-
 .main-content article .editDeletePost .deletePost input {
 	color: rgb(252,13,27);
 }
-
 .main-content article .editDeletePost .deletePost input:hover {
 	color: white;
 	background-color: rgb(252,13,27);
 }
-
 .main-content article .likePost {
 	margin: 0 0 20px 300px;
 }
-
 .main-content article .likePost form {
 	display: inline;
 	margin-right: 5px;
 }
-
 .main-content article .likePost form button {
 	border: none;
 	font-size: 17px;
 }
-
 .main-content article .likePost form button:hover {
 	color: rgb(0,150,136);
 }
-
 .main-content article .tags {
 	display: flex;
 	align-items: baseline;
@@ -246,11 +231,6 @@ p code {
 	margin-bottom: 30px;
 	border-bottom: 1px solid #e6eaea;
 }
-
-.main-content article .tags i {
-	margin-right: 8px;
-}
-
 .main-content article .tags span {
 	padding: 5px 10px;
 	margin-left: 8px;
@@ -259,7 +239,6 @@ p code {
 	background-color: rgb(242,242,242);
 	font-size: 14px;
 }
-
 .main-content article .tags span:hover {
 	background-color: rgb(220,220,220);
 }
@@ -277,18 +256,15 @@ p code {
 	border-radius: 3px;
 	background-color: rgb(242,242,242);
 }
-
 .main-content .sign form legend {
 	align-self: center;
 	margin-bottom: 10px;
 	font-size: 2rem;
 	font-weight: 700;
 }
-
 .main-content .sign form p.title {
 	margin: 10px 0 0 0;
 }
-
 .main-content .sign form p input {
 	box-sizing: border-box;
 	width: 100%;
@@ -298,15 +274,6 @@ p code {
 	font-size: 16px;
 	color: grey;
 }
-
-.main-content .sign form p.invalid {
-	align-self: center;
-	margin-bottom: 0;
-	padding: 3px 5px;
-	border: 1px solid grey;
-	border-radius: 3px;
-}
-
 .main-content .sign form input[type='submit'] {
 	box-sizing: border-box;
 	color: white;
@@ -319,23 +286,19 @@ p code {
 	font-size: 16px;
     font-weight: 400;
 }
-
 .main-content .sign form input[type='submit']:hover {
 	background-color: rgb(30,180,170);
 }
-
 .main-content .sign p.login,
 .main-content .sign p.signUp {
 	margin-bottom: 20px;
 	text-align: center;
 }
-
 .main-content .sign p.login a,
 .main-content .sign p.signUp a {
 	font-weight: bold;
 	color: rgb(0,150,136);
 }
-
 .main-content .sign p.login a:hover,
 .main-content .sign p.signUp a:hover {
 	color: rgb(30,180,170);
@@ -343,17 +306,49 @@ p code {
 
 
 
+.homepage .imageHolder {
+	position: relative; 
+	display: inline-block;
+}
+.homepage .imageHolder h1 {
+	position: absolute;
+	top: 50px;
+	left: 0; 
+	right: 0;
+	text-align: center;
+    font-size: 3rem;
+    letter-spacing: 2px;
+    color: white;
+}
+.homepage .imageHolder img {
+	display: block;
+	width: 100vw;
+	margin-bottom: 20px;
+}
+.homepage li {
+	list-style: none;
+	line-height: 2;
+}
+.homepage i {
+	color: rgb(0,150,136);
+}
+
+
+
 .main-footer {
+	display: flex;
+	flex-flow: row nowrap;
 	/* Prevent vertical grow otherwise it takes available space from content */
 	flex: 0 0 auto;
-    padding: 40px 60px;
-    text-align: left;
+    padding: 40px 245px;
 	color: rgb(117,123,133);
     background: rgb(44,48,51);
 }
-
-.homeTitle {
-    line-height: .8;
-    font-size: 1.375rem;
-    letter-spacing: 1px;
+.main-footer p {
+	flex: 1 0 auto;
+}
+.main-footer a {
+	flex: 0 0 auto;
+	margin-left: 20px;
+	color: rgb(117,123,133);
 }

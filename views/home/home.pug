@@ -4,30 +4,37 @@ block title
 	|homepage
 
 block content
-
-	p.homeTitle Create your blog. Share your stories
-
-	img(src='/images/homepage1.jpg' alt='Homepage picture')
-	
-	p Whether you'd like to share your expertise, experiences, the latest news or whatever is on your mind
-
-	ul
-		li Post anything
-		li Share your passions
-		li Discover
-		li Follow people
-		li Like posts
-
-	h2 Latest posts
-
-	ul
-		each post in posts
-			div: a(href=`/posts/${post.slug}`)= post.title
-			div #{post.subtitle}
-			div #{moment(post.postedAt).format('ll')}
-			div by #{post.owner}
-			// FIXME!!! Delete <br/>
-			<br/>
-
-	a(href='about') About the blogging platform
-	a(href='contact') Contact me
+	article.homepage
+		div.imageHolder
+			h1 Create your blog. Share your stories
+			img(src='/images/homepage.jpg' alt='Homepage image')
+		div.readingWidth
+			h3 Whether you'd like to share your expertise, experiences or whatever is on your mind
+			ul
+				li 
+					i.icon-check
+					|  Post anything
+				li
+					i.icon-check
+					|  Share your passions
+				li 
+					i.icon-check
+					|  Discover
+				li
+					i.icon-check
+					|  Follow people
+				li 
+					i.icon-check
+					|  Like posts
+			h4 Check the latest posts
+			ul
+				each post in posts
+					div.userInfo
+						if post.ownerPic != null
+							img.userPic(src=`/uploads/${post.ownerPic}`)
+						else
+							img.userPic(src='/images/avatar.jpg')
+						div: a(href=`/posts/${post.slug}`)= post.title
+						div.postedAt #{moment(post.postedAt).format('ll')}
+						div by #{post.owner}
+						div.clear

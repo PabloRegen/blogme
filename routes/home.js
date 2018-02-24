@@ -12,7 +12,7 @@ module.exports = function(knex, environment) {
 				deletedAt: null,
 				isVisible: true,
 				isDraft: false
-			}).orderBy('postedAt', 'desc').limit(5);
+			}).orderBy('postedAt', 'desc').limit(10);
 		}).map((post) => {
 			return Promise.all([
 				Promise.try(() => {
@@ -33,6 +33,7 @@ module.exports = function(knex, environment) {
 					{}, 
 					{slug: slug.name}, 
 					{owner: owner.username},
+					{ownerPic: owner.pic},
 					post
 				);
 			});
