@@ -33,8 +33,8 @@ block content
 
 			if canEditAndDelete
 				div.editDeletePost
-					a.editPost(href=`/posts/${slug}/edit`) Edit post
-					form.deletePost(action=`/posts/${slug}/delete` method='post')
+					a(href=`/posts/${slug}/edit`) Edit post
+					form(action=`/posts/${slug}/delete` method='post')
 						input(type='submit' value='Delete post')
 
 			div.likePost

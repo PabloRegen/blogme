@@ -4,26 +4,23 @@ block title
 	|create post
 
 block content
-	h1 Create your post
-	form(action='/posts/create' method='post' enctype='multipart/form-data')
-		
-		p(class={invalid: errors.title != null}) Title <br/>
-			input(type='text' name='title' value=body.title)
-			if errors.title != null
-				|<br/> #{errors.title.message}
-
-		p Subtitle <br/>
-			textarea(name='subtitle')= body.subtitle
-
-		p Body <br/>
-			textarea(name='body' placeholder='Your article goes here...')= body.body
-
-		p Tags <br/>
-			input(type='text' name='tags' value=body.tags)
-
-		p Picture <br/>
-			input(type='file' name='postPic')
-		p
-			input(type='submit' name='save' value='Save draft')
-		p
-			input(type='submit' name='publish' value='Publish post')
+	article
+		div.readingWidth
+			form.createPost(action='/posts/create' method='post' enctype='multipart/form-data')
+				legend Create your post
+				p Title (* required)
+					input.border1SolidGrey(type='text' name='title' value=body.title)
+					if errors.title != null
+						p.invalid #{errors.title.message}
+				p Subtitle
+					textarea.border1SolidGrey(name='subtitle')= body.subtitle
+				p Body
+					textarea.border1SolidGrey(name='body' placeholder='Your article goes here...')= body.body
+				p Tags (use commas to separate if more than one)
+					input.border1SolidGrey(type='text' name='tags' value=body.tags)
+				p
+					label.customFileUpload(for='fileUpload') Choose picture
+					input#fileUpload(type='file' name='postPic')
+				div.savePublishPost
+					input(type='submit' name='save' value='Save draft')
+					input(type='submit' name='publish' value='Publish post')

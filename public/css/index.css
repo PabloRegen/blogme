@@ -44,6 +44,13 @@ i {
 	margin-right: 8px;
 }
 
+legend {
+	align-self: center;
+	margin-bottom: 10px;
+	font-size: 2rem;
+	font-weight: 700;
+}
+
 .clear {
 	clear: both;
 }
@@ -63,6 +70,14 @@ i {
     margin: 0 auto;
     text-align: left;
 }
+
+.border1SolidGrey {
+	border: 1px solid rgb(220,220,220);
+	border-radius: 2px;
+}
+
+
+
 
 .userInfo {
 	font-size: 14px;
@@ -104,13 +119,50 @@ i {
 
 
 
+.savePublishPost,
+.editDeletePost {
+	display: flex;
+	flex-flow: row nowrap;
+	margin-bottom: 30px;
+}
+.savePublishPost input,
+.editDeletePost a,
+.editDeletePost form input {
+	text-decoration: none;
+	padding: 5px 10px;
+	margin-right: 8px;
+	border: 1px solid;
+	border-radius: 3px;
+	font-size: 14px;
+}
+.savePublishPost .savePublish,
+.editDeletePost a {
+	color: rgb(0,150,136);
+}
+.savePublishPost .savePublish:hover,
+.editDeletePost a:hover {
+	color: white;
+	background-color: grey;
+}
+.savePublishPost .delete,
+.editDeletePost form input {
+	color: rgb(252,13,27);
+}
+.savePublishPost .delete:hover
+.editDeletePost form input:hover {
+	color: white;
+	background-color: rgb(252,13,27);
+}
+
+
+
 .main-header {
 	display: flex;
 	flex-flow: row nowrap;
 	/* Prevent vertical grow so only main content pushes footer to the bottom */
 	flex: 0 0 auto;
     padding: 18px 245px;
-    border-bottom: 1px solid #e6eaea;
+    border-bottom: 1px solid rgb(230,234,234);
 }
 .main-header .siteName {
 	flex: 1 0 auto;
@@ -183,33 +235,6 @@ i {
 	color: rgb(117,123,133);
 	margin-bottom: 30px;
 }
-.main-content article .editDeletePost {
-	display: flex;
-	margin-bottom: 30px;
-}
-.main-content article .editDeletePost .editPost,
-.main-content article .editDeletePost .deletePost input {
-	text-decoration: none;
-	padding: 5px 10px;
-	margin-right: 8px;
-	border: 1px solid;
-	border-radius: 3px;
-	font-size: 14px;
-}
-.main-content article .editDeletePost .editPost {
-	color: rgb(0,150,136);
-}
-.main-content article .editDeletePost .editPost:hover {
-	color: white;
-	background-color: grey;
-}
-.main-content article .editDeletePost .deletePost input {
-	color: rgb(252,13,27);
-}
-.main-content article .editDeletePost .deletePost input:hover {
-	color: white;
-	background-color: rgb(252,13,27);
-}
 .main-content article .likePost {
 	margin: 0 0 20px 300px;
 }
@@ -226,6 +251,7 @@ i {
 }
 .main-content article .tags {
 	display: flex;
+	flex-flow: row nowrap;
 	align-items: baseline;
 	padding-bottom: 10px;
 	margin-bottom: 30px;
@@ -245,22 +271,43 @@ i {
 
 
 
+.homepage .imageHolder {
+	position: relative; 
+	display: inline-block;
+}
+.homepage .imageHolder h1 {
+	position: absolute;
+	top: 50px;
+	left: 0; 
+	right: 0;
+	text-align: center;
+    font-size: 3rem;
+    letter-spacing: 2px;
+    color: white;
+}
+.homepage .imageHolder img {
+	display: block;
+	width: 100vw;
+	margin-bottom: 20px;
+}
+.homepage li {
+	list-style: none;
+	line-height: 2;
+}
+.homepage i {
+	color: rgb(0,150,136);
+}
+
+
+
 .main-content .sign form {
 	display: flex;
 	flex-flow: column nowrap;
 	box-sizing: border-box;
 	max-width: 500px;
-	margin: 0 auto 20px auto;
+	margin: 40px auto 20px auto;
 	padding: 30px 40px 3px 40px;
-	border: 1px solid rgb(220,220,220);
-	border-radius: 3px;
 	background-color: rgb(242,242,242);
-}
-.main-content .sign form legend {
-	align-self: center;
-	margin-bottom: 10px;
-	font-size: 2rem;
-	font-weight: 700;
 }
 .main-content .sign form p.title {
 	margin: 10px 0 0 0;
@@ -306,32 +353,66 @@ i {
 
 
 
-.homepage .imageHolder {
-	position: relative; 
-	display: inline-block;
+.createPost,
+.editPost {
+	display: flex;
+	flex-flow: column nowrap;
+	box-sizing: border-box;
+	max-width: 750px;
+	margin: 30px auto 20px auto;
 }
-.homepage .imageHolder h1 {
-	position: absolute;
-	top: 50px;
-	left: 0; 
-	right: 0;
-	text-align: center;
-    font-size: 3rem;
-    letter-spacing: 2px;
-    color: white;
+.createPost p,
+.editPost p {
+	margin: 10px 0 0 0;
 }
-.homepage .imageHolder img {
-	display: block;
-	width: 100vw;
-	margin-bottom: 20px;
+.createPost p input,
+.createPost p textarea,
+.editPost p input,
+.editPost p textarea {
+	box-sizing: border-box;
+	width: 100%;
+	height: 40px;
+	padding: 10px;
+	font-family: 'Roboto', sans-serif;
+	font-size: 16px;
+	color: grey;
 }
-.homepage li {
-	list-style: none;
-	line-height: 2;
+.createPost p input[type='file'],
+.editPost p input[type='file'] {
+	margin-bottom: 30px;
+	display: none;
 }
-.homepage i {
+.customFileUpload {
+	padding: 5px 10px;
+	margin: 0 8px 10px 0;
+	border: 1px solid rgb(0,150,136);
+	border-radius: 3px;
+	font-size: 14px;
 	color: rgb(0,150,136);
+	display: inline-block;
+
 }
+.customFileUpload:hover {
+	color: white;
+	background-color: grey;
+	border: 1px solid grey;
+
+}
+/*
+.customFileUpload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+*/
+
+/*
+.editPost{
+	display: flex;
+	flex-flow: column nowrap;
+}
+*/
 
 
 
