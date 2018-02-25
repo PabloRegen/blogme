@@ -11,7 +11,7 @@ block content
 				p.invalid #{errors[attributes.name].message}
 
 	div.sign
-		form.border1SolidGrey(action='/accounts/signin' method='post')
+		form.border1SolidGrey.flex-column(action='/accounts/signin' method='post')
 			legend Login
 			+field('Username or Email')(type='text' name='usernameOrEmail' value=body.usernameOrEmail)
 			+field('Password')(type='password' name='password' value=body.password)

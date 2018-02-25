@@ -77,6 +77,20 @@ legend {
 }
 
 
+.flex-row {
+	display: flex;
+	flex-flow: row nowrap;
+}
+.flex-column {
+	display: flex;
+	flex-flow: column nowrap;
+}
+.heigh100vh {
+	/* ensure content area is as tall as the browser window */
+	height: 100vh;
+}
+
+
 
 
 .userInfo {
@@ -110,19 +124,9 @@ legend {
 	background-color: grey;
 }
 
-.main-wrapper {
-	display: flex;
-	flex-flow: column nowrap;
-	/* ensure content area is as tall as the browser window */
-	height: 100vh;
-}
-
-
 
 .savePublishPost,
 .editDeletePost {
-	display: flex;
-	flex-flow: row nowrap;
 	margin-bottom: 30px;
 }
 .savePublishPost input,
@@ -157,8 +161,6 @@ legend {
 
 
 .main-header {
-	display: flex;
-	flex-flow: row nowrap;
 	/* Prevent vertical grow so only main content pushes footer to the bottom */
 	flex: 0 0 auto;
     padding: 18px 245px;
@@ -250,8 +252,6 @@ legend {
 	color: rgb(0,150,136);
 }
 .main-content article .tags {
-	display: flex;
-	flex-flow: row nowrap;
 	align-items: baseline;
 	padding-bottom: 10px;
 	margin-bottom: 30px;
@@ -301,8 +301,6 @@ legend {
 
 
 .main-content .sign form {
-	display: flex;
-	flex-flow: column nowrap;
 	box-sizing: border-box;
 	max-width: 500px;
 	margin: 40px auto 20px auto;
@@ -355,8 +353,6 @@ legend {
 
 .createPost,
 .editPost {
-	display: flex;
-	flex-flow: column nowrap;
 	box-sizing: border-box;
 	max-width: 750px;
 	margin: 30px auto 20px auto;
@@ -390,6 +386,7 @@ legend {
 	font-size: 14px;
 	color: rgb(0,150,136);
 	display: inline-block;
+	/* cursor: pointer; */
 
 }
 .customFileUpload:hover {
@@ -398,27 +395,10 @@ legend {
 	border: 1px solid grey;
 
 }
-/*
-.customFileUpload {
-    border: 1px solid #ccc;
-    display: inline-block;
-    padding: 6px 12px;
-    cursor: pointer;
-}
-*/
-
-/*
-.editPost{
-	display: flex;
-	flex-flow: column nowrap;
-}
-*/
 
 
 
 .main-footer {
-	display: flex;
-	flex-flow: row nowrap;
 	/* Prevent vertical grow otherwise it takes available space from content */
 	flex: 0 0 auto;
     padding: 40px 245px;

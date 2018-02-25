@@ -11,7 +11,7 @@ block content
 				p.invalid #{errors[attributes.name].message}
 
 	div.sign
-		form(action='/accounts/signup' method='post')
+		form.flex-column(action='/accounts/signup' method='post')
 			legend Sign up
 			+field('Username')(type='text', name='username' value=body.username)
 			+field('Email')(type='text', name='email' value=body.email)
