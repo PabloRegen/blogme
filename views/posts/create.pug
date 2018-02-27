@@ -8,15 +8,15 @@ block content
 		div.readingWidth
 			form.createPost.flex-column(action='/posts/create' method='post' enctype='multipart/form-data')
 				legend Create your post
-				p Title (* required)
+				p.title Title (* required)
 					input.border1SolidGrey(type='text' name='title' value=body.title)
 					if errors.title != null
 						p.invalid #{errors.title.message}
-				p Subtitle
+				p.title Subtitle
 					textarea.border1SolidGrey(name='subtitle')= body.subtitle
-				p Body
+				p.title Body
 					textarea.border1SolidGrey(name='body' placeholder='Your article goes here...')= body.body
-				p Tags (use commas to separate if more than one)
+				p.title Tags (use commas to separate if more than one)
 					input.border1SolidGrey(type='text' name='tags' value=body.tags)
 				p
 					label.customFileUpload(for='fileUpload') Choose picture

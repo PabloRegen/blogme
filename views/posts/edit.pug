@@ -8,17 +8,17 @@ block content
 		div.readingWidth
 			form.editPost.flex-column(action=`/posts/${slug}/edit` method='post' enctype='multipart/form-data')
 				legend Edit your post
-				p Title
+				p.title Title
 					input.border1SolidGrey(type='text' name='title' value=post != null ? post.title : body.title)
 					if errors.title != null
 						p.invalid #{errors.title.message}
-				p Subtitle
+				p.title Subtitle
 					textarea.border1SolidGrey(name='subtitle')= post != null ? post.subtitle : body.subtitle
-				p Body
+				p.title Body
 					textarea.border1SolidGrey(name='body' placeholder='Your article goes here...')= post != null ? post.body : body.body
-				p Tags
+				p.title Tags
 					input.border1SolidGrey(type='text' name='tags' value=tags != null ? tags : body.tags)
-				p
+				p.title
 					label.customFileUpload(for='fileUpload') Choose picture
 					input#fileUpload(type='file' name='postPic')
 				div.savePublishPost.flex-row
