@@ -700,17 +700,20 @@ form p.title {
 }
 
 
-
+.editProfile,
 .createPost,
 .editPost {
 	box-sizing: border-box;
 	max-width: 750px;
 	margin: 30px auto 20px auto;
 }
+.editProfile p,
 .createPost p,
 .editPost p {
 	margin: 10px 0 0 0;
 }
+.editProfile p input,
+.editProfile p textarea,
 .createPost p input,
 .createPost p textarea,
 .editPost p input,
@@ -723,6 +726,7 @@ form p.title {
 	font-size: 16px;
 	color: grey;
 }
+.editProfile p input[type='file'],
 .createPost p input[type='file'],
 .editPost p input[type='file'] {
 	margin-bottom: 30px;

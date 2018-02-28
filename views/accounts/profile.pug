@@ -4,25 +4,27 @@ block title
 	|profile
 
 block content
-	h1 Your profile
+	article
+		div.readingWidth
+			h1 Your profile
 
-	if currentUser.pic != null
-		img(src=`/uploads/${currentUser.pic}`)
-		form(action='/accounts/profile' method='post')
-			input(type='submit' value='Delete picture')
-	else
-		img(src='/images/avatar.jpg')
-		| You may chose your own picture
+			if currentUser.pic != null
+				img(src=`/uploads/${currentUser.pic}`)
+				form(action='/accounts/profile' method='post')
+					input.redButton(type='submit' value='Delete picture')
+			else
+				img(src='/images/avatar.jpg')
+				| You may chose your own picture
 
-	div Name:
-		if currentUser.name != null
-			|  #{currentUser.name}
-		else 
-			|  N/A
-	div Bio:
-		if currentUser.bio != null
-			|  #{currentUser.bio}
-		else 
-			|  N/A
-	div 
-		a(href='/accounts/profile/edit') Edit profile
+			p Name:
+				if currentUser.name != null
+					|  #{currentUser.name}
+				else 
+					|  N/A
+			p Bio:
+				if currentUser.bio != null
+					|  #{currentUser.bio}
+				else 
+					|  N/A
+			p 
+				a.greenButton(href='/accounts/profile/edit') Edit profile
