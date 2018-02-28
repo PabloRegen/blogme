@@ -4,38 +4,40 @@ block title
 	|image manager overview
 
 block content
-	h1 Image manager
-	h2 Overview
+	article.imagesOverview
+		div.readingWidth
+			h1 Image overview
 
-	if currentUser.role > 1
-		form(action='/uploads/overview/1' method='get')
-			p Enter username to overview user's images
-			input(type='text' name='username')
-			input(type='hidden' name='deleted' value=deleted)
-			input(type='submit' value='Submit')
-		| Displaying #{username != null ? `${username}'s` : 'your'} #{deleted === '1' ? 'deleted' : 'current'} images
-	else
-		| Displaying your #{deleted === '1' ? 'deleted' : 'current'} images
+			if currentUser.role > 1
+				form(action='/uploads/overview/1' method='get')
+					p Enter username to overview user's images
+					input(type='text' name='username')
+					input(type='hidden' name='deleted' value=deleted)
+					input.greenButton(type='submit' value='Submit')
+				h2 #{username != null  && username !== currentUser.username ? `${username}'s` : 'Your'} #{deleted === '1' ? 'deleted' : 'current'} images
+			else
+				h2 Your #{deleted === '1' ? 'deleted' : 'current'} images
 
-	a(href=`/uploads/overview/1?${toggleQuery}`)= `Display ${deleted === '1' ? 'current' : 'deleted'}`
+			a.linkStyle(href=`/uploads/overview/1?${toggleQuery}`)= `Display ${deleted === '1' ? 'current' : 'deleted'}`
 
-	ul
-		each image in images
-			a(href=`/uploads/${image.id}`)
-				img(src=`/uploads/${image.path}` width='350')
-				| Details
-			a(href=`/uploads/${image.id}/edit`) Edit
-			if deleted !== '1'
-				form(action=`/uploads/${image.id}/delete` method='post')
-					input(type='submit' value='Delete')
-		else
-			div You have not uploaded any images yet
+			ul
+				each image in images
+					li
+						img.imageWidth(src=`/uploads/${image.path}`)
+						div.flex-row
+							a(href=`/uploads/${image.id}`) Details
+							a.greenButton(href=`/uploads/${image.id}/edit`) Edit
+							if deleted !== '1'
+								form(action=`/uploads/${image.id}/delete` method='post')
+									input.redButton(type='submit' value='Delete')
+				else
+					div You have not uploaded any images yet
 
-	if page > 1
-		a(href=`/uploads/overview/${page - 1}?${pageQuery}`) Prev -
-	if page < numberOfPages
-		a(href=`/uploads/overview/${page + 1}?${pageQuery}`) Next
-	if numberOfPages > 0
-		|  Page #{page} / #{numberOfPages}
-	if username == null
-		a(href='/uploads/upload') Upload images
+			if page > 1
+				a.linkStyle(href=`/uploads/overview/${page - 1}?${pageQuery}`) Prev -
+			if page < numberOfPages
+				a.linkStyle(href=`/uploads/overview/${page + 1}?${pageQuery}`) Next
+			if numberOfPages > 0
+				|  Page #{page} / #{numberOfPages}
+			if username == null
+				a(href='/uploads/upload') Upload images

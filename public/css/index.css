@@ -759,15 +759,18 @@ form p.title {
 }
 
 
-.overview ul,
+.postsOverview ul,
+.imagesOverview ul,
 .dashboard ul {
 	list-style: none;
 }
-.overview li,
+.postsOverview li,
+.imagesOverview li,
 .dashboard li {
 	margin-bottom: 17px;
 }
-.overview li a,
+.postsOverview li a,
+.imagesOverview li a,
 .dashboard li a {
 	color: rgb(0,150,136);
 }
@@ -787,6 +790,13 @@ form p.title {
 	border-radius: 3px;
 	font-size: 14px;
 }
+
+.imagesOverview .imageWidth {
+	max-width: 100%;
+}
+
+
+
 .greenButton {
 	color: white;
 	background-color: rgb(0,150,136);
