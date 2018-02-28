@@ -1,6 +1,17 @@
 @font-face {
     font-family: 'Roboto';
     font-style: normal;
+    font-weight: 300;
+    src: url(Roboto_300_normal.eot); /* {{embedded-opentype-gf-url}} */
+    src: local('☺'),
+        url(Roboto_300_normal.eot?#iefix) format('embedded-opentype'), /* {{embedded-opentype-gf-url}} */
+        url(Roboto_300_normal.woff) format('woff'), /* http://fonts.gstatic.com/s/roboto/v18/KFOlCnqEu92Fr1MmSU5fBBc-.woff */
+        url(Roboto_300_normal.ttf) format('truetype'), /* http://fonts.gstatic.com/s/roboto/v18/KFOlCnqEu92Fr1MmSU5fBBc9AMP6lQ.ttf */
+        url(Roboto_300_normal.svg#Roboto_300_normal) format('svg'); /* http://fonts.gstatic.com/l/font?kit=KFOlCnqEu92Fr1MmSU5fBBc_&skey=11ce8ad5f54705ca&v=v18#Roboto */
+}
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
     font-weight: 400;
     src: url(Roboto_400_normal.eot); /* {{embedded-opentype-gf-url}} */
     src: local('☺'),
