@@ -6,44 +6,48 @@ block title
 block content
 
 	mixin postDetails(post)
-		div: a(href=`/posts/${post.slug}`)= post.title
-		
-		div #{post.subtitle}
+		li
+			div: a(href=`/posts/${post.slug}`)= post.title
+			
+			if post.subtitle != null
+				div #{post.subtitle}
 
-		if post.deletedAt != null
-			div deleted #{moment(post.deletedAt).format('ll')}
+			div posted #{moment(post.postedAt).format('ll')}
 
-		div posted #{moment(post.postedAt).format('ll')}
+			if post.updatedAt != null
+				div updated #{moment(post.updatedAt).format('ll')}
 
-		if post.updatedAt != null
-			div updated #{moment(post.updatedAt).format('ll')}
+			if post.deletedAt != null
+				div.redText deleted #{moment(post.deletedAt).format('ll')}				
 
-		| #{post.likes} likes
+			| #{post.likes} likes
 
-		if post.isVisible
-			|  - visible
-		else
-			|  - not visible
+			if post.isVisible
+				|  | visible
+			else
+				|  | not visible
 
-		if post.isDraft
-			|  - draft
-		else
-			|  - not draft
+			if post.isDraft
+				|  | draft
+			else
+				|  | not draft
 
-	h1 Posts overview
+	article.overview
+		div.readingWidth
+			h1 Posts overview
 
-	if currentUser.role > 1
-		form(action='/posts/overview' method='get')
-			p Enter username to overview user's posts
-			input(type='text' name='username')
-			input(type='submit' value='Submit')
-		if username != null
-			| Displaying #{username}'s posts
-		else
-			| Displaying your posts
+			if currentUser.role > 1
+				form(action='/posts/overview' method='get')
+					p Enter username to overview user's posts
+					input(type='text' name='username')
+					input.greenButton(type='submit' value='Submit')
+				if username != null && username !== currentUser.username
+					h2 #{username}'s posts
+				else
+					h2 Your posts
 
-	ul
-		each post in posts
-			+postDetails(post) 
-		else
-			div You don't have any posts yet
+			ul
+				each post in posts
+					+postDetails(post) 
+				else
+					div You don't have any posts yet

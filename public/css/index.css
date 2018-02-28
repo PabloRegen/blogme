@@ -376,6 +376,14 @@ form p.title {
 	clear: both;
 }
 
+.redText{
+	color: rgb(252,13,27);
+}
+
+.linkStyle {
+	color: rgb(0,150,136);
+}
+
 .invalid {
 	margin-top: 0;
 	margin-bottom: 0;
@@ -751,13 +759,15 @@ form p.title {
 }
 
 
-
+.overview ul,
 .dashboard ul {
 	list-style: none;
 }
+.overview li,
 .dashboard li {
 	margin-bottom: 17px;
 }
+.overview li a,
 .dashboard li a {
 	color: rgb(0,150,136);
 }

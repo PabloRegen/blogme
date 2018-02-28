@@ -23,11 +23,11 @@ block content
 
 			h2 Your posts and images
 			div.userPostAndImages.flex-row
-				a(href='/posts/overview') Your posts
-				a(href='/uploads/overview/1') Your current images
-				a(href='/uploads/overview/1?deleted=1') Your deleted images
+				a(href='/posts/overview') Posts
+				a(href='/uploads/overview/1') Current images
+				a(href='/uploads/overview/1?deleted=1') Deleted images
 
-			h2 Stats
+			h2 Your stats
 			p.
 				likes #{likes} |
 				liking #{liking} |
@@ -39,4 +39,5 @@ block content
 
 			if currentUser.role > 1
 				h2 Admins only
-				a(href='/accounts/users/change-password/admin') Update user password
+				p
+					a.linkStyle(href='/accounts/users/change-password/admin') Update user password
