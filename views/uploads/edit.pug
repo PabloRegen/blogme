@@ -4,20 +4,21 @@ block title
 	|image manager edit
 
 block content
-	h1 Image manager
-	h2 edit image data
+	article.editImage
+		div.readingWidth
+			h1 Edit image data
 
-	form(action=`/uploads/${image.id}/edit` method='post')
-		img(src=`/uploads/${image.path}` width='750')
-		p Caption <br/>
-			input(type='text' name='caption' value=image.caption)
-		p Owner's name <br/>
-			input(type='text' name='owner' value=image.ownerName)
-		p License type <br/>
-			input(type='text' name='license' value=image.licenseType)
-		p Original URL <br/>
-			input(type='text' name='url' value=image.originalURL)
-		input(type='submit' value='Save changes')
+			form.editImageData.flex-column(action=`/uploads/${image.id}/edit` method='post')
+				img(src=`/uploads/${image.path}` width='750')
+				p.title Caption
+					input(type='text' name='caption' value=image.caption)
+				p.title Owner's name
+					input(type='text' name='owner' value=image.ownerName)
+				p.title License type
+					input(type='text' name='license' value=image.licenseType)
+				p.title Original URL
+					input(type='text' name='url' value=image.originalURL)
+				input(type='submit' value='Save changes')
 
-	form(action=`/uploads/${image.id}/delete` method='post')
-		input(type='submit' value='Delete image')
+			form(action=`/uploads/${image.id}/delete` method='post')
+				input.redButton(type='submit' value='Delete image')
