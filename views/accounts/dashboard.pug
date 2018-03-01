@@ -28,11 +28,14 @@ block content
 				a(href='/uploads/overview/1?deleted=1') Deleted images
 
 			h2 Your stats
-			p.
-				likes #{likes} |
-				liking #{liking} |
-				followers #{follows} |
-				following #{following}
+			p
+				| likes #{likes}
+				span.dot •
+				| liking #{liking}
+				span.dot •
+				| followers #{follows}
+				span.dot •
+				| following #{following}
 
 			form(action='/accounts/delete' method='post')
 				input.deleteAccount.redButton(type='submit' value='Delete account')

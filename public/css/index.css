@@ -315,13 +315,34 @@ template {
 }
 */
 
+/*	COLORS
+
+	rgb(35,159,134); 	green
+	rgb(30,180,170); 	green light
+	rgb(0,150,136); 	green dark
+
+	rgb(117,123,133);	grey text
+	rgb(51,51,51);		grey dark text
+	rgb(38,38,38);		grey darker text
+
+	rgb(252,95,32);		orange text
+
+*/
+
 
 body {
-    color: rgb(51,51,51);
+    color: rgb(117,123,133);
 	background-color: white;
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
     font-size: 17px;
+}
+
+a {
+	color: rgb(117,123,133);
+}
+a:hover {
+	color: rgb(51,51,51);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -406,6 +427,36 @@ form p.title {
 	border-radius: 2px;
 }
 
+.paddingTop30 {
+    padding-top: 30px;
+}
+.paddingBottom30 {
+    padding-bottom: 30px;
+}
+.paddingLeft15 {
+    padding-left: 15px;
+}
+.paddingRight15 {
+    padding-right: 15px;
+}
+.marginRight15 {
+    margin-right: 15px;
+}
+.displayBlock {
+	display: block;
+}
+
+.pipe {
+	margin: 0 20px;
+	color: rgb(204, 204, 204);
+}
+.dot {
+	margin: 0 20px;
+	color: rgb(204, 204, 204);
+}
+
+
+
 
 
 .flex-row {
@@ -435,7 +486,7 @@ form p.title {
 }
 .main-header .siteName a {
 	text-decoration: none;
-	color: rgb(0,150,136);
+	color: rgb(35,159,134);
 	font-size: 1.5rem;
 	font-weight: 700;
 	letter-spacing: 2px;
@@ -447,7 +498,9 @@ form p.title {
 	margin-left: 25px;
 	padding: 10px;
     text-decoration: none;
+    color: rgb(112,191,97);
     color: rgb(0,150,136);
+    color: rgb(35,159,134);
     font-size: 0.85rem;
 	font-weight: 400;
 	letter-spacing: 1px;
@@ -529,14 +582,19 @@ form p.title {
 .userInfo .userPic {
 	float: left;
 	width: 60px;
-	margin: 0 10px 30px 0;
+	/*margin: 0 10px 30px 0;*/
 	border-radius: 50%;
+	/*
+	display: block;
+	display: inline-block;
+	vertical-align: middle;
+	*/
 }
 .userInfo .userBio {
 	color: rgb(117,123,133);
 }
 .userInfo .postedAt {
-	color: rgb(0,150,136);
+	color: rgb(252,95,32);
 }
 .userInfo form {
 	display: inline;

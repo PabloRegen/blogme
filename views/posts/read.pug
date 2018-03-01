@@ -6,19 +6,22 @@ block title
 block content
 	article
 		div.readingWidth
-			div.userInfo
+			div.userInfo.paddingTop30.paddingBottom30
 				if postedByUser.pic != null
-					img.userPic(src=`/uploads/${postedByUser.pic}`)
+					img.userPic.marginRight15(src=`/uploads/${postedByUser.pic}`)
 				else
-					img.userPic(src='/images/avatar.jpg')
+					img.userPic.marginRight15(src='/images/avatar.jpg')
 
-				if postedByUser.name != null
-					div.userName #{postedByUser.name}
+				div
+					if postedByUser.name != null
+						div.userName #{postedByUser.name}
+					else
+						div.userName #{postedByUser.username}
 
-				if postedByUser.bio != null
-					div.userBio #{postedByUser.bio}
+					if postedByUser.bio != null
+						div.userBio #{postedByUser.bio}
 
-				div.postedAt #{moment(post.postedAt).format('ll')}
+					div.postedAt #{moment(post.postedAt).format('ll')}
 
 				div.clear
 
@@ -57,7 +60,7 @@ block content
 					each tag in tags
 						span #{tag}
 
-			div.userInfo
+			div.userInfo.paddingBottom30
 				if postedByUser.pic != null
 					img.userPic(src=`/uploads/${postedByUser.pic}`)
 				else
