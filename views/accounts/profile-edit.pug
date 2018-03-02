@@ -4,22 +4,21 @@ block title
 	|edit profile
 
 block content
-	article
-		div.readingWidth
-			h1 Edit your profile
+	div.readingWidth
+		h1 Edit your profile
 
-			if currentUser.pic != null
-				img(src=`/uploads/${currentUser.pic}`)
-			else
-				img(src='/images/avatar.jpg')
+		if currentUser.pic != null
+			img(src=`/uploads/${currentUser.pic}`)
+		else
+			img(src='/images/avatar.jpg')
 
-			form.editProfile(action='/accounts/profile/edit' method='post' enctype='multipart/form-data')
-				p
-					label.customFileUpload(for='fileUpload') Choose picture
-					input#fileUpload(type='file' name='userPic')
-				p Name
-					input.border1SolidGrey(type='text' name='name' value=currentUser.name)
-				p Bio
-					textarea.border1SolidGrey(name='bio' placeholder='Enter short bio')=currentUser.bio
-				p
-					input.greenButton(type='submit' name='publish' value='Save profile')
+		form.editProfile(action='/accounts/profile/edit' method='post' enctype='multipart/form-data')
+			p
+				label.customFileUpload(for='fileUpload') Choose picture
+				input#fileUpload(type='file' name='userPic')
+			p Name
+				input.border1SolidGrey(type='text' name='name' value=currentUser.name)
+			p Bio
+				textarea.border1SolidGrey(name='bio' placeholder='Enter short bio')=currentUser.bio
+			p
+				input(type='submit' name='publish' value='Save profile')

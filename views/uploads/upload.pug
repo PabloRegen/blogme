@@ -4,15 +4,14 @@ block title
 	|image manager upload
 
 block content
-	article
-		div.readingWidth
-			h1 Store images
+	div.readingWidth
+		h1 Store images
 
-			div(class={invalid: message != null}) #{message}
+		div(class={invalid: message != null}) #{message}
 
-			form.uploadImages(action='/uploads/upload' method='post' enctype='multipart/form-data')
-				p
-					label.customFileUpload(for='imagesUpload') Choose images
-					input#imagesUpload(type='file' name='images' multiple)
-				p
-					input.greenButton(type='submit' value='Save images')
+		form.uploadImages(action='/uploads/upload' method='post' enctype='multipart/form-data')
+			p
+				label.customFileUpload(for='imagesUpload') Choose images
+				input#imagesUpload(type='file' name='images' multiple)
+			p
+				input.greenButton(type='submit' value='Save images')

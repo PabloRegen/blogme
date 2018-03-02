@@ -4,7 +4,7 @@ block title
 	|image manager overview
 
 block content
-	article.imagesOverview
+	div.imagesOverview
 		div.readingWidth
 			h1 Image overview
 
@@ -13,12 +13,12 @@ block content
 					p Enter username to overview user's images
 					input(type='text' name='username')
 					input(type='hidden' name='deleted' value=deleted)
-					input.greenButton(type='submit' value='Submit')
+					input.customButton(type='submit' value='Submit')
 				h2 #{username != null  && username !== currentUser.username ? `${username}'s` : 'Your'} #{deleted === '1' ? 'deleted' : 'current'} images
 			else
 				h2 Your #{deleted === '1' ? 'deleted' : 'current'} images
 
-			a.linkStyle(href=`/uploads/overview/1?${toggleQuery}`)= `Display ${deleted === '1' ? 'current' : 'deleted'}`
+			a(href=`/uploads/overview/1?${toggleQuery}`)= `Display ${deleted === '1' ? 'current' : 'deleted'}`
 
 			ul
 				each image in images
@@ -26,17 +26,17 @@ block content
 						img.imageWidth(src=`/uploads/${image.path}`)
 						div.flex-row
 							a(href=`/uploads/${image.id}`) Details
-							a.greenButton(href=`/uploads/${image.id}/edit`) Edit
+							a.customButton(href=`/uploads/${image.id}/edit`) Edit
 							if deleted !== '1'
 								form(action=`/uploads/${image.id}/delete` method='post')
-									input.redButton(type='submit' value='Delete')
+									input.danger(type='submit' value='Delete')
 				else
 					div You have not uploaded any images yet
 
 			if page > 1
-				a.linkStyle(href=`/uploads/overview/${page - 1}?${pageQuery}`) Prev -
+				a(href=`/uploads/overview/${page - 1}?${pageQuery}`) Prev -
 			if page < numberOfPages
-				a.linkStyle(href=`/uploads/overview/${page + 1}?${pageQuery}`) Next
+				a(href=`/uploads/overview/${page + 1}?${pageQuery}`) Next
 			if numberOfPages > 0
 				|  Page #{page} / #{numberOfPages}
 			if username == null

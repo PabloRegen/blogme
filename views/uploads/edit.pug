@@ -4,7 +4,7 @@ block title
 	|image manager edit
 
 block content
-	article.editImage
+	div.editImage
 		div.readingWidth
 			h1 Edit image data
 
@@ -21,4 +21,4 @@ block content
 				input(type='submit' value='Save changes')
 
 			form(action=`/uploads/${image.id}/delete` method='post')
-				input.redButton(type='submit' value='Delete image')
+				input.danger(type='submit' value='Delete image')

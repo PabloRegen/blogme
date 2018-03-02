@@ -36,20 +36,20 @@ block content
 
 			if canEditAndDelete
 				div.editDeletePost.flex-row
-					a(href=`/posts/${slug}/edit`) Edit post
+					a.customButton(href=`/posts/${slug}/edit`) Edit post
 					form(action=`/posts/${slug}/delete` method='post')
-						input(type='submit' value='Delete post')
+						input.danger(type='submit' value='Delete post')
 
-			div.likePost
+			div
 				if alreadyLikedPost
 					// user logged-in and already liked post
-					form(action=`/posts/${slug}/unlike` method='post')
-						button(type='submit')
+					form.likePost(action=`/posts/${slug}/unlike` method='post')
+						button.heart(type='submit')
 							i.icon-heart
 				else	
 					// user not logged-in or not liked post yet
-					form(action=`/posts/${slug}/like` method='post')
-						button(type='submit' disabled=(!canLike))
+					form.likePost(action=`/posts/${slug}/like` method='post')
+						button.heart(type='submit' disabled=(!canLike))
 							i.icon-heart 
 				| #{likes}
 

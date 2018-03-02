@@ -4,40 +4,39 @@ block title
 	|image manager details
 
 block content
-	article
-		div.readingWidth
-			h1 Image details
+	div.readingWidth
+		h1 Image details
 
-			img(src=`/uploads/${image.path}` width='750')
+		img(src=`/uploads/${image.path}` width='750')
 
-			p To use this image copy the following and paste anywhere within your post's body:
-			p.redText  ![#{image.caption}](/uploads/#{image.path})
+		p To use this image copy the following and paste anywhere within your post's body:
+		p.redText  ![#{image.caption}](/uploads/#{image.path})
 
 
-			p name: #{image.originalName}
-			p caption: #{image.caption}
-			p size: #{Math.round(image.size/1000)} KB
+		p name: #{image.originalName}
+		p caption: #{image.caption}
+		p size: #{Math.round(image.size/1000)} KB
 
-			if image.width != null
-				p width: #{image.width} px
-			else
-				p width:
+		if image.width != null
+			p width: #{image.width} px
+		else
+			p width:
 
-			if image.height != null
-				p height: #{image.height} px
-			else
-				p height:
+		if image.height != null
+			p height: #{image.height} px
+		else
+			p height:
 
-			p dated: #{image.dated}
-			p owner: #{image.ownerName}
-			p license: #{image.licenseType}
-			p original URL: #{image.originalURL}
-			p uploaded: #{image.uploadedAt}
-			p modified: #{image.modifiedAt}
-			p deleted: #{image.deletedAt}
+		p dated: #{image.dated}
+		p owner: #{image.ownerName}
+		p license: #{image.licenseType}
+		p original URL: #{image.originalURL}
+		p uploaded: #{image.uploadedAt}
+		p modified: #{image.modifiedAt}
+		p deleted: #{image.deletedAt}
 
-			p
-				a.greenButton(href=`/uploads/${image.id}/edit`) Edit data
+		div.flex-row
+			a.customButton(href=`/uploads/${image.id}/edit`) Edit data
 
 			form(action=`/uploads/${image.id}/delete` method='post')
-				input.redButton(type='submit' value='Delete image')
+				input.danger(type='submit' value='Delete image')

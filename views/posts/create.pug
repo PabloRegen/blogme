@@ -4,23 +4,22 @@ block title
 	|create post
 
 block content
-	article
-		div.readingWidth
-			form.createPost.flex-column(action='/posts/create' method='post' enctype='multipart/form-data')
-				legend Create your post
-				p.title Title (* required)
-					input.border1SolidGrey(type='text' name='title' value=body.title)
-					if errors.title != null
-						p.invalid #{errors.title.message}
-				p.title Subtitle
-					textarea.border1SolidGrey(name='subtitle')= body.subtitle
-				p.title Body
-					textarea.border1SolidGrey(name='body' placeholder='Your article goes here...')= body.body
-				p.title Tags (use commas to separate if more than one)
-					input.border1SolidGrey(type='text' name='tags' value=body.tags)
-				p
-					label.customFileUpload(for='fileUpload') Choose picture
-					input#fileUpload(type='file' name='postPic')
-				div.savePublishPost
-					input(type='submit' name='save' value='Save draft')
-					input(type='submit' name='publish' value='Publish post')
+	div.readingWidth
+		form.createPost.flex-column(action='/posts/create' method='post' enctype='multipart/form-data')
+			legend Create your post
+			p.title Title (* required)
+				input.border1SolidGrey(type='text' name='title' value=body.title)
+				if errors.title != null
+					p.invalid #{errors.title.message}
+			p.title Subtitle
+				textarea.border1SolidGrey(name='subtitle')= body.subtitle
+			p.title Body
+				textarea.border1SolidGrey(name='body' placeholder='Your article goes here...')= body.body
+			p.title Tags (use commas to separate if more than one)
+				input.border1SolidGrey(type='text' name='tags' value=body.tags)
+			p
+				label.customFileUpload(for='fileUpload') Choose picture
+				input#fileUpload(type='file' name='postPic')
+			div
+				input(type='submit' name='save' value='Save draft')
+				input(type='submit' name='publish' value='Publish post')
