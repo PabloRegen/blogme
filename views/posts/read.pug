@@ -54,7 +54,7 @@ block content
 				| #{likes}
 
 			div.tags.flex-row
-				if tags !== []
+				if tags.length > 0
 					i.icon-tag
 					| Tags:
 					each tag in tags
