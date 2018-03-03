@@ -23,7 +23,7 @@ body {
 	background-color: white;
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1.6;
 }
 
@@ -187,6 +187,35 @@ form p.title {
 /* ============================================ */
 
 
+/* homepage
+   ============================================ */
+.imageHolder {
+	position: relative;
+}
+.imageHolder h1 {
+	position: absolute;
+	top: 20px;
+	left: 0; 
+	right: 0;
+	text-align: center;
+    font-size: 3rem;
+    letter-spacing: 2px;
+    color: white;
+}
+.imageHolder img {
+	width: 100vw;
+}
+.homepage li {
+	list-style: none;
+	line-height: 2;
+	font-size: 17px;
+}
+.homepage i {
+	color: rgb(0,150,136);
+}
+/* ============================================ */
+
+
 /* login and sign up forms
    ============================================ */
 .sign {
@@ -219,6 +248,37 @@ form p.title {
 }
 .signQuery a:hover {
 	color: rgb(30,180,170);
+}
+/* ============================================ */
+
+
+/* user info block
+   ============================================ */
+.userInfo {
+	font-size: 14px;
+	line-height: 1.4;
+	margin-bottom: 20px;
+}
+.userInfo img {
+	float: left;
+	margin-right: 10px;
+	width: 60px;
+	border-radius: 50%;
+}
+.userInfo form {
+	display: inline;
+	margin-right: 5px;
+}
+.userInfo input {
+	padding: 1px 4px;
+	border: 1px solid rgb(210, 210, 210);
+	border-radius: 3px;
+	color: rgb(35,159,134);
+	font-size: 13px;
+}
+.userInfo input:hover {
+	color: white;
+	background-color: grey;
 }
 /* ============================================ */
 
@@ -299,77 +359,6 @@ p code {
 
 
 
-
-.homepage .imageHolder {
-	position: relative; 
-	display: inline-block;
-}
-.homepage .imageHolder h1 {
-	position: absolute;
-	top: 50px;
-	left: 0; 
-	right: 0;
-	text-align: center;
-    font-size: 3rem;
-    letter-spacing: 2px;
-    color: white;
-}
-.homepage .imageHolder img {
-	display: block;
-	width: 100vw;
-	margin-bottom: 20px;
-}
-.homepage li {
-	list-style: none;
-	line-height: 2;
-}
-.homepage i {
-	color: rgb(0,150,136);
-}
-
-
-
-.userInfo {
-	font-size: 14px;
-	line-height: 1.5;
-}
-.userInfo .userPic {
-	float: left;
-	width: 60px;
-	/*margin: 0 10px 30px 0;*/
-	border-radius: 50%;
-	/*
-	display: block;
-	display: inline-block;
-	vertical-align: middle;
-	*/
-}
-.userInfo .userBio {
-	color: rgb(117,123,133);
-}
-.userInfo .postedAt {
-	color: rgb(252,95,32);
-}
-.userInfo form {
-	display: inline;
-}
-.userInfo form input {
-	padding: 1px 4px;
-	border: 1px solid rgb(210, 210, 210);
-	color: rgb(0,150,136);
-	background-color: white;
-	font-size: 13px
-}
-.userInfo form input:hover {
-	color: white;
-	background-color: grey;
-}
-
-
-
-
-
-
 .main-content {
 	/* Allow vertical grow so main content pushes footer to the bottom */
 	flex: 1 0 auto;
@@ -439,6 +428,7 @@ p code {
 .main-content article .tags span:hover {
 	background-color: rgb(220,220,220);
 }
+
 
 
 

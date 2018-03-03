@@ -6,23 +6,21 @@ block title
 block content
 	article
 		div.readingWidth
-			div.userInfo.paddingTop30.paddingBottom30
+			div.userInfo.paddingTop30
 				if postedByUser.pic != null
-					img.userPic.marginRight15(src=`/uploads/${postedByUser.pic}`)
+					img(src=`/uploads/${postedByUser.pic}`)
 				else
-					img.userPic.marginRight15(src='/images/avatar.jpg')
+					img(src='/images/avatar.jpg')
 
-				div
-					if postedByUser.name != null
-						div.userName #{postedByUser.name}
-					else
-						div.userName #{postedByUser.username}
+				if postedByUser.name != null
+					div #{postedByUser.name}
+				else
+					div #{postedByUser.username}
 
-					if postedByUser.bio != null
-						div.userBio #{postedByUser.bio}
+				if postedByUser.bio != null
+					div #{postedByUser.bio}
 
-					div.postedAt #{moment(post.postedAt).format('ll')}
-
+				div #{moment(post.postedAt).format('ll')}
 				div.clear
 
 			h1.postTitle!= sanitizer.sanitize(post.title)
@@ -60,17 +58,19 @@ block content
 					each tag in tags
 						span #{tag}
 
-			div.userInfo.paddingBottom30
+			div.userInfo
 				if postedByUser.pic != null
 					img.userPic(src=`/uploads/${postedByUser.pic}`)
 				else
 					img.userPic(src='/images/avatar.jpg')
 
 				if postedByUser.name != null
-					div.userName #{postedByUser.name}
+					div #{postedByUser.name}
+				else
+					div #{postedByUser.username}
 
 				if postedByUser.bio != null
-					div.userBio #{postedByUser.bio}
+					div #{postedByUser.bio}
 
 				if alreadyFollowing
 					// user logged-in and already following post's author
@@ -82,5 +82,4 @@ block content
 						input(type='submit' value='Follow' disabled=(!canFollow))
 
 				| #{follows}
-
 				div.clear

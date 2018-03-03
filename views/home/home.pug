@@ -27,15 +27,15 @@ block content
 					i.icon-check
 					|  Like posts
 					
-			h4 Check the latest posts
+			h3 Check the latest posts
 			ul
 				each post in posts
 					div.userInfo
 						if post.ownerPic != null
-							img.userPic(src=`/uploads/${post.ownerPic}`)
+							img(src=`/uploads/${post.ownerPic}`)
 						else
-							img.userPic(src='/images/avatar.jpg')
-						div: a(href=`/posts/${post.slug}`)= post.title
-						div.postedAt #{moment(post.postedAt).format('ll')}
-						div by #{post.owner}
+							img(src='/images/avatar.jpg')
+						div #{post.owner}		
+						a(href=`/posts/${post.slug}`)= post.title
+						div #{moment(post.postedAt).format('ll')}
 						div.clear
