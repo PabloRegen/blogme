@@ -10,13 +10,12 @@ block content
 			if errors[attributes.name] != null
 				p.invalid #{errors[attributes.name].message}
 
-	div.sign
-		form.border1SolidGrey.flex-column(action='/accounts/signin' method='post')
-			legend Login
-			+field('Username or Email')(type='text' name='usernameOrEmail' value=body.usernameOrEmail)
-			+field('Password')(type='password' name='password' value=body.password)
-			input(type='submit' value='Login')
-			p.title Forgot password?
+	form.sign.border1SolidGrey.flex-column(action='/accounts/signin' method='post')
+		legend Login
+		+field('Username or Email')(type='text' name='usernameOrEmail' value=body.usernameOrEmail)
+		+field('Password')(type='password' name='password' value=body.password)
+		input(type='submit' value='Login')
+		p.title Forgot password?
 
-		p.signUp New to Blogme?
-			a(href='/accounts/signup')  Sign up
+	p.signQuery New to Blogme?
+		a(href='/accounts/signup')  Sign up
