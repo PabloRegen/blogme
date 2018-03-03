@@ -39,6 +39,10 @@ a:hover {
 	color: rgb(117, 123, 133);
 }
 
+i {
+	margin-right: 8px;
+}
+
 
 /* flexbox
    ============================================ */
@@ -102,6 +106,25 @@ a:hover {
 /* ============================================ */
 
 
+/* main footer
+   ============================================ */
+.main-footer {
+	/* Prevent vertical grow otherwise it takes available space from content */
+	flex: 0 0 auto;
+    padding: 40px 245px;
+	color: rgb(117,123,133);
+    background: rgb(44,48,51);
+}
+.main-footer p {
+	flex: 1 0 auto;
+}
+.main-footer a {
+	flex: 0 0 auto;
+	margin-left: 20px;
+}
+/* ============================================ */
+
+
 /* custom button
    ============================================ */
 .customButton {
@@ -155,6 +178,9 @@ a:hover {
 }
 /* ============================================ */
 
+
+/* post body
+   ============================================ */
 blockquote {
 	-webkit-margin-start: 0;
     -webkit-margin-end: 0;
@@ -170,9 +196,7 @@ p code {
 	background-color: rgb(242,242,242);
 }
 
-i {
-	margin-right: 8px;
-}
+
 
 legend {
 	align-self: center;
@@ -239,22 +263,6 @@ form p.title {
 
 
 
-
-.main-footer {
-	/* Prevent vertical grow otherwise it takes available space from content */
-	flex: 0 0 auto;
-    padding: 40px 245px;
-	color: rgb(117,123,133);
-    background: rgb(44,48,51);
-}
-.main-footer p {
-	flex: 1 0 auto;
-}
-.main-footer a {
-	flex: 0 0 auto;
-	margin-left: 20px;
-	color: rgb(117,123,133);
-}
 
 
 
