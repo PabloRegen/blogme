@@ -38,7 +38,7 @@ block content
 				| following #{following}
 
 			form(action='/accounts/delete' method='post')
-				input.danger(type='submit' value='Delete account')
+				input.customButton.danger(type='submit' value='Delete account')
 
 			if currentUser.role > 1
 				h2 Admins only

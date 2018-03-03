@@ -9,24 +9,23 @@ html
 		link(href='/css/simple-line-icons.css' rel='stylesheet')
 		link(href='/fonts/fonts.css' rel='stylesheet')
 	body
-		div.main-wrapper.flex-column.heigh100vh
-			header.main-header.flex-row
-				div.siteName
-					a(href='/')= siteName
+		div.flex-column.heigh100vh
+			header.mainHeader.flex-row
+				a.siteName(href='/')= siteName
 
 				if currentUser == null
-					nav.main-nav
+					nav.mainNav
 						a(href='/accounts/signin') Login
-						a.signup(href='/accounts/signup') Sign up
+						a.mainNavButton(href='/accounts/signup') Sign up
 
 				else
-					nav.main-nav
+					nav.mainNav
 						i.icon-user
 						| #{currentUser.username}
 						a(href='/accounts/dashboard') Dashboard
 						a(href='/accounts/profile') Profile
 						form(action='/accounts/signout' method='post')
-							input(type='submit' value='Logout')
+							input.mainNavButton(type='submit' value='Logout')
 
 			div.main-content
 				block content

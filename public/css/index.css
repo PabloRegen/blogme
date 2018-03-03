@@ -7,6 +7,8 @@
 	rgb(117,123,133)	grey text
 	rgb(51,51,51)		grey darker text
 	rgb(38,38,38)		grey darkest text
+	rgb(230,234,234)	grey mainHeader border-bottom
+	rgb(210,210,210) 	grey mainNavBorder
 
 	rgb(252,95,32)		orange
 	rgb(252,79,31)		orange dark
@@ -37,8 +39,72 @@ a:hover {
 	color: rgb(117, 123, 133);
 }
 
-a.customButton,
-input[type='submit'] {
+
+/* flexbox
+   ============================================ */
+.flex-row {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+}
+.flex-column {
+	display: flex;
+	flex-flow: column nowrap;
+}
+.heigh100vh {
+	/* ensure content area is as tall as the browser window */
+	height: 100vh;
+}
+/* ============================================ */
+
+
+/* main header
+   ============================================ */
+.mainHeader {
+	/* Prevent vertical grow so only main content pushes footer to the bottom */
+	flex: 0 0 auto;
+    padding: 18px 245px;
+    border-bottom: 1px solid rgb(230,234,234);
+}
+.siteName {
+	flex: 1 0 auto;
+	font-size: 1.5rem;
+	font-weight: 700;
+	letter-spacing: 2px;
+}
+.siteName:hover {
+	color: rgb(35,159,134);
+}
+.mainNav {
+	flex: 0 0 auto;
+}
+.mainNav form {
+	display: inline;
+}
+.mainNavButton {
+	border: 1px solid rgb(210,210,210);
+	border-radius: 3px;
+	color: rgb(35,159,134);
+}
+.mainNav a,
+.mainNavButton {
+	margin-left: 25px;
+	padding: 10px;
+    font-size: 0.85rem;
+	letter-spacing: 1px;
+}
+.mainNav a:hover,
+.mainNavButton:hover {
+	color: white;
+	background-color: grey;
+	border-radius: 3px;
+}
+/* ============================================ */
+
+
+/* custom button
+   ============================================ */
+.customButton {
 	margin-right: 8px;
 	/*padding: 5px 10px;*/
 	padding: 30px 30px; /* for testing */
@@ -51,21 +117,43 @@ input[type='submit'] {
 	line-height: 1.6;
 	letter-spacing: 0.2px;
 }
-a.customButton:hover,
-input[type='submit']:hover {
+.customButton:hover {
 	border-color: grey;
+	color: white;
 	background-color: grey;
 }
-input.danger[type='submit'] {
+.danger {
 	border: 1px solid red;
 	background-color: red;
 }
-input.danger[type='submit']:hover {
+.danger:hover {
 	border: 1px solid black;
 	background-color: black;
 }
+/* ============================================ */
 
 
+/* custom margin & padding
+   ============================================ */
+.marginRight15 {
+    margin-right: 15px;
+}
+.marginLeft25 {
+    margin-left: 25px;
+}
+.paddingTop30 {
+    padding-top: 30px;
+}
+.paddingBottom30 {
+    padding-bottom: 30px;
+}
+.paddingLeft15 {
+    padding-left: 15px;
+}
+.paddingRight15 {
+    padding-right: 15px;
+}
+/* ============================================ */
 
 blockquote {
 	-webkit-margin-start: 0;
@@ -86,7 +174,7 @@ i {
 	margin-right: 8px;
 }
 
-form legend {
+legend {
 	align-self: center;
 	margin-bottom: 10px;
 	font-size: 2rem;
@@ -131,21 +219,6 @@ form p.title {
 	border-radius: 2px;
 }
 
-.paddingTop30 {
-    padding-top: 30px;
-}
-.paddingBottom30 {
-    padding-bottom: 30px;
-}
-.paddingLeft15 {
-    padding-left: 15px;
-}
-.paddingRight15 {
-    padding-right: 15px;
-}
-.marginRight15 {
-    margin-right: 15px;
-}
 .displayBlock {
 	display: block;
 }
@@ -163,70 +236,7 @@ form p.title {
 
 
 
-.flex-row {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-}
-.flex-column {
-	display: flex;
-	flex-flow: column nowrap;
-}
-.heigh100vh {
-	/* ensure content area is as tall as the browser window */
-	height: 100vh;
-}
 
-
-
-.main-header {
-	/* Prevent vertical grow so only main content pushes footer to the bottom */
-	flex: 0 0 auto;
-    padding: 18px 245px;
-    border-bottom: 1px solid rgb(230,234,234);
-}
-.main-header .siteName {
-	flex: 1 0 auto;
-}
-.main-header .siteName a {
-	text-decoration: none;
-	color: rgb(35,159,134);
-	font-size: 1.5rem;
-	font-weight: 700;
-	letter-spacing: 2px;
-}
-.main-header .main-nav {
-	flex: 0 0 auto;
-}
-.main-header .main-nav a {
-	margin-left: 25px;
-	padding: 10px;
-    text-decoration: none;
-    color: rgb(112,191,97);
-    color: rgb(0,150,136);
-    color: rgb(35,159,134);
-    font-size: 0.85rem;
-	font-weight: 400;
-	letter-spacing: 1px;
-}
-.main-header .main-nav a.signup {
-	border: 1px solid rgb(210, 210, 210);
-	border-radius: 3px;
-}
-.main-header .main-nav form {
-	display: inline;
-}
-.main-header .main-nav form input[type='submit'] {
-	margin-left: 25px;
-	padding: 9px;
-	font-size: 0.85rem;
-}
-.main-header .main-nav a:hover,
-.main-header .main-nav form input[type='submit']:hover {
-	color: white;
-	background-color: grey;
-	border-radius: 3px;
-}
 
 
 
@@ -434,31 +444,6 @@ form p.title {
 }
 
 
-/*
-.savePublishPost,
-.editDeletePost {
-	margin-bottom: 30px;
-}
-.savePublishPost .savePublish {
-	color: white;
-	background-color: rgb(0,150,136);
-}
-.savePublishPost .savePublish:hover {
-	color: white;
-	background-color: grey;
-}
-.savePublishPost .delete,
-.editDeletePost form input {
-	color: white;
-	background-color: rgb(252,13,27);
-}
-.savePublishPost .delete:hover,
-.editDeletePost form input:hover {
-	color: white;
-	background-color: rgb(252,200,20);
-	filter: brightness(1.5);
-}
-*/
 
 .editImageData,
 .editProfile,

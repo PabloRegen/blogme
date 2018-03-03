@@ -29,7 +29,7 @@ block content
 							a.customButton(href=`/uploads/${image.id}/edit`) Edit
 							if deleted !== '1'
 								form(action=`/uploads/${image.id}/delete` method='post')
-									input.danger(type='submit' value='Delete')
+									input.customButton.danger(type='submit' value='Delete')
 				else
 					div You have not uploaded any images yet
 

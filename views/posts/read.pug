@@ -35,10 +35,10 @@ block content
 			div.postBody!= sanitizer.sanitize(postBody, function(url) { return url; })
 
 			if canEditAndDelete
-				div.editDeletePost.flex-row
+				div.paddingBottom30.flex-row
 					a.customButton(href=`/posts/${slug}/edit`) Edit post
 					form(action=`/posts/${slug}/delete` method='post')
-						input.danger(type='submit' value='Delete post')
+						input.customButton.danger(type='submit' value='Delete post')
 
 			div
 				if alreadyLikedPost

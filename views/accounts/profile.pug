@@ -10,7 +10,7 @@ block content
 		if currentUser.pic != null
 			img(src=`/uploads/${currentUser.pic}`)
 			form(action='/accounts/profile' method='post')
-				input.danger(type='submit' value='Delete picture')
+				input.customButton.danger(type='submit' value='Delete picture')
 		else
 			img(src='/images/avatar.jpg')
 			| You may chose your own picture
