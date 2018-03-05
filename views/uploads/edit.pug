@@ -18,7 +18,8 @@ block content
 					input(type='text' name='license' value=image.licenseType)
 				p.title Original URL
 					input(type='text' name='url' value=image.originalURL)
-				input(type='submit' value='Save changes')
+				p
+					input.customButton(type='submit' value='Save changes')
 
 			form(action=`/uploads/${image.id}/delete` method='post')
 				input.customButton.danger(type='submit' value='Delete image')

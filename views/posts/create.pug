@@ -8,18 +8,18 @@ block content
 		form.createPost.flex-column(action='/posts/create' method='post' enctype='multipart/form-data')
 			legend Create your post
 			p.title Title (* required)
-				input.border1SolidGrey(type='text' name='title' value=body.title)
+				input(type='text' name='title' value=body.title)
 				if errors.title != null
 					p.invalid #{errors.title.message}
 			p.title Subtitle
-				textarea.border1SolidGrey(name='subtitle')= body.subtitle
+				textarea(name='subtitle')= body.subtitle
 			p.title Body
-				textarea.border1SolidGrey(name='body' placeholder='Your article goes here...')= body.body
-			p.title Tags (use commas to separate if more than one)
-				input.border1SolidGrey(type='text' name='tags' value=body.tags)
-			p
-				label.customFileUpload(for='fileUpload') Choose picture
+				textarea(name='body' placeholder='Your article goes here...')= body.body
+			p.title Tags (separate tags with commas)
+				input(type='text' name='tags' value=body.tags)
+			p.title
+				label.customButton.customFileUpload(for='fileUpload') Choose main picture
 				input#fileUpload(type='file' name='postPic')
 			div
-				input(type='submit' name='save' value='Save draft')
-				input(type='submit' name='publish' value='Publish post')
+				input.customButton(type='submit' name='save' value='Save draft')
+				input.customButton(type='submit' name='publish' value='Publish post')
