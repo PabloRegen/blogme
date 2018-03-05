@@ -4,17 +4,19 @@ block title
 	|edit post
 
 block content
+	script= function autoSize(element) { element.style.height = '40px'; element.style.height = `${element.scrollHeight}px`; }
+
 	div.readingWidth
 		form.editPost.flex-column(action=`/posts/${slug}/edit` method='post' enctype='multipart/form-data')
 			legend Edit your post
-			p.title Title (* required)
+			p.title Title #[span.asterisk  *]
 				input(type='text' name='title' value=post != null ? post.title : body.title)
 				if errors.title != null
 					p.invalid #{errors.title.message}
 			p.title Subtitle
-				textarea(name='subtitle')= post != null ? post.subtitle : body.subtitle
+				textarea(name='subtitle' oninput='autoSize(this)')= post != null ? post.subtitle : body.subtitle
 			p.title Body
-				textarea(name='body' placeholder='Your article goes here...')= post != null ? post.body : body.body
+				textarea(name='body' placeholder='Your article goes here...' oninput='autoSize(this)')= post != null ? post.body : body.body
 			p.title Tags
 				input(type='text' name='tags' value=tags != null ? tags : body.tags)
 			p.title

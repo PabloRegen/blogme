@@ -60,6 +60,10 @@ textarea {
 	border: 1px solid rgb(220,220,220);
 	border-radius: 2px;
 }
+textarea {
+	resize: none;
+	overflow: hidden;
+}
 
 input[type='file'] {
 	display: none;
@@ -109,6 +113,9 @@ form p.title {
 .dot {
 	margin: 0 20px;
 	color: rgb(204, 204, 204);
+}
+.asterisk {
+	color: rgb(252,95,32);
 }
 
 .redText{
