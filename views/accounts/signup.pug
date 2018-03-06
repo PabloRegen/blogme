@@ -10,7 +10,7 @@ block content
 			if errors[attributes.name] != null
 				p.invalid #{errors[attributes.name].message}
 				
-	form.sign.border1SolidGrey.flex-column(action='/accounts/signup' method='post')
+	form.sign(action='/accounts/signup' method='post')
 		legend Sign up
 		+field('Username')(type='text', name='username' value=body.username)
 		+field('Email')(type='text', name='email' value=body.email)
