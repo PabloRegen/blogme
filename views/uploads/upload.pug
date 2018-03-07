@@ -1,17 +1,14 @@
 extends ../layouts/layout
 
 block title
-	|image manager upload
+	|image upload
 
 block content
-	div.readingWidth
-		h1 Store images
-
-		div(class={invalid: message != null}) #{message}
-
+	div.readingWidth.paddingBottom30
+		h1.textAlignCenter Store images
 		form.uploadImages(action='/uploads/upload' method='post' enctype='multipart/form-data')
-			p
+			div.imageUpload.flex-row
 				label.customButton.customFileUpload(for='imagesUpload') Choose images
 				input#imagesUpload(type='file' name='images' multiple)
-			p
 				input.customButton(type='submit' value='Save images')
+		div(class={invalid: message != null}) #{message}

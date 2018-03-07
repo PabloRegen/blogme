@@ -4,9 +4,9 @@ block title
 	|dashboard
 
 block content
-	div.dashboard
+	div.dashboard.marginBottom30
 		div.readingWidth
-			h1 Dashboard
+			h1.textAlignCenter Dashboard
 			a.customButton(href='/posts/create') Start new post
 			
 			h2 Your latest posts
@@ -24,7 +24,9 @@ block content
 			h2 Your posts and images
 			div.userPostsAndImages
 				a(href='/posts/overview') Posts
+				span.dot •
 				a(href='/uploads/overview/1') Current images
+				span.dot •
 				a(href='/uploads/overview/1?deleted=1') Deleted images
 
 			h2 Your stats
@@ -34,6 +36,6 @@ block content
 				input.customButton.danger(type='submit' value='Delete account')
 
 			if currentUser.role > 1
-				h2 Admins only
+				h2 Admins only space
 				p
-					a(href='/accounts/users/change-password/admin') Update user password
+					a.customButton(href='/accounts/users/change-password/admin') Update user password

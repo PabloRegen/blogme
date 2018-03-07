@@ -4,11 +4,11 @@ block title
 	|create post
 
 block content
-	script= function autoSize(element) { element.style.height = '40px'; element.style.height = `${element.scrollHeight}px`; }
+	script= function autoSize(element) {element.style.height = (element.name==='body' ? '600px' : '40px'); element.style.height = `${element.scrollHeight}px`;}
 
 	div.readingWidth
-		form.createPost.flex-column(action='/posts/create' method='post' enctype='multipart/form-data')
-			legend Create your post
+		form.createPost.paddingTop30.paddingBottom30(action='/posts/create' method='post' enctype='multipart/form-data')
+			legend Create post
 			p.title Title #[span.asterisk  *]
 				input(type='text' name='title' value=body.title)
 				if errors.title != null
@@ -19,9 +19,9 @@ block content
 				textarea(name='body' placeholder='Your article goes here...' oninput='autoSize(this)')= body.body
 			p.title Tags (separate tags with commas)
 				input(type='text' name='tags' value=body.tags)
-			p.title
-				label.customButton.customFileUpload(for='fileUpload') Choose main picture
-				input#fileUpload(type='file' name='postPic')
 			div
+				label.customButton.customFileUpload.marginTop30(for='fileUpload') Choose main picture
+				input#fileUpload(type='file' name='postPic')
+			div.marginTop30
 				input.customButton(type='submit' name='save' value='Save draft')
 				input.customButton(type='submit' name='publish' value='Publish post')

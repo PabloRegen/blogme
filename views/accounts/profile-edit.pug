@@ -6,21 +6,21 @@ block title
 block content
 	script= function autoSize(element) { element.style.height = '40px'; element.style.height = `${element.scrollHeight}px`; }
 
-	div.readingWidth
-		h1 Edit your profile
+	div.readingWidth.paddingTop30.paddingBottom30
+		form.editProfile(action='/accounts/profile/edit' method='post' enctype='multipart/form-data')
+			legend Edit profile
+			if currentUser.pic != null
+				img.userAvatar(src=`/uploads/${currentUser.pic}`)
+			else
+				img.userAvatar(src='/images/avatar.jpg')
 
-		if currentUser.pic != null
-			img(src=`/uploads/${currentUser.pic}`)
-		else
-			img(src='/images/avatar.jpg')
-
-		form.editProfile.flex-column(action='/accounts/profile/edit' method='post' enctype='multipart/form-data')
-			p.title
+			div.marginTop20
 				label.customButton.customFileUpload(for='fileUpload') Choose picture
 				input#fileUpload(type='file' name='userPic')
+
+			p.title (#[span.asterisk  *] Avatars are displayed circular so circle or square ones work best. Otherwise may look stretched)
 			p.title Name
 				input(type='text' name='name' value=currentUser.name)
 			p.title Bio
 				textarea(name='bio' placeholder='Enter short bio' oninput='autoSize(this)')=currentUser.bio
-			p
-				input.customButton(type='submit' name='publish' value='Save profile')
+			input.customButton.marginTop30(type='submit' name='publish' value='Save profile')

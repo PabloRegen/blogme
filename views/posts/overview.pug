@@ -33,14 +33,14 @@ block content
 				|  | not draft
 
 	div.postsOverview
-		div.readingWidth
-			h1 Posts overview
+		div.readingWidth.paddingBottom30
+			h1.textAlignCenter Posts overview
 
 			if currentUser.role > 1
 				form(action='/posts/overview' method='get')
-					p Enter username to overview user's posts
+					p.title Enter username to overview user's posts
 					input(type='text' name='username')
-					input(type='submit' value='Submit')
+					input.customButton(type='submit' value='Submit')
 				if username != null && username !== currentUser.username
 					h2 #{username}'s posts
 				else

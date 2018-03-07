@@ -4,26 +4,27 @@ block title
 	|profile
 
 block content
-	div.readingWidth
-		h1 Your profile
+	div.readingWidth.paddingBottom30
+		h1.textAlignCenter Your profile
 
 		if currentUser.pic != null
-			img(src=`/uploads/${currentUser.pic}`)
-			form(action='/accounts/profile' method='post')
+			img.userAvatar(src=`/uploads/${currentUser.pic}`)
+			form.marginTop20(action='/accounts/profile' method='post')
 				input.customButton.danger(type='submit' value='Delete picture')
 		else
-			img(src='/images/avatar.jpg')
-			| You may chose your own picture
+			img.userAvatar(src='/images/avatar.jpg')
+			p (#[span.asterisk  *] You can provide your own avatar or picture by editing your profile)
 
 		p Name:
 			if currentUser.name != null
 				|  #{currentUser.name}
 			else 
 				|  N/A
+
 		p Bio:
 			if currentUser.bio != null
 				|  #{currentUser.bio}
 			else 
 				|  N/A
-		p 
-			a.customButton(href='/accounts/profile/edit') Edit profile
+		
+		a.customButton(href='/accounts/profile/edit') Edit profile

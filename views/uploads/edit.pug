@@ -5,11 +5,10 @@ block title
 
 block content
 	div.editImage
-		div.readingWidth
-			h1 Edit image data
-
+		div.readingWidth.paddingTop30.paddingBottom30
 			form.editImageData.flex-column(action=`/uploads/${image.id}/edit` method='post')
-				img(src=`/uploads/${image.path}` width='750')
+				legend Edit image data
+				img.imageWidth100(src=`/uploads/${image.path}`)
 				p.title Caption
 					input(type='text' name='caption' value=image.caption)
 				p.title Owner's name
@@ -18,8 +17,7 @@ block content
 					input(type='text' name='license' value=image.licenseType)
 				p.title Original URL
 					input(type='text' name='url' value=image.originalURL)
-				p
+				div.marginTop30
 					input.customButton(type='submit' value='Save changes')
-
-			form(action=`/uploads/${image.id}/delete` method='post')
-				input.customButton.danger(type='submit' value='Delete image')
+					form(action=`/uploads/${image.id}/delete` method='post')
+						input.customButton.danger(type='submit' value='Delete image')

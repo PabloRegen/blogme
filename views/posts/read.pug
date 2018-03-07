@@ -23,8 +23,9 @@ block content
 				div #{moment(post.postedAt).format('ll')}
 				div.clear
 
-			h1.postTitle!= sanitizer.sanitize(post.title)
-			h2.postSubtitle!= sanitizer.sanitize(post.subtitle)
+			div.marginBottom20
+				h1.postTitle!= sanitizer.sanitize(post.title)
+				h2.postSubtitle!= sanitizer.sanitize(post.subtitle)
 
 		if post.pic != null
 			img.postCoverImage(src=`/uploads/${post.pic}`, alt='Alt post pic', title='Main Post Pic')
