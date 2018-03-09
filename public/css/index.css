@@ -216,6 +216,7 @@ form p.title {
 }
 .mainFooter p {
 	flex: 1 0 auto;
+	margin: 0;
 }
 .mainFooter a {
 	flex: 0 0 auto;
