@@ -8,13 +8,13 @@ block content
 		form.createPost.paddingTop30.paddingBottom30(action='/posts/create' method='post' enctype='multipart/form-data')
 			legend Create post
 			p.title Title #[span.asterisk  *]
-				input(type='text' name='title' value=body.title)
+				textarea.autosize(name='title')= body.title
 				if errors.title != null
 					p.invalid #{errors.title.message}
 			p.title Subtitle
-				textarea.autosize(name='subtitle' oninput='autoSize(this)')= body.subtitle
+				textarea.autosize(name='subtitle')= body.subtitle
 			p.title Body
-				textarea.autosize(name='body' placeholder='Your article goes here...' oninput='autoSize(this)')= body.body
+				textarea.autosize(name='body' placeholder='Your article goes here...')= body.body
 			p.title Tags (separate tags with commas)
 				input(type='text' name='tags' value=body.tags)
 			div
@@ -23,5 +23,3 @@ block content
 			div.marginTop30
 				input.customButton(type='submit' name='save' value='Save draft')
 				input.customButton(type='submit' name='publish' value='Publish post')
-
-	script(src='/client/autozise.js')

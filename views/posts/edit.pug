@@ -8,7 +8,7 @@ block content
 		form.editPost.paddingTop30.paddingBottom30(action=`/posts/${slug}/edit` method='post' enctype='multipart/form-data')
 			legend Edit post
 			p.title Title #[span.asterisk  *]
-				input(type='text' name='title' value=post != null ? post.title : body.title)
+				textarea.autosize(name='title')= post != null ? post.title : body.title
 				if errors.title != null
 					p.invalid #{errors.title.message}
 			p.title Subtitle
@@ -26,5 +26,3 @@ block content
 					
 		form.paddingBottom30(action=`/posts/${slug}/delete` method='post')
 			input.customButton.danger(type='submit' value='Delete post')
-
-	script(src='/client/autozise.js')
