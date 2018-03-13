@@ -7,7 +7,7 @@ block content
 	div.readingWidth.paddingBottom30
 		h1.textAlignCenter Store images
 		form.uploadImages(action='/uploads/upload' method='post' enctype='multipart/form-data')
-			div.imageUpload.flex-row
+			div.imageUpload.flexRow
 				label.customButton.customFileUpload(for='imagesUpload') Choose images
 				input#imagesUpload(type='file' name='images' multiple)
 				input.customButton(type='submit' value='Save images')

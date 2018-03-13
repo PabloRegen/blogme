@@ -8,8 +8,8 @@ block content
 		div.imageHolder
 			h1 Create your blog. Share your stories
 			img(src='/images/homepage.jpg' alt='Homepage image')
+		h1 Whether you'd like to share your expertise, experiences or whatever is on your mind
 		div.readingWidth
-			h3 Whether you'd like to share your expertise, experiences or whatever is on your mind
 			ul
 				li
 					i.icon-check
@@ -26,16 +26,21 @@ block content
 				li 
 					i.icon-check
 					|  Like posts
-					
-			h3 Check the latest posts
-			ul
-				each post in posts
-					div.userInfo
-						if post.ownerPic != null
-							img(src=`/uploads/${post.ownerPic}`)
-						else
-							img(src='/images/avatar.jpg')
-						div #{post.owner}		
-						a(href=`/posts/${post.slug}`)= post.title
-						div #{moment(post.postedAt).format('ll')}
-						div.clear
+
+			div.listingLatest.marginBottom80
+				h2 Latest posts
+				ul
+					each post in posts
+						article
+							figure
+								if post.pic != null
+									img(src=`/uploads/${post.pic}`)
+								else
+									img(src='/images/no_image_available.jpg')
+							header
+								h2
+									a(href=`/posts/${post.slug}`)= post.title
+								if post.subtitle != null
+									p.latestSubtitle #{post.subtitle}
+								p.latestOwner #{post.owner} • #{moment(post.postedAt).format('ll')}	
+							div.clear

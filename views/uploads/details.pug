@@ -6,33 +6,24 @@ block title
 block content
 	div.readingWidth.paddingBottom30
 		h1.textAlignCenter Image details
-		img.imageWidth100(src=`/uploads/${image.path}`)
+		img.center.imageMaxWidth100(src=`/uploads/${image.path}`)
 		p.redText NOTE: To use this image copy the line below and paste it anywhere within your post's body!
 		p.redText  ![#{image.caption}](/uploads/#{image.path})
 
-		p name: #{image.originalName}
-		p caption: #{image.caption}
-		p size: #{Math.round(image.size/1000)} KB
-
-		if image.width != null
-			p width: #{image.width} px
-		else
-			p width:
-
-		if image.height != null
-			p height: #{image.height} px
-		else
-			p height:
-
-		p dated: #{image.dated}
-		p owner: #{image.ownerName}
-		p license: #{image.licenseType}
-		p original URL: #{image.originalURL}
-		p uploaded: #{moment(image.uploadedAt).format('ll')}
-		p modified: #{image.modifiedAt != null ? moment(image.modifiedAt).format('ll') : ''}
-		p deleted: #{image.deletedAt != null ? moment(image.deletedAt).format('ll') : ''}
-
-		div.flex-row
+		p Name: #{image.originalName}
+		p Uploaded: #{moment(image.uploadedAt).format('ll')}
+		if image.modifiedAt != null
+			p Modified: #{moment(image.modifiedAt).format('ll')}
+		if image.deletedAt != null
+			p Deleted: #{moment(image.deletedAt).format('ll')}
+		p Size: #{Math.round(image.size/1000)} KB
+		p Caption: #{image.caption}
+		p Owner: #{image.ownerName}
+		p License: #{image.licenseType}
+		p Original URL: #{image.originalURL}
+		
+		div.flexRow
 			a.customButton(href=`/uploads/${image.id}/edit`) Edit data
-			form(action=`/uploads/${image.id}/delete` method='post')
-				input.customButton.danger(type='submit' value='Delete image')
+			if image.deletedAt == null
+				form(action=`/uploads/${image.id}/delete` method='post')
+					input.customButton.danger(type='submit' value='Delete image')

@@ -34,7 +34,7 @@ block content
 			div.postBody!= sanitizer.sanitize(postBody, function(url) { return url; })
 
 			if canEditAndDelete
-				div.paddingBottom30.flex-row
+				div.flexRow.paddingBottom30
 					a.customButton(href=`/posts/${slug}/edit`) Edit post
 					form(action=`/posts/${slug}/delete` method='post')
 						input.customButton.danger(type='submit' value='Delete post')
@@ -52,7 +52,7 @@ block content
 							i.icon-heart 
 				| #{likes}
 
-			div.readPostTags.flex-row
+			div.readPostTags.flexRow
 				if tags.length > 0
 					i.icon-tag
 					| Tags:

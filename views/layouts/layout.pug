@@ -10,8 +10,8 @@ html
 		link(href='/fonts/fonts.css' rel='stylesheet')
 		script(src='/js/autosize.js')
 	body
-		div.flex-column.heigh100vh
-			header.mainHeader.flex-row
+		div.flexColumn.heigh100vh
+			header.mainHeader.flexRow
 				a.siteName(href='/')= siteName
 
 				if currentUser == null
@@ -32,7 +32,7 @@ html
 				block content
 					p #[strong Note:] This page doesn't have any content yet
 
-			footer.mainFooter.flex-row
-					p Copyright © 2018 • Blogme • All rights reserved
+			footer.mainFooter.flexRow
+					p © 2018 Blogme. All rights reserved
 					a(href='/about') About
 					a(href='/contact') Contact

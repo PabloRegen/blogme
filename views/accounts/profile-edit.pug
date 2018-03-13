@@ -4,8 +4,6 @@ block title
 	|edit profile
 
 block content
-	script= function autoSize(element) { element.style.height = '40px'; element.style.height = `${element.scrollHeight}px`; }
-
 	div.readingWidth.paddingTop30.paddingBottom30
 		form.editProfile(action='/accounts/profile/edit' method='post' enctype='multipart/form-data')
 			legend Edit profile
@@ -22,5 +20,5 @@ block content
 			p.title Name
 				input(type='text' name='name' value=currentUser.name)
 			p.title Bio
-				textarea(name='bio' placeholder='Enter short bio' oninput='autoSize(this)')=currentUser.bio
+				textarea.autosize(name='bio' placeholder='Enter short bio')=currentUser.bio
 			input.customButton.marginTop30(type='submit' name='publish' value='Save profile')
