@@ -6,35 +6,42 @@ block title
 block content
 
 	mixin postDetails(post)
-		li
-			div: a(href=`/posts/${post.slug}`)= post.title
-			
-			if post.subtitle != null
-				div #{post.subtitle}
+		article
+			figure
+				if post.pic != null
+					img(src=`/uploads/${post.pic}`)
+				else
+					img(src='/images/no_image_available.jpg')
+			header
+				h2
+					a(href=`/posts/${post.slug}`)= post.title
+				if post.subtitle != null
+					p.subtitleList #{post.subtitle}
+				p.postData #{moment(post.postedAt).format('ll')}	
+				if post.updatedAt != null
+					p.postData updated #{moment(post.updatedAt).format('ll')}
 
-			div posted #{moment(post.postedAt).format('ll')}
+				if post.deletedAt != null
+					p.postData.redText deleted #{moment(post.deletedAt).format('ll')}				
 
-			if post.updatedAt != null
-				div updated #{moment(post.updatedAt).format('ll')}
+				p.postData
+					| #{post.likes} likes
 
-			if post.deletedAt != null
-				div.redText deleted #{moment(post.deletedAt).format('ll')}				
+					if post.isVisible
+						|  • visible
+					else
+						|  • not visible
 
-			| #{post.likes} likes
+					if post.isDraft
+						|  • draft
+					else
+						|  • published
+			div.clear
 
-			if post.isVisible
-				|  | visible
-			else
-				|  | not visible
-
-			if post.isDraft
-				|  | draft
-			else
-				|  | not draft
 
 	div.postsOverview
 		div.readingWidth.paddingBottom30
-			h1.textAlignCenter Posts overview
+			h1.textAlignCenter Your posts
 
 			if currentUser.role > 1
 				form(action='/posts/overview' method='get')
@@ -46,8 +53,8 @@ block content
 				else
 					h2 Your posts
 
-			ul
+			div.postList.marginBottom80
 				each post in posts
 					+postDetails(post) 
 				else
-					div You don't have any posts yet
+					p You don't have any posts yet

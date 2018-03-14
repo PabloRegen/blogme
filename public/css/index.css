@@ -233,6 +233,16 @@ form p.title {
 }
 
 
+/* About page
+   ============================================ */
+.aboutPageText {
+	font-weight: 300;
+	font-size: 17px;
+	line-height: 1.6;
+	color: rgb(117,123,133);
+}
+
+
 /* homepage
    ============================================ */
 .imageHolder {
@@ -265,6 +275,54 @@ form p.title {
 }
 .homepage i {
 	color: rgb(0,150,136);
+}
+
+
+/* posts list
+   ============================================ */
+.postList article {
+    margin-bottom: 25px;
+}
+.postList figure {
+	float: left;
+	margin: 0;
+	width: 130px;
+	height: 130px;
+
+}
+.postList img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.postList header {
+	box-sizing: border-box;
+	margin-left: 145px;
+	min-height: 130px;
+	border-bottom: 1px solid rgb(210,210,210);
+}
+.postList header h2 {
+	margin: 0;
+	line-height: 1.2;
+	font-weight: 400;
+}
+.postList header h2 a {
+	color: rgb(51,51,51);	
+}
+.postList header h2 a:hover {
+	color: rgb(30,180,170);
+}
+.postList p.subtitleList {
+	margin: 6px 0 0 0;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 18px;
+}
+.postList p.postData {
+	margin: 6px 0 0 0;
+	font-weight: 300;
+	font-size: 13px;
+	line-height: 1.15;
 }
 
 
@@ -318,7 +376,7 @@ textarea[name='body'] {
  	letter-spacing: 0.2px;
  	line-height: 1.3;
 }
-.postSubtitle {
+. {
 	margin: 0;
 	/* font-size: 24px; */
 	letter-spacing: 0.2px;
@@ -396,10 +454,6 @@ textarea[name='body'] {
 
 /* dashboard
    ============================================ */
-.dashboard li {
-	margin-bottom: 20px;
-	list-style: none;
-}
 
 
 /* post and image overview pages
@@ -410,12 +464,10 @@ textarea[name='body'] {
 	width: 650px;
 	margin-right: 15px;
 }
-.postsOverview ul,
 .imagesOverview ul {
 	padding-left: 0;
 	list-style: none;
 }
-.postsOverview li,
 .imagesOverview li {
 	margin-bottom: 30px;
 }
@@ -434,54 +486,6 @@ textarea[name='body'] {
    ============================================ */
 .imageUpload {
 	justify-content: center;
-}
-
-
-/* latest posts
-   ============================================ */
-.listingLatest article {
-    margin-bottom: 25px;
-}
-.listingLatest figure {
-	float: left;
-	margin: 0;
-	width: 130px;
-	height: 130px;
-
-}
-.listingLatest img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-.listingLatest header {
-	box-sizing: border-box;
-	margin-left: 145px;
-	min-height: 130px;
-	border-bottom: 1px solid rgb(210,210,210);
-}
-.listingLatest header h2 {
-	margin: 0;
-	line-height: 1.2;
-	font-weight: 400;
-}
-.listingLatest header h2 a {
-	color: rgb(51,51,51);	
-}
-.listingLatest header h2 a:hover {
-	color: rgb(30,180,170);
-}
-.listingLatest p.latestSubtitle {
-	margin: 6px 0 0 0;
-	font-weight: 400;
-	font-size: 14px;
-	line-height: 18px;
-}
-.listingLatest p.latestOwner {
-	margin: 6px 0 0 0;
-	font-weight: 300;
-	font-size: 13px;
-	line-height: 1.15;
 }
 
 

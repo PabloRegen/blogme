@@ -27,20 +27,20 @@ block content
 					i.icon-check
 					|  Like posts
 
-			div.listingLatest.marginBottom80
+			div.postList.marginBottom80
 				h2 Latest posts
-				ul
-					each post in posts
-						article
-							figure
-								if post.pic != null
-									img(src=`/uploads/${post.pic}`)
-								else
-									img(src='/images/no_image_available.jpg')
-							header
-								h2
-									a(href=`/posts/${post.slug}`)= post.title
-								if post.subtitle != null
-									p.latestSubtitle #{post.subtitle}
-								p.latestOwner #{post.owner} • #{moment(post.postedAt).format('ll')}	
-							div.clear
+
+				each post in posts
+					article
+						figure
+							if post.pic != null
+								img(src=`/uploads/${post.pic}`)
+							else
+								img(src='/images/no_image_available.jpg')
+						header
+							h2
+								a(href=`/posts/${post.slug}`)= post.title
+							if post.subtitle != null
+								p.subtitleList #{post.subtitle}
+							p.postData by #{post.owner} • #{moment(post.postedAt).format('ll')}	
+						div.clear

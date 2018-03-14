@@ -9,17 +9,26 @@ block content
 			h1.textAlignCenter Dashboard
 			a.customButton(href='/posts/create') Start new post
 			
-			h2 Your latest posts
-			ul
+			div.postList
+				h2 Your latest posts
+
 				each post in latestPosts
-					li
-						div: a(href=`/posts/${post.slug}`)= post.title
-						if post.subtitle != null
-							div #{post.subtitle}
-						div #{moment(post.postedAt).format('ll')}
+					article
+						figure
+							if post.pic != null
+								img(src=`/uploads/${post.pic}`)
+							else
+								img(src='/images/no_image_available.jpg')
+						header
+							h2
+								a(href=`/posts/${post.slug}`)= post.title
+							if post.subtitle != null
+								p.subtitleList #{post.subtitle}
+							p.postData #{moment(post.postedAt).format('ll')}
+						div.clear
 
 				else
-					li You have no posts yet
+					p You have no posts yet
 
 			h2 Your posts and images
 			div.userPostsAndImages
