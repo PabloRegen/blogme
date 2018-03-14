@@ -8,7 +8,9 @@ block content
 		h1.textAlignCenter Image details
 		img.center.imageMaxWidth100(src=`/uploads/${image.path}`)
 		p.redText NOTE: To use this image copy the line below and paste it anywhere within your post's body!
-		p.redText  ![#{image.caption}](/uploads/#{image.path})
+		p.redText ![Unable to display image. #{image.caption}](/uploads/#{image.path})
+			if image.caption != null
+				| #{image.caption}
 
 		p Name: #{image.originalName}
 		p Uploaded: #{moment(image.uploadedAt).format('ll')}

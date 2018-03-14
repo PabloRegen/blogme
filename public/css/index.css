@@ -376,7 +376,7 @@ textarea[name='body'] {
  	letter-spacing: 0.2px;
  	line-height: 1.3;
 }
-. {
+.postSubtitle {
 	margin: 0;
 	/* font-size: 24px; */
 	letter-spacing: 0.2px;
