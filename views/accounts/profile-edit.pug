@@ -13,11 +13,11 @@ block content
 				img.userAvatar(src='/images/avatar.jpg')
 
 			div.marginTop20
-				label.customButton.customFileUpload(for='fileUpload') Choose picture
+				label.customButton.customFileUpload(for='fileUpload') Choose your avatar
 				input#fileUpload(type='file' name='userPic')
 
-			p.title (#[span.asterisk  *] Avatars are displayed circular so circle or square ones work best. Otherwise may look stretched)
-			p.title Name
+			p.title (#[span.asterisk  *] Avatars are displayed circular so circular or square ones work best. Otherwise may look stretched)
+			p.title Name (If provided it will be displayed instead of your username on your posts)
 				input(type='text' name='name' value=currentUser.name)
 			p.title Bio
 				textarea.autosize(name='bio' placeholder='Enter short bio')=currentUser.bio

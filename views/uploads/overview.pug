@@ -8,6 +8,9 @@ block content
 		div.readingWidth.paddingBottom30
 			h1.textAlignCenter Images overview
 
+			if deleted !== '1'
+				p.redText To add an image to your post copy the text below the image and paste it anywhere within the post body
+
 			if currentUser.role > 1
 				form(action='/uploads/overview/1' method='get')
 					p.title Enter username to overview user's images
@@ -18,26 +21,33 @@ block content
 			else
 				h2.marginBottom0 Your #{deleted === '1' ? 'deleted' : 'current'} images
 
-			a(href=`/uploads/overview/1?${toggleQuery}`)= `Display ${deleted === '1' ? 'current' : 'deleted'} images instead`
+			div.marginBottom30
+				a(href=`/uploads/overview/1?${toggleQuery}`)= `Display ${deleted === '1' ? 'current' : 'deleted'} images instead`
 
 			ul
 				each image in images
 					li
-						img.imageMaxWidth100(src=`/uploads/${image.path}`)
+						img.displayBlock.imageMaxWidth100(src=`/uploads/${image.path}`)
+						if deleted !== '1'
+							p.imgGrab ![Image #{image.caption}](/uploads/#{image.path})
+								if image.caption != null
+									| #{image.caption}
 						div.flexRow
 							a.customButton(href=`/uploads/${image.id}`) Details
-							a.customButton(href=`/uploads/${image.id}/edit`) Edit
+							a.customButton(href=`/uploads/${image.id}/edit`) Edit data
 							if deleted !== '1'
 								form(action=`/uploads/${image.id}/delete` method='post')
 									input.customButton.danger(type='submit' value='Delete')
 				else
-					div You have not uploaded any images yet
+					p #{`You have no ${deleted !== '1' ? 'current' : 'deleted'} images`}
 
-			if page > 1
-				a(href=`/uploads/overview/${page - 1}?${pageQuery}`) Prev -
-			if page < numberOfPages
-				a(href=`/uploads/overview/${page + 1}?${pageQuery}`) Next
-			if numberOfPages > 0
-				|  Page #{page} / #{numberOfPages}
-			if username == null
+			div.marginBottom30
+				if page > 1
+					a.previousNext(href=`/uploads/overview/${page - 1}?${pageQuery}`) &#8249;
+				if page < numberOfPages
+					a.previousNext(href=`/uploads/overview/${page + 1}?${pageQuery}`) &#8250;
+				if numberOfPages > 0
+					|  Page #{page} / #{numberOfPages}
+
+			if username == null || username === currentUser.username
 				a.customButton(href='/uploads/upload') Upload images

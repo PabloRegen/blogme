@@ -469,7 +469,25 @@ textarea[name='body'] {
 	list-style: none;
 }
 .imagesOverview li {
-	margin-bottom: 30px;
+	margin-bottom: 40px;
+}
+.imagesOverview img {
+	margin-bottom: 7px;
+}
+.imgGrab {
+	margin: 7px 0;
+	font-weight: 300;
+	font-size: 13px;
+	line-height: 1.15;
+}
+.previousNext {
+	margin-right: 5px;
+	padding: 4px 11px;
+	border: 1px solid rgb(210,210,210);
+	border-radius: 50%;
+}
+.previousNext:hover {
+	border-color: rgb(30,180,170);;
 }
 
 
@@ -580,6 +598,9 @@ textarea[name='body'] {
 }
 .marginLeft25 {
     margin-left: 25px;
+}
+.marginTop0 {
+    margin-top: 0;
 }
 .marginTop20 {
     margin-top: 20px;

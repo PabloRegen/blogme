@@ -7,10 +7,14 @@ block content
 	div.dashboard.marginBottom30
 		div.readingWidth
 			h1.textAlignCenter Dashboard
-			a.customButton(href='/posts/create') Start new post
 			
 			div.postList
-				h2 Your latest posts
+				h2 Your posts
+
+				a.customButton(href='/posts/create') Start new post
+				p
+					a(href='/posts/overview') View all posts
+				h4.marginTop0 Latest posts
 
 				each post in latestPosts
 					article
@@ -28,23 +32,22 @@ block content
 						div.clear
 
 				else
-					p You have no posts yet
+					p You have no posts yet  
 
-			h2 Your posts and images
-			div.userPostsAndImages
-				a(href='/posts/overview') Posts
-				span.dot •
+			div
+				h2 Your images
 				a(href='/uploads/overview/1') Current images
 				span.dot •
 				a(href='/uploads/overview/1?deleted=1') Deleted images
 
-			h2 Your stats
-			p likes #{likes} #[span.dot •] liking #{liking} #[span.dot •] followers #{follows} #[span.dot •] following #{following}
+			div.marginBottom30
+				h2 Your stats
+				p likes #{likes} #[span.dot •] liking #{liking} #[span.dot •] followers #{follows} #[span.dot •] following #{following}
 
 			form(action='/accounts/delete' method='post')
 				input.customButton.danger(type='submit' value='Delete account')
 
 			if currentUser.role > 1
-				h2 Admins only space
+				h2 For admins only
 				p
 					a.customButton(href='/accounts/users/change-password/admin') Update user password

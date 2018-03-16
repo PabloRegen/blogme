@@ -7,22 +7,22 @@ block content
 	div.readingWidth
 		form.editPost.paddingTop30.paddingBottom30(action=`/posts/${slug}/edit` method='post' enctype='multipart/form-data')
 			legend Edit post
+			p.marginTop20 Use #[a(href='https://guides.github.com/features/mastering-markdown/' target='_blank') Markdown] to easily format your posts.
+			p To add your Blogme stored images to the #[b post body] follow #[a(href='/uploads/overview/1') this instructions].
+				|  Otherwise #[a.customButton(href='/uploads/upload') upload images]
 			p.title Title #[span.asterisk  *]
 				textarea.autosize(name='title')= post != null ? post.title : body.title
 				if errors.title != null
 					p.invalid #{errors.title.message}
 			p.title Subtitle
 				textarea.autosize(name='subtitle')= post != null ? post.subtitle : body.subtitle
+			p.title
+				label.customButton.customFileUpload(for='fileUpload') Main image
+				input#fileUpload(type='file' name='postPic')
 			p.title Body
 				textarea.autosize(name='body' placeholder='Your article goes here...')= post != null ? post.body : body.body
 			p.title Tags (separate tags with commas)
 				input(type='text' name='tags' value=tags != null ? tags : body.tags)
-			div
-				label.customButton.customFileUpload.marginTop30(for='fileUpload') Choose main picture
-				input#fileUpload(type='file' name='postPic')
 			div.marginTop30
 				input.customButton(type='submit' name='save' value='Save draft')
 				input.customButton(type='submit' name='publish' value='Publish post')
-					
-		form.paddingBottom30(action=`/posts/${slug}/delete` method='post')
-			input.customButton.danger(type='submit' value='Delete post')

@@ -4,8 +4,10 @@ block title
 	|error
 
 block content
-	h1 error page
-	h2= errorTitle
+	div.readingWidth
+		h1.textAlignCenter.marginBottom0 Oops. There was an error
+		h3.textAlignCenter.marginTop0= errorTitle
+		img(src='/images/error-owl.jpg')
 		
 	if errorStacktrace != null
 		pre= errorStacktrace

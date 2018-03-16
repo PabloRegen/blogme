@@ -6,9 +6,9 @@ block title
 block content
 	div.readingWidth.paddingBottom30
 		h1.textAlignCenter Image details
-		img.center.imageMaxWidth100(src=`/uploads/${image.path}`)
-		p.redText NOTE: To use this image copy the line below and paste it anywhere within your post's body!
-		p.redText ![Unable to display image. #{image.caption}](/uploads/#{image.path})
+		img.displayBlock.center.imageMaxWidth100(src=`/uploads/${image.path}`)
+		p.redText To add this image to your post copy the red text line below and paste it anywhere within the post body
+		p.imgGrab.redText ![Image #{image.caption}](/uploads/#{image.path})
 			if image.caption != null
 				| #{image.caption}
 
