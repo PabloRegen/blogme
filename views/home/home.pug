@@ -10,7 +10,7 @@ block content
 			img(src='/images/homepage.jpg' alt='Homepage image')
 		h1 Whether you'd like to share your expertise, experiences or whatever is on your mind
 		div.readingWidth
-			ul
+			ul.marginBottom30
 				li
 					i.icon-check
 					|  Post anything
@@ -27,8 +27,12 @@ block content
 					i.icon-check
 					|  Like posts
 
+			div.flexRow.marginBottom30
+				a.customButton(href='/accounts/signin') Login
+				a.customButton(href='/accounts/signup') Sign up
+
 			div.postList.marginBottom80
-				h2 Latest posts
+				h2#latestPosts Latest posts
 
 				each post in posts
 					article

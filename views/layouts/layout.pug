@@ -16,15 +16,17 @@ html
 
 				if currentUser == null
 					nav.mainNav
+						a(href='/#latestPosts') Latest Posts
 						a(href='/accounts/signin') Login
 						a.mainNavButton(href='/accounts/signup') Sign up
 
 				else
 					nav.mainNav
+						a(href='/#latestPosts') Latest Posts
+						a(href='/accounts/profile') Profile
 						a(href='/accounts/dashboard')
 							i.icon-user
 							| #{currentUser.username}
-						a(href='/accounts/profile') Profile
 						form(action='/accounts/signout' method='post')
 							input.mainNavButton(type='submit' value='Logout')
 
