@@ -6,15 +6,20 @@ block title
 block content
 	div.dashboard.marginBottom30
 		div.readingWidth
-			h1.textAlignCenter Dashboard
+			h1.textAlignCenter
+				if currentUser.pic != null
+					img.userAvatar(src=`/uploads/${currentUser.pic}`)
+				else
+					img.userAvatar(src='/images/avatar.jpg')
+				| #{currentUser.username}
 			
 			div.postList
 				h2 Your posts
 
 				a.customButton(href='/posts/create') Start new post
 				p
-					a(href='/posts/overview') View all posts
-				h4.marginTop0 Latest posts
+					a(href='/posts/overview') View all your posts
+				h4.marginTop0 Your latest posts
 
 				each post in latestPosts
 					article

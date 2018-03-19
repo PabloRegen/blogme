@@ -8,6 +8,10 @@ block content
 		div.readingWidth.paddingBottom30
 			h1.textAlignCenter Images overview
 
+			if username == null || username === currentUser.username
+				div.marginBottom30
+					a.customButton(href='/uploads/upload') Upload images
+
 			if deleted !== '1'
 				p.redText To add an image to your post copy the text below the image and paste it anywhere within the post body
 
@@ -48,6 +52,3 @@ block content
 					a.previousNext(href=`/uploads/overview/${page + 1}?${pageQuery}`) &#8250;
 				if numberOfPages > 0
 					|  Page #{page} / #{numberOfPages}
-
-			if username == null || username === currentUser.username
-				a.customButton(href='/uploads/upload') Upload images

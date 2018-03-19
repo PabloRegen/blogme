@@ -99,7 +99,7 @@ module.exports = function(knex, environment) {
 						});
 					});
 				}).then(() => {
-					res.redirect('/uploads/upload');
+					res.redirect('/uploads/overview/1');
 				});
 			}
 		});

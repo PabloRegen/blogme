@@ -14,7 +14,7 @@ block content
 		legend Sign up
 		+field('Username')(type='text', name='username' value=body.username)
 		+field('Email')(type='text', name='email' value=body.email)
-		+field('Password')(type='password', name='password' value=body.password)
+		+field('Password (minimum 8 characters)')(type='password', name='password' value=body.password)
 		+field('Confirm password')(type='password', name='confirm_password' value=body.confirm_password)
 		input(type='submit' value='Sign up')
 		p.title #[span.asterisk *] Please check out our #[a(href='/about') about page] before signing up!

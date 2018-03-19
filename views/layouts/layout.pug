@@ -21,9 +21,9 @@ html
 
 				else
 					nav.mainNav
-						i.icon-user
-						| #{currentUser.username}
-						a(href='/accounts/dashboard') Dashboard
+						a(href='/accounts/dashboard')
+							i.icon-user
+							| #{currentUser.username}
 						a(href='/accounts/profile') Profile
 						form(action='/accounts/signout' method='post')
 							input.mainNavButton(type='submit' value='Logout')

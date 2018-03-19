@@ -124,6 +124,13 @@ form p.title {
 	text-align: center;
 }
 
+.parensText {
+	font-weight: 300;
+	font-size: 13px;
+	line-height: 1.15;
+	color: rgb(117,123,133);
+}
+
 .pipe {
 	margin: 0 20px;
 	color: rgb(204, 204, 204);

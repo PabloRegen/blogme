@@ -5,15 +5,15 @@ block title
 
 block content
 	div.readingWidth.paddingBottom30
-		h1.textAlignCenter Your profile
+		h1.textAlignCenter Profile
 
 		if currentUser.pic != null
 			img.userAvatar(src=`/uploads/${currentUser.pic}`)
 			form.marginTop20(action='/accounts/profile' method='post')
-				input.customButton.danger(type='submit' value='Delete picture')
+				input.customButton.danger(type='submit' value='Delete image')
 		else
 			img.userAvatar(src='/images/avatar.jpg')
-			p (#[span.asterisk  *] You can provide your own avatar or picture by editing your profile)
+			div.parensText (#[span.asterisk  *] You can provide your own image by editing your profile)
 
 		p Name:
 			if currentUser.name != null
