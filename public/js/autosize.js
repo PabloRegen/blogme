@@ -1,7 +1,9 @@
+
 document.addEventListener('DOMContentLoaded', event => {
 	Array.from(document.querySelectorAll('.autosize')).forEach(element => {
-		element.addEventListener('input', event => {
-			autoSize(event.target);
+		autoSize(element);
+		element.addEventListener('input', () => {
+			autoSize(element);
 		});
 	});
 });
