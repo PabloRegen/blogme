@@ -15,12 +15,13 @@ block content
 			img.userAvatar(src='/images/avatar.jpg')
 			div.parensText (#[span.asterisk  *] You can provide your own image by editing your profile)
 
+		p Username: #{currentUser.username}
+		p Email: #{currentUser.email}
 		p Name:
 			if currentUser.name != null
 				|  #{currentUser.name}
 			else 
 				|  N/A
-
 		p Bio:
 			if currentUser.bio != null
 				|  #{currentUser.bio}

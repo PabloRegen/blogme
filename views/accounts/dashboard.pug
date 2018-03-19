@@ -6,12 +6,16 @@ block title
 block content
 	div.dashboard.marginBottom30
 		div.readingWidth
-			h1.textAlignCenter
+			h1.flexRow
 				if currentUser.pic != null
-					img.userAvatar(src=`/uploads/${currentUser.pic}`)
+					img.userAvatar.marginRight15(src=`/uploads/${currentUser.pic}`)
 				else
-					img.userAvatar(src='/images/avatar.jpg')
-				| #{currentUser.username}
+					img.userAvatar.marginRight15(src='/images/avatar.jpg')
+
+				if currentUser.name != null
+					| #{currentUser.name}
+				else 
+					| #{currentUser.username}
 			
 			div.postList
 				h2 Your posts

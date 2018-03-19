@@ -461,7 +461,9 @@ textarea[name='body'] {
 
 /* dashboard
    ============================================ */
-
+.dashboard .flexRow {
+	justify-content: center;	
+}
 
 /* post and image overview pages
    ============================================ */

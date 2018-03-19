@@ -26,7 +26,10 @@ html
 						a(href='/accounts/profile') Profile
 						a(href='/accounts/dashboard')
 							i.icon-user
-							| #{currentUser.username}
+							if currentUser.name != null
+								|  #{currentUser.name}
+							else
+								| #{currentUser.username}
 						form(action='/accounts/signout' method='post')
 							input.mainNavButton(type='submit' value='Logout')
 
