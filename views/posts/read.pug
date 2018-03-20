@@ -57,7 +57,8 @@ block content
 					i.icon-tag
 					| Tags:
 					each tag in tags
-						span #{tag}
+						span
+							a(href=`/posts/tagged/${tag}`) #{tag}
 
 			div.userInfo
 				if postedByUser.pic != null

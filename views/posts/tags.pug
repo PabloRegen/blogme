@@ -1,0 +1,15 @@
+extends ../layouts/layout
+
+block title
+	|posts tagged 
+
+block content
+	div.readingWidth
+		h1.textAlignCenter Tags
+		div.readPostTags
+			if currentTags.length > 0
+				each tag in currentTags
+					span
+						a(href=`/posts/tagged/${tag.name}`) #{tag.name}
+			else 
+				| There are no tags yet
