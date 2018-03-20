@@ -195,7 +195,7 @@ module.exports = function(knex, environment) {
 		});
 	});
 
-	/* overview all posts */
+	/* overview all specific user posts */
 	router.get('/overview', requireSignin, (req, res) => {
 		return Promise.try(() => {
 			let username = req.query.username;
@@ -231,6 +231,17 @@ module.exports = function(knex, environment) {
 		});
 	});
 
+	/* all tags */
+	router.get('/tags', (req, res) => {
+		return Promise.try(() => {
+			return knex('tags').where({deletedAt: null});
+		}).then((currentTags) => {
+			res.render('posts/tags', {
+				currentTags: currentTags
+			});
+		});
+	});
+	
 	/* delete */
 	router.post('/:slug/delete', requireSignin, auth(2, true), (req, res) => {
 		return Promise.try(() => {
@@ -387,6 +398,57 @@ module.exports = function(knex, environment) {
 						canEditAndDelete: (req.currentUser != null) && (req.currentUser.id === postedByUser.id || req.currentUser.role >= 2)
 					});
 				});
+			});
+		});
+	});
+
+	/* overview posts by tag */
+	router.get('/tagged/:tag', (req, res) => {
+		return Promise.try(() => {
+			return knex('tags').where({
+				name: req.params.tag,
+				deletedAt: null
+			}).first();
+		}).then((tag) => {
+			if (tag != null) {
+				return knex('tags_posts').where({tagId: tag.id});
+			} else {
+				throw new Error(`There are no posts tagged "${req.params.tag}"`);
+			}
+		}).map((tagPostAssociation) => {
+			let postId = tagPostAssociation.postId;
+
+			return Promise.all([
+				knex('posts').where({
+					id: postId,
+					deletedAt: null,
+					isVisible: true,
+					isDraft: false
+				}).first(),
+				knex('likedposts').where({postId: postId}).count(),
+				Promise.try(() => {
+					return knex('slugs').where({
+						postId: postId,
+						isCurrent: true
+					}).first();
+				}).then((slug) => {
+					if (slug != null) {
+						return slug;
+					} else {
+						throw new Error(`The slug is missing or there is no current slug for post id ${postId}`);
+					}
+				})
+			]).spread((post, likes, slug) => {
+				return Object.assign(
+					post, 
+					{likes: parseInt(likes[0].count)}, 
+					{slug: slug.name}
+				);
+			});
+		}).then((postsWithLikesAndSlugs) => {
+			res.render('posts/tagged', {
+				posts: postsWithLikesAndSlugs,
+				tag: req.params.tag
 			});
 		});
 	});

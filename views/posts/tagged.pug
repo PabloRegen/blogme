@@ -1,0 +1,36 @@
+extends ../layouts/layout
+
+block title
+	|posts tagged
+
+block content
+
+	mixin postDetails(post)
+		article
+			figure
+				if post.pic != null
+					img(src=`/uploads/${post.pic}`)
+				else
+					img(src='/images/no_image_available.jpg')
+			header
+				h2
+					a(href=`/posts/${post.slug}`)= post.title
+				if post.subtitle != null
+					p.subtitleList #{post.subtitle}
+				p.postData #{moment(post.postedAt).format('ll')}	
+				if post.updatedAt != null
+					p.postData updated #{moment(post.updatedAt).format('ll')}		
+				p.postData 
+					i.icon-heart 
+					| #{post.likes}
+			div.clear
+
+	div.postsOverview
+		div.readingWidth.paddingBottom30
+				h4.textAlignCenter.marginBottom0 Tagged in
+				h1.textAlignCenter.marginTop0 #{tag}
+				div.postList.marginBottom80
+					each post in posts
+						+postDetails(post) 
+					else
+						p.textAlignCenter No post has been tagged "#{tag}" yet
