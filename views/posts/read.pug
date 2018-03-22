@@ -13,14 +13,14 @@ block content
 					img(src='/images/avatar.jpg')
 
 				if postedByUser.name != null
-					div #{postedByUser.name}
+					div.fontWeightBold #{postedByUser.name}
 				else
-					div #{postedByUser.username}
+					div.fontWeightBold #{postedByUser.username}
 
 				if postedByUser.bio != null
 					div #{postedByUser.bio}
 
-				div #{moment(post.postedAt).format('ll')}
+				div.fontWeight300 #{moment(post.postedAt).format('ll')}
 				div.clear
 
 			div.marginBottom20
@@ -67,9 +67,9 @@ block content
 					img.userPic(src='/images/avatar.jpg')
 
 				if postedByUser.name != null
-					div #{postedByUser.name}
+					div.fontWeightBold #{postedByUser.name}
 				else
-					div #{postedByUser.username}
+					div.fontWeightBold #{postedByUser.username}
 
 				if postedByUser.bio != null
 					div #{postedByUser.bio}

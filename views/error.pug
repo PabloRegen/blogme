@@ -4,9 +4,9 @@ block title
 	|error
 
 block content
-	div.readingWidth
-		h1.textAlignCenter.marginBottom0 Oops. There was an error
-		h3.textAlignCenter.marginTop0= errorTitle
+	div.readingWidth.flexColumn.alignItemsCenter.marginBottom30
+		h1.marginBottom0 Oops. There was an error
+		h3.marginTop0.redText= errorTitle
 		img(src='/images/error-owl.jpg')
 		
 	if errorStacktrace != null

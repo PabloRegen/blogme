@@ -30,7 +30,7 @@ module.exports = function(environment, errorReporter) {
 
 			if (environment === 'development') {
 				res.render('error', {
-					errorTitle: err.message, 
+					errorTitle: err.message,
 					errorStacktrace: err.stack
 				});
 			} else {

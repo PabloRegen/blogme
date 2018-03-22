@@ -231,7 +231,7 @@ module.exports = function(knex, environment) {
 		});
 	});
 
-	/* all tags */
+	/* display all current tags */
 	router.get('/tags', (req, res) => {
 		return Promise.try(() => {
 			return knex('tags').where({deletedAt: null});
@@ -402,9 +402,10 @@ module.exports = function(knex, environment) {
 		});
 	});
 
-	/* overview posts by tag */
+	/* overview all posts by a specific tag */
 	router.get('/tagged/:tag', (req, res) => {
 		return Promise.try(() => {
+			/* Check tag table in case user manually enters the URL */
 			return knex('tags').where({
 				name: req.params.tag,
 				deletedAt: null
@@ -413,7 +414,7 @@ module.exports = function(knex, environment) {
 			if (tag != null) {
 				return knex('tags_posts').where({tagId: tag.id});
 			} else {
-				throw new Error(`There are no posts tagged "${req.params.tag}"`);
+				throw new Error(`There is no current tag "${req.params.tag}"`);
 			}
 		}).map((tagPostAssociation) => {
 			let postId = tagPostAssociation.postId;

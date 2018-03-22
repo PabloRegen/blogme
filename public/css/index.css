@@ -130,6 +130,12 @@ form p.title {
 	line-height: 1.15;
 	color: rgb(117,123,133);
 }
+.fontWeight300 {
+	font-weight: 300;
+}
+.fontWeightBold {
+	font-weight: bold;
+}
 
 .pipe {
 	margin: 0 20px;
@@ -162,6 +168,9 @@ form p.title {
 .heigh100vh {
 	/* ensure content area is as tall as the browser window */
 	height: 100vh;
+}
+.alignItemsCenter {
+	align-items: center;
 }
 
 
@@ -420,6 +429,10 @@ textarea[name='body'] {
 .postBody p code {
 	margin: 0 2px;
 	padding: 3px 4px;
+	background-color: rgb(242,242,242);
+}
+.postBody .backgroundColor {
+	padding: 4px 9px;
 	background-color: rgb(242,242,242);
 }
 .postBody img {
