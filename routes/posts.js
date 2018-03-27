@@ -405,7 +405,7 @@ module.exports = function(knex, environment) {
 	/* overview all posts by a specific tag */
 	router.get('/tagged/:tag', (req, res) => {
 		return Promise.try(() => {
-			/* Check tag table in case user manually enters the URL */
+			/* Check tag table in case user manually enters the URL or uses an old link */
 			return knex('tags').where({
 				name: req.params.tag,
 				deletedAt: null
@@ -414,7 +414,7 @@ module.exports = function(knex, environment) {
 			if (tag != null) {
 				return knex('tags_posts').where({tagId: tag.id});
 			} else {
-				throw new Error(`There is no current tag "${req.params.tag}"`);
+				throw new errors.NotFoundError(`There is no current tag "${req.params.tag}"`);
 			}
 		}).map((tagPostAssociation) => {
 			let postId = tagPostAssociation.postId;
@@ -440,12 +440,18 @@ module.exports = function(knex, environment) {
 					}
 				})
 			]).spread((post, likes, slug) => {
-				return Object.assign(
-					post, 
-					{likes: parseInt(likes[0].count)}, 
-					{slug: slug.name}
-				);
+				if (post != null) {
+					return Object.assign(
+						post, 
+						{likes: parseInt(likes[0].count)}, 
+						{slug: slug.name}
+					);
+				} else {
+					return null;
+				}
 			});
+		}).filter((post) => {
+			return post !== null;
 		}).then((postsWithLikesAndSlugs) => {
 			res.render('posts/tagged', {
 				posts: postsWithLikesAndSlugs,

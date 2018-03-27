@@ -472,6 +472,7 @@ textarea[name='body'] {
 }
 .readPostTags span a {
 	color: rgb(80,80,80);
+	/* display: inline-block; */
 }
 
 
