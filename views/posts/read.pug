@@ -52,13 +52,12 @@ block content
 							i.icon-heart 
 				| #{likes}
 
-			div.readPostTags.flexRow
+			div.tags.flexRow.flexFlowWrap
 				if tags.length > 0
 					i.icon-tag
-					| Tags:
+					span Tags:
 					each tag in tags
-						span
-							a(href=`/posts/tagged/${tag}`) #{tag}
+						a(href=`/posts/tagged/${tag}`) #{tag}
 
 			div.userInfo
 				if postedByUser.pic != null
