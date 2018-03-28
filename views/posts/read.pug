@@ -28,7 +28,7 @@ block content
 				h2.postSubtitle!= sanitizer.sanitize(post.subtitle)
 
 		if post.pic != null
-			img.postCoverImage(src=`/uploads/${post.pic}`, alt='Alt post pic', title='Main Post Pic')
+			img.postCoverImage(src=`/uploads/${post.pic}`, alt='Alt post image', title='Main post image')
 
 		div.readingWidth
 			div.postBody!= sanitizer.sanitize(postBody, function(url) { return url; })
