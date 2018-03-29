@@ -173,6 +173,9 @@ form p.title {
 .alignItemsCenter {
 	align-items: center;
 }
+.justifyContentCenter {
+	justify-content: center;
+}
 .flexFlowWrap {
 	flex-flow: row wrap;
 }
@@ -631,6 +634,9 @@ textarea[name='body'] {
    ============================================ */
 .marginRight15 {
     margin-right: 15px;
+}
+.marginLeft12 {
+    margin-left: 12px;
 }
 .marginLeft25 {
     margin-left: 25px;

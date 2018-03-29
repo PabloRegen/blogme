@@ -17,7 +17,7 @@ block content
 		+field('Password (minimum 8 characters)')(type='password', name='password' value=body.password)
 		+field('Confirm password')(type='password', name='confirm_password' value=body.confirm_password)
 		input(type='submit' value='Sign up')
-		p.title #[span.asterisk *] Please check out our #[a(href='/about') about page] before signing up!
+		p.title.textAlignCenter #[span.asterisk *****] Please read our #[a(href='/about') #[span.redText about page]] before signing up! #[span.asterisk *****]
 
 	p.signQuery Have an account?
 		a(href='/accounts/signin')  Login
