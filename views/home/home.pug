@@ -46,5 +46,5 @@ block content
 								a(href=`/posts/${post.slug}`)= post.title
 							if post.subtitle != null
 								p.subtitleList #{post.subtitle}
-							p.postData by #{post.owner} • #{moment(post.postedAt).format('ll')}	
+							p.postData by #{post.owner.name != null ? post.owner.name : post.owner.username} • #{moment(post.postedAt).format('ll')}	
 						div.clear

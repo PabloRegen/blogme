@@ -32,8 +32,7 @@ module.exports = function(knex, environment) {
 				return Object.assign(
 					{}, 
 					{slug: slug.name}, 
-					{owner: owner.username},
-					{ownerPic: owner.pic},
+					{owner: owner},
 					post
 				);
 			});
