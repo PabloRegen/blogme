@@ -1,6 +1,6 @@
 # Blogme
 
-#[strong [Blogme](https://blogme.space)] is a mostly backend blogging platform I designed, developed & deployed, written in JavaScript and storing data to a postgreSQL database.
+[Blogme](https://blogme.space) is a mostly backend blogging platform I designed, developed & deployed, written in JavaScript and storing data to a postgreSQL database.
 
 It allows users to search, read & create posts with images & tags, create profiles, upload images to the db, see statistics, like posts and follow people. It also differentiates between admins and users roles.
 
