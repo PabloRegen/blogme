@@ -4,6 +4,8 @@
 
 It allows users to search, read & create posts with images & tags, create profiles, upload images to the db, see statistics, like posts and follow people. It also differentiates between admins and users roles.
 
+For details on the platform's requirements, technologies and structure check [this post](https://blogme.space/posts/Blogme).
+
 ## Technologies
 * JavaScript
 * HTML5
